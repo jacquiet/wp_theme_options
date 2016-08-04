@@ -1,0 +1,140 @@
+/**
+ * General Styles
+ */
+
+.appearance_page_theme_options {
+  #wpcontent {
+    padding-left: 0px;
+  }
+
+  #wpwrap {
+    background-color: $view-main-color-index;
+  }
+}
+
+.view-block {
+  background-color: white;
+  padding: 20px;
+  margin: 10px;
+  @extend .z-depth-1;
+}
+
+.view-component-heading {
+  font-size: 20px;
+  margin-left: -5px;
+}
+
+.view-block-title.widget {
+  .block-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+  }
+
+  .block-subtitle {
+    font-size: 12px;
+    margin-top: 0px;
+  }
+}
+
+.view-block-title {
+  .block-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+    margin-bottom: 0px;
+  }
+
+  .block-subtitle {
+    font-size: 12px;
+    margin-top: 0px;
+  }
+}
+
+.view-block-section {
+  margin-bottom: 20px;
+}
+
+.view-block-section-heading {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.view-field-title {
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+
+.view-field-label {
+  margin-top: 0px;
+  font-size: 12px;
+}
+
+.view-block-label {
+  width: 100px;
+  display: inline-block;
+}
+
+.view-field, .view-dropdown {
+  min-width: 250px;
+  margin-bottom: 20px;
+}
+
+.view-field-hidden {
+  display: none;
+}
+
+.view-block-count {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.chart-publish-posts {
+  fill: $publish-posts-color;
+}
+
+.chart-draft-posts {
+  fill: $draft-posts-color;
+}
+
+.chart-trash-posts {
+  fill: $trash-posts-color;
+}
+
+
+.post-legend {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  position: relative;
+  top: 2px;
+}
+
+.publish-posts {
+  @extend .post-legend;
+  background-color: $publish-posts-color;
+}
+
+.draft-posts {
+  @extend .post-legend;
+  background-color: $draft-posts-color;
+}
+
+.trash-posts {
+  @extend .post-legend;
+  background-color: $trash-posts-color;
+}
+
+.view-image-upload-box {
+  img {
+    width: 250px;
+    height: auto;
+    @extend .z-depth-1;
+  }
+}
+
+.textarea-hidden {
+  display: none;
+}

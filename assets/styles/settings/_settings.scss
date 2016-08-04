@@ -1,0 +1,21 @@
+/**
+ * Style settings for module [theme_options]
+ */
+
+
+/** View [index] */
+$view-heading-color-index: #F7F7F7;
+$view-navigation-color-index: #FFFFFF;
+$view-navigation-hover-color-index: rgba(101, 108, 126, 0.4);
+$view-navigation-active-color-index: rgba(0, 115, 170, 0.6);
+$view-main-color-index: #efefef;
+$view-footer-color-index: #efefef;
+
+/** General */
+$highlight-color: rgba(0, 115, 170, 0.6);
+$highlight-color-hover: $view-navigation-hover-color-index;
+
+/** Pie charts colors */
+$publish-posts-color: #e52c65;
+$draft-posts-color: #ff8c53;
+$trash-posts-color: #ffc851;
