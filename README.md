@@ -2,6 +2,7 @@
 # Module 'Theme Options' README
 ------------------------------------------------------------
 CONTENTS:
+
 1. Overview
 2. Installation
 3. Gulp Options
@@ -49,6 +50,7 @@ The above command will install all dependencies, located in themedir/package.jso
 If you want to add more plugins, insert them in devDependencies array in package.json.
 
 There's are several gulp tasks, defined in gulpfile.js:
+
 	gulp app:watch  - combines tasks [sass:watch] and [js:watch]
 	gulp sass:watch - precompilation of sass files upon save
 	gulp js:watch   - concatenation of js files upon save
@@ -65,6 +67,7 @@ If you want to add more tasks, define them in gulpfile.js
 Open a command prompt or terminal in the theme's main directory.
 
 You have 5 commands at your disposal:
+
 	gulp app:watch
 	This is an on-going task, which conbines tasks [sass:watch] and [js:watch]
 
@@ -92,6 +95,7 @@ That's it! You're ready to start using Theme Options.
 
 If you want to customize the module, you can configure its settings. To do this, open init.php and configure your module from the global variable 'module'.
 Some of the configuration options include:
+
     - mode      - 'development' or 'production'
     - name      - the name of the module
     - pages     - the module pages
