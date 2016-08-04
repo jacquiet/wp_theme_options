@@ -1,7 +1,7 @@
 
 # Module 'Theme Options' README
 ------------------------------------------------------------
-0. CONTENTS:
+CONTENTS
 
 1. Overview
 2. Installation
