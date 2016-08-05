@@ -30,6 +30,7 @@ TO also contains:
 
 - assets        - wrapper for static resources - css, sass, js, images, fonts
 - widgets       - components, which has their own view and can communicate with the database directly
+- etc           - wrapper for templates - component, page and widget
 
 The theme is also integrated with Gulp, so common tasks like sass pre-compilation, js concatenation and minification are automated.
 
