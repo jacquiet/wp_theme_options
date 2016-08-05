@@ -1,5 +1,6 @@
 <?php
 // Class: Model
+// Description: This class communicates with the database
 
 
 class Model {

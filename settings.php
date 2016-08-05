@@ -11,6 +11,7 @@ $module = array(
     'mode'          => 'development',
     // Set module name - must match the name of the module under themedir/modules
     'name'          => 'theme_options',
+    // Set module title - the title appears on each of the module pages
     'title'         => 'Theme Options',
     // Define pages
     'pages'    => array(
@@ -22,6 +23,7 @@ $module = array(
     // Define GET params
     'params'        => array(
         'page'        => 'theme-options-page',
+        // Do NOT change this property - it comes from WP
         'updated'     => 'settings-updated'
     ),
     // Define default view

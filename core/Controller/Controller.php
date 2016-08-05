@@ -1,5 +1,6 @@
 <?php
 // Class: Controller
+// Description: This class communicates with the views
 
 
 class Controller {

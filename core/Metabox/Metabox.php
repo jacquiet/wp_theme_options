@@ -1,5 +1,6 @@
 <?php
 // Class: Metabox
+// Description: This class contains metafield creation methods
 
 // Supported public metafields:
 
@@ -344,7 +345,7 @@ class Metabox {
         $modules_dir = get_template_directory_uri() . '/modules/';
 
         // Set icons directory
-        $wysiwyg_icons_dir = $modules_dir . '/' . $module['name'] . '/assets/fonts/trumbowyg/icons.svg';
+        $wysiwyg_icons_dir = $modules_dir . $module['name'] . '/assets/fonts/trumbowyg/icons.svg';
 
         // Get module options
         $settings = get_option('sa_options', $sa_options);

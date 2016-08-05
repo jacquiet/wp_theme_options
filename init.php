@@ -7,27 +7,28 @@
 // Get module settings
 require_once('settings.php');
 
+
 global $module;
 
 
 // Get modules directory
-$modules_dir = get_stylesheet_directory() . '/modules';
+$modules_dir = get_stylesheet_directory() . '/modules/';
 
 
 // Get Controller class
-require_once($modules_dir . '/' . $module['name'] . '/core/Controller/Controller.php');
+require_once($modules_dir . $module['name'] . '/core/Controller/Controller.php');
 
 // Get Module class
-require_once($modules_dir . '/' . $module['name'] . '/core/Model/Model.php');
+require_once($modules_dir . $module['name'] . '/core/Model/Model.php');
 
 // Get Router class
-require_once($modules_dir . '/' . $module['name'] . '/core/Router/Router.php');
+require_once($modules_dir . $module['name'] . '/core/Router/Router.php');
 
 // Get Helper class
-require_once($modules_dir . '/' . $module['name'] . '/core/Helper/Helper.php');
+require_once($modules_dir . $module['name'] . '/core/Helper/Helper.php');
 
 // Get Metabox class
-require_once($modules_dir . '/' . $module['name'] . '/core/Metabox/Metabox.php');
+require_once($modules_dir . $module['name'] . '/core/Metabox/Metabox.php');
 
 
 // Enqueue module styles

@@ -1,5 +1,6 @@
 <?php
 // Class: Helper
+// Description: This class contains helper methods
 
 
 
