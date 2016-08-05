@@ -1,10 +1,10 @@
 <?php
-// Template component: Settings
+// Page: Settings
 // Displays the settings page
 ?>
 
 <?php
-// Component settings
+// Page settings
 
 // Get module options
 global $sa_options;

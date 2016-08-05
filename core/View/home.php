@@ -1,10 +1,10 @@
 <?php
-// Template component: pages
+// Page: pages
 // Displays the pages page
 ?>
 
 <?php
-// Component settings
+// Page settings
 
 // Get Controller
 $controller = new Controller();
