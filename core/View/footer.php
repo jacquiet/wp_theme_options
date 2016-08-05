@@ -15,12 +15,14 @@ $view = $controller->getCurrentView();
 
 <?php if ( $view !== 'home' ) : ?>
 
-    <div class="view-component" data-view-component="footer">
+    <!-- view-page-part [footer] -->
+    <div class="view-page-part" data-view-page-part="footer">
         <div class="footer-controls">
             <div class="buttons-group">
                 <a href="#" class="button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
             </div>
         </div>
     </div>
+    <!-- view-page-part [footer] -->
 
 <?php endif; ?>

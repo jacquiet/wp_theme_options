@@ -93,18 +93,16 @@ To activate Theme Options for your theme, please follow these steps:
 
 That's it! You're ready to start using Theme Options.
 
-If you want to customize the module, you can configure its settings. To do this, open init.php and configure your module from the global variable 'module'.
+If you want to customize the module, you can configure its settings. To do this, open moduledir/settings.php and configure your module from the global variable 'module'.
 Some of the configuration options include:
 
     - mode      - 'development' or 'production'
     - name      - the name of the module
     - pages     - the module pages
-    - display   - callback function which displays the module page
-    - create    - callback function which creates the module
     - base_view - base view for the module
-    - params    - GET and POST params, used by the module
+    - params    - GET params, used by the module
 
-If you want to add module pages, make sure to add the new page in the module settings in init.php and also make sure to add the new view under moduledir/core/View
+If you want to add module pages, make sure to add the new page in the module settings in settings.php and also make sure to add the new view under moduledir/core/View
 
 
 

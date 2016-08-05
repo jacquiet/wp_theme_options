@@ -16,8 +16,8 @@ $controller = new Controller();
 ?>
 
 
-<!-- module-view -->
-<div class="module_view" data-view="index">
+<!-- module-view [index] -->
+<div class="module-view" data-view="index">
 
     <!-- heading -->
     <div class="view-heading">
@@ -46,4 +46,4 @@ $controller = new Controller();
     </div>
 
 </div>
-<!-- /module-view -->
+<!-- /module-view [index] -->

@@ -26,10 +26,12 @@ if ( strpos($module_url, $module['params']['page']) ) {
 }
 ?>
 
-<!-- view-component[navigation] -->
+<!-- view-component [navigation] -->
 <div class="view-component" data-view-component="navigation">
 
     <div class="row row-full">
+
+        <!-- navigation -->
         <ul class="navigation">
 
             <!-- Go through navigation pages -->
@@ -44,7 +46,9 @@ if ( strpos($module_url, $module['params']['page']) ) {
             <?php endforeach ?>
 
         </ul>
+        <!-- /navigation -->
+
     </div>
 
 </div>
-<!-- /view-component[navigation] -->
+<!-- /view-component [navigation] -->

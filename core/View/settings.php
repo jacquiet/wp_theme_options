@@ -29,11 +29,12 @@ $templates = $model->getPosts(array(
 
 // Require module options
 $settings = get_option('sa_options', $sa_options);
-
 ?>
 
-<div class="view-component" data-view-component="settings">
+<!-- view-page [settings] -->
+<div class="view-page" data-view-page="settings">
 
+    <!-- form -->
     <form class="view-form" action="options.php" method="POST">
 
         <!-- insert security fields -->
@@ -42,10 +43,12 @@ $settings = get_option('sa_options', $sa_options);
         <!-- create hidden fields for module options -->
         <?php $metabox->createOptionFields(); ?>
 
-        <p class="view-component-heading"><?php echo __('Settings'); ?></p>
+        <!-- view-page-heading -->
+        <p class="view-page-heading"><?php echo __('Settings'); ?></p>
 
         <div class="row">
             <div class="col-sm-12 col-md-6 col-lg-4 col-full">
+
                 <!-- view-block -->
                 <div class="view-block">
 
@@ -54,6 +57,7 @@ $settings = get_option('sa_options', $sa_options);
                         <p class="block-title"><?php echo __('Page IDs') ?></p>
                         <p class="block-subtitle"><?php echo __('Insert the page ids to allow internal linking.'); ?></p>
                     </div>
+                    <!-- /title -->
 
                     <!-- content -->
                     <div class="view-block-content">
@@ -135,6 +139,7 @@ $settings = get_option('sa_options', $sa_options);
                         <p class="block-title"><?php echo __('Social links') ?></p>
                         <p class="block-subtitle"><?php echo __('These links appear in the website\'s footer.'); ?></p>
                     </div>
+                    <!-- /title -->
 
                     <!-- content -->
                     <div class="view-block-content">
@@ -215,6 +220,7 @@ $settings = get_option('sa_options', $sa_options);
                         <p class="block-title"><?php echo __('Other stuff') ?></p>
                         <p class="block-subtitle"><?php echo __('More options are available here.'); ?></p>
                     </div>
+                    <!-- /title -->
 
                     <!-- content -->
                     <div class="view-block-content">
@@ -273,5 +279,7 @@ $settings = get_option('sa_options', $sa_options);
         </div>
 
     </form>
+    <!-- /form -->
 
 </div>
+<!-- /view-page [settings] -->

@@ -19,8 +19,10 @@ $controller = new Controller();
 $settings = get_option( 'sa_options', $sa_options );
 ?>
 
-<div class="view-component" data-view-component="pages">
+<!-- view-page [pages] -->
+<div class="view-page" data-view-page="pages">
 
+    <!-- form -->
     <form class="view-form" action="options.php" method="POST">
 
         <!-- insert security fields -->
@@ -29,10 +31,10 @@ $settings = get_option( 'sa_options', $sa_options );
         <!-- create hidden fields for module options -->
         <?php $metabox->createOptionFields(); ?>
 
-        <p class="view-component-heading"><?php echo __('Pages'); ?></p>
+        <!-- view-page-heading -->
+        <p class="view-page-heading"><?php echo __('Pages'); ?></p>
 
         <div class="row">
-
             <div class="col-sm-12 col-md-4 col-full">
 
                 <!-- view-block -->
@@ -43,6 +45,7 @@ $settings = get_option( 'sa_options', $sa_options );
                         <p class="block-title"><?php echo __('Home') ?></p>
                         <p class="block-subtitle"><?php echo __('Fields required for the homepage.'); ?></p>
                     </div>
+                    <!-- /title -->
 
                     <!-- content -->
                     <div class="view-block-content">
@@ -60,6 +63,7 @@ $settings = get_option( 'sa_options', $sa_options );
                         ?>
 
                     </div>
+                    <!-- /content -->
 
                 </div>
                 <!-- /view-block -->
@@ -76,6 +80,7 @@ $settings = get_option( 'sa_options', $sa_options );
                         <p class="block-title"><?php echo __('Blog') ?></p>
                         <p class="block-subtitle"><?php echo __('Fields required for the blog page.'); ?></p>
                     </div>
+                    <!-- /title -->
 
                     <!-- content -->
                     <div class="view-block-content">
@@ -115,6 +120,7 @@ $settings = get_option( 'sa_options', $sa_options );
                         ?>
 
                     </div>
+                    <!-- /content -->
 
                 </div>
                 <!-- /view-block -->
@@ -131,6 +137,7 @@ $settings = get_option( 'sa_options', $sa_options );
                         <p class="block-title"><?php echo __('Contact') ?></p>
                         <p class="block-subtitle"><?php echo __('Fields required for the contact page.'); ?></p>
                     </div>
+                    <!-- /title -->
 
                     <!-- content -->
                     <div class="view-block-content">
@@ -170,6 +177,7 @@ $settings = get_option( 'sa_options', $sa_options );
                         ?>
 
                     </div>
+                    <!-- /content -->
 
                 </div>
                 <!-- /view-block -->
@@ -178,5 +186,7 @@ $settings = get_option( 'sa_options', $sa_options );
         </div>
 
     </form>
+    <!-- /form -->
 
 </div>
+<!-- /view-page [pages] -->

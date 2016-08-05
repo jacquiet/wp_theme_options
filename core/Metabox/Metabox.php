@@ -151,8 +151,8 @@ class Metabox {
             '<label>' .
             '<input type="checkbox" class="view-field" name="' . $args['name'] . '" ' . $checked . ' ' . $required . '/>' . $args['description'] .
             '</label><br/><br/>';
-        ?>
 
+        ?>
         <script type="text/javascript">
             // Helper
             jQuery(document).ready(function($) {
@@ -167,8 +167,8 @@ class Metabox {
                 })
             });
         </script>
-
         <?php
+
         echo $html;
     }
 
@@ -204,7 +204,6 @@ class Metabox {
                 });
             });
         </script>
-
         <?php
 
         echo $html;
@@ -353,9 +352,6 @@ class Metabox {
         // Get field value
         $field_value = $settings[$args['name']];
 
-        // Get encoded field value
-        $field_value_encoded = htmlentities($field_value);
-
         // Set field name
         $field_name = '"sa_options[' . $args['name'] . ']"';
 
@@ -363,17 +359,13 @@ class Metabox {
         $field_id = $args['name'] . '-wysiwyg';
 
         // Set required
-        // $required = $args['required'] ? 'required="required"' : '';
+        $required = $args['required'] ? 'required="required"' : '';
 
         // Set field markup
         $html =
             '<textarea class="textarea-hidden" name="' . 'sa_options['.$args['name'].']' . '">' . $field_value . '</textarea>' .
             '<p class="view-field-title">' . $args['title'] . '</p>' .
             '<div id="' . $field_id . '"></div>';
-
-        //
-            // '<input type="hidden" class="view-field" name="' . 'sa_options['.$args['name'].']' . '" value="' . $field_value . '" ' . ' title="' . $args['description'] . '"/>' .
-            // '<input type="text" class="view-field" name="' . 'sa_options['.$args['name'].']' . '" value="' . $field_value . '" ' . $required . ' title="' . $args['description'] . '"/><br/>';
 
         ?>
         <script type="text/javascript">
@@ -385,6 +377,7 @@ class Metabox {
                     svgPath: '<?php echo $wysiwyg_icons_dir; ?>'
                 });
 
+                // Load editor content
                 $('#<?php echo $field_id; ?>').trumbowyg('html', "<?php echo $field_value; ?>");
 
                 // Update field value on multiple events

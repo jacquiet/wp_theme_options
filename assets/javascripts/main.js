@@ -2934,7 +2934,7 @@ jQuery.trumbowyg = {
         // Components
         var components = {
 
-            // component [any]
+            // component [any] - executed on any page
             any: function () {
 
                 // on click on save button
@@ -2955,16 +2955,13 @@ jQuery.trumbowyg = {
                     // go to destination
                     window.location.href = $(this).find('a').attr('href');
                 });
-            },
-
-            // component [home]
-            home: function () {}
+            }
         };
 
         // Widgets
         var widgets = {
 
-            // widget [any]
+            // widget [any] - executed on any page
             any: function () {},
 
             // widget [activity]
@@ -3047,7 +3044,7 @@ jQuery.trumbowyg = {
                 // check if component exists
                 if (collection.hasOwnProperty(component)) {
 
-                    // initialize component
+                    // execute component
                     collection[component]();
                 } else {
 

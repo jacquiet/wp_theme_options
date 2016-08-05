@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
         // Components
         var components = {
 
-            // component [any]
+            // component [any] - executed on any page
             any: function() {
 
                 // on click on save button
@@ -28,18 +28,13 @@ jQuery(document).ready(function($) {
                     window.location.href = $(this).find('a').attr('href');
                 });
             },
-
-            // component [home]
-            home: function() {
-
-            }
         };
 
 
         // Widgets
         var widgets = {
 
-            // widget [any]
+            // widget [any] - executed on any page
             any: function() {
 
             },
@@ -133,7 +128,7 @@ jQuery(document).ready(function($) {
                 // check if component exists
                 if ( collection.hasOwnProperty(component) ) {
 
-                    // initialize component
+                    // execute component
                     collection[component]();
                 } else {
 

@@ -4,40 +4,14 @@
 // Author: KenobiSoft
 
 
-// Set module settings
+// Get module settings
+require_once('settings.php');
+
 global $module;
-$module = array(
-    // Set mode - can be 'development' or 'production
-    'mode'          => 'development',
-    // Set module name - must match the name of the module under themedir/modules
-    'name'          => 'theme_options',
-    'title'         => 'Theme Options',
-    'capability'    => 'edit_theme_options',
-    // Set display callback
-    'display'       => 'displayModule',
-    // Set create callback
-    'create'        => 'createPage',
-    // Define pages
-    'pages'    => array(
-        // page name  // id
-        'home'        => 0,
-        'settings'    => 1,
-        'pages'       => 2
-    ),
-    // Define GET params
-    'params'        => array(
-        'page'        => 'theme-options-page',
-        'updated'     => 'settings-updated'
-    ),
-    // Define default view
-    'default_view'  => 'home',
-    // Define base View
-    'base_view'     => 'index'
-);
 
 
 // Get modules directory
-$modules_dir = get_stylesheet_directory() . '/modules/';
+$modules_dir = get_stylesheet_directory() . '/modules';
 
 
 // Get Controller class
@@ -98,7 +72,7 @@ function register_module_settings() {
 
 
 // Hook to admin menu and assign create callback
-add_action('admin_menu', $module['create']);
+add_action('admin_menu', 'createPage');
 
 // Create module page
 function createPage() {
@@ -110,9 +84,10 @@ function createPage() {
         global $module;
 
         // Add theme options page to the admin menu
-        add_theme_page($module['title'], $module['title'], $module['capability'], $module['name'], $module['display']);
+        add_theme_page($module['title'], $module['title'], 'edit_' . $module['name'], $module['name'], 'displayModule');
     }
 }
+
 
 // Display module
 function displayModule() {
