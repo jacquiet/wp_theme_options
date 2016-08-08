@@ -24,7 +24,7 @@ $metabox = new Metabox();
         <?php $metabox->createOptionFields(); ?>
 
         <!-- page name -->
-        <p class="view-page-heading"><?php echo __('Insert your page name here'); ?></p>
+        <p class="view-component-heading"><?php echo __('Insert your page name here'); ?></p>
 
         <div class="row">
             <div class="col-sm-12 col-md-6 col-lg-4 col-full">
