@@ -12,14 +12,10 @@ global $sa_options;
 // Instantiate metabox
 $metabox = new Metabox();
 
-// Instantiate model
 $model = new Model();
 
 // Get videos
-$videos = $model->getPosts(array(
-    'post_type'      => 'video',
-    'posts_per_page' => -1
-));
+$videos = $model->getPosts('video');
 
 // Instantiate controller
 $controller = new Controller();
@@ -130,6 +126,7 @@ $settings = get_option( 'sa_options', $sa_options );
                     <div class="view-block-content">
 
                         <?php
+
                         // Create metabox [page_id_home]
                         $metabox->createField('input_text', array(
                             'name'          => 'page_contact_field_1',
@@ -161,6 +158,7 @@ $settings = get_option( 'sa_options', $sa_options );
                             'description'   => __('Field 4'),
                             'required'      => false
                         ));
+
                         ?>
 
                     </div>

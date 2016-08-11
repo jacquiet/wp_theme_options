@@ -58,3 +58,21 @@
     font-size: 52px;
   }
 }
+
+.button-remove-file {
+  display: none;
+  position: absolute;
+  font-size: 26px;
+  color: $highlight-color;
+  left: 45px;
+  @include transition(all, 0.3s);
+
+  &:hover {
+    @include transition(all, 0.3s);
+    color: $delete-color;
+  }
+}
+
+.button-remove-file.active {
+  display: block;
+}

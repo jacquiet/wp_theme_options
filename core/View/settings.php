@@ -16,16 +16,10 @@ $metabox = new Metabox();
 $model = new Model();
 
 // Get videos
-$videos = $model->getPosts(array(
-    'post_type'      => 'video',
-    'posts_per_page' => -1
-));
+$videos = $model->getPosts('video');
 
 // Get templates
-$templates = $model->getPosts(array(
-    'post_type'      => 'template',
-    'posts_per_page' => -1
-));
+$templates = $model->getPosts('template');
 
 // Require module options
 $settings = get_option('sa_options', $sa_options);
@@ -154,9 +148,25 @@ $settings = get_option('sa_options', $sa_options);
                             'required'      => true
                         ));
 
+                        // Create metabox [gallery]
+                        $metabox->createField('gallery', array(
+                            'name'          => 'gallery_3',
+                            'title'         => 'Gallery',
+                            'description'   => __('Upload images here'),
+                            'required'      => true
+                        ));
+
                         // Create metabox [image upload]
                         $metabox->createField('image_upload', array(
                             'name'          => 'img_upload_1',
+                            'title'         => 'Image upload',
+                            'description'   => __('Upload an image here'),
+                            'required'      => true
+                        ));
+
+                        // Create metabox [image upload]
+                        $metabox->createField('image_upload', array(
+                            'name'          => 'img_upload_3',
                             'title'         => 'Image upload',
                             'description'   => __('Upload an image here'),
                             'required'      => true

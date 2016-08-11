@@ -266,6 +266,9 @@ class Metabox {
         // Set field name
         $field_name = '"sa_options[' . $args['name'] . ']"';
 
+        // Set image style
+        $img_style = empty($field_value) ? 'style="display:none"' : '';
+
         // Set required
         $required = $args['required'] ? 'required="required"' : '';
 
@@ -275,7 +278,7 @@ class Metabox {
             '<input type="hidden" name="' . $args['name'] . '_noncename" id="' . $args['name'] . '_noncename" value="' . wp_create_nonce(plugin_basename(__FILE__)) . '"/>' .
             '<p class="view-field-title">' . $args['title'] . '</p>' .
             '<div class="view-image-upload-box" id="' . $args['name'] . '-image-box' . '">' .
-            '<a class="gallery-image-link" href="' . $field_value . '"><img src="'. $field_value . '"/></a></div>' .
+            '<a class="gallery-image-link" href="' . $field_value . '"><img src="'. $field_value . '" ' . $img_style . '/></a></div>' .
             '<input type="hidden" class="view-field" name="' . 'sa_options['.$args['name'].']' . '" value="' . $field_value . '" ' . $required . ' title="' . $args['description'] . '"/>' .
             '<input type="button" class="button-image-upload" id="' . $args['name'] . '-button' . '" value="'. __('Select image') . '" title="' . $args['description'] . '"/>' .
             '</div>';
@@ -309,9 +312,11 @@ class Metabox {
                         // Sends the attachment URL to our custom image input field.
                         $('input[name=<?php echo $field_name; ?>]').val(media_attachment.url);
 
-                        $('#<?php echo $args['name']; ?>-image-box').hide();
-                        $('#<?php echo $args['name']; ?>-image-box').find('img').attr('src', media_attachment.url);
-                        $('#<?php echo $args['name']; ?>-image-box').fadeIn(300);
+                        var $imgBox = $('#<?php echo $args['name']; ?>-image-box');
+                        $imgBox.hide();
+                        $imgBox.find('img').attr('src', media_attachment.url);
+                        $imgBox.find('img').show();
+                        $imgBox.fadeIn(300);
                     });
 
                     // Runs on open
@@ -369,12 +374,15 @@ class Metabox {
         // Set required
         $required = $args['required'] ? 'required="required"' : '';
 
+        // Set remove button
+        $remove_btn = !empty($field_value) ? '<a href="#" class="button-remove-file" title="' . __('Remove file') . '"><span class="mdi-navigation-close"></span>' : '';
+
         // Set field markup
         $html =
             '<div class="view-metafield" data-view-metafield="file_upload">' .
             '<input type="hidden" name="' . $args['name'] . '_noncename" id="' . $args['name'] . '_noncename" value="' . wp_create_nonce(plugin_basename(__FILE__)) . '"/>' .
             '<p class="view-field-title">' . $args['title'] . '</p>' .
-            '<a href="' . $link . '" class="button-download-file" id="' . $args['name'] . '-button-download-file" ' . $visibility . ' title="' . __('Open file') . '" target="_blank"><span class="mdi-action-description"></span></a>' .
+            $remove_btn . '</a><a href="' . $link . '" class="button-download-file" id="' . $args['name'] . '-button-download-file" ' . $visibility . ' title="' . __('Open file') . '" target="_blank"></span><span class="mdi-action-description"></span></a>' .
             '<input type="hidden" class="view-field" name="' . 'sa_options['.$args['name'].']' . '" value="' . $field_value . '" ' . $required . ' title="' . $args['description'] . '"/>' .
             '<input type="button" class="button-image-upload" id="' . $args['name'] . '-button' . '" value="'. __('Select file') . '" title="' . $args['description'] . '"/>' .
             '</div>';
@@ -408,13 +416,50 @@ class Metabox {
                         // Sends the attachment URL to our custom image input field.
                         $('input[name=<?php echo $field_name; ?>]').val(media_attachment.url);
 
-                        $('#<?php echo $args['name']; ?>-button-download-file').attr('href', media_attachment.url);
-                        $('#<?php echo $args['name']; ?>-button-download-file').show();
+                        var $buttonDownloadFile = $('#<?php echo $args['name']; ?>-button-download-file');
+
+                        $buttonDownloadFile.before('<?php echo '<a href="#" class="button-remove-file" title="' . __('Remove file') . '"><span class="mdi-navigation-close"></span>'; ?>');
+                        $buttonDownloadFile.attr('href', media_attachment.url);
+                        $buttonDownloadFile.css({display: 'block'});
+
+                        $('.button-remove-file').on('click', function(e) {
+                            e.preventDefault();
+
+                            $('input[name=<?php echo $field_name; ?>]').val('');
+
+                            var $wrapper = $(this).parent();
+
+                            $wrapper.find('.button-download-file').hide();
+                            $(this).remove();
+                        });
                     });
 
                     // Opens the media library frame.
                     meta_image_frame.open();
                 });
+
+                $('.view-metafield[data-view-metafield=file_upload]').hover(function(e) {
+                   var $btnRemove = $(this).find('.button-remove-file');
+
+                    $btnRemove.addClass('active');
+                }, function(e) {
+                    var $btnRemove = $(this).find('.button-remove-file');
+
+                    $btnRemove.removeClass('active');
+                });
+
+                $('.button-remove-file').on('click', function(e) {
+                    e.preventDefault();
+
+                    $('input[name=<?php echo $field_name; ?>]').val('');
+
+                    var $wrapper = $(this).parent();
+
+                    $wrapper.find('.button-download-file').hide();
+                    $(this).remove();
+                });
+
+
             });
         </script>
         <?php
@@ -434,8 +479,11 @@ class Metabox {
         // Get field value
         $field_value = $settings[$args['name']];
 
+        // Set field name
+        $field_name = '"sa_options[' . $args['name'] . ']"';
+
         // Set gallery markup
-        $gallery_html = '<div class="gallery-frame"><ul>';
+        $gallery_html = '<div class="gallery-frame" id="' . $args['name'] . '"><ul>';
 
         if ( !empty($field_value) ) {
             $gallery_data = json_decode($field_value);
@@ -449,9 +497,6 @@ class Metabox {
         }
 
         $gallery_html .= '</ul></div>';
-
-        // Set field name
-        $field_name = '"sa_options[' . $args['name'] . ']"';
 
         // Set required
         $required = $args['required'] ? 'required="required"' : '';
@@ -519,7 +564,7 @@ class Metabox {
 
                     var $html = '<div class="gallery-frame"><ul>';
 
-                    for (u in urls) {
+                    for (var u in urls) {
 
                         $html += '<li><div class="gallery-image-wrapper"><a class="gallery-image-link" href="' + urls[u] + '"><img src="' + urls[u] + '"/></a></div></li>';
                     }
@@ -529,6 +574,7 @@ class Metabox {
                     $galleryWrapper.append($html);
 
                     // Start programatically metafield [gallery]
+
                     $.themeOptions.App.start('metafield', 'gallery');
 
                     $galleryWrapper.fadeIn(300);
@@ -536,9 +582,12 @@ class Metabox {
 
                 // Runs on open
                 meta_image_frame.on('open', function() {
+
                     setTimeout(function() {
                         var selection = meta_image_frame.state().get('selection');
+
                         var $allImages = $('.attachments li');
+
                         var ids = {
                             urls: JSON.parse($('[name=<?php echo $field_name; ?>]').val()),
                             checked: []
@@ -556,7 +605,6 @@ class Metabox {
                                 var idOriginal = contains(ids, id);
 
                                 $img.addClass('selected');
-
                                 selection.add(wp.media.attachment(idOriginal));
                             }
                         }

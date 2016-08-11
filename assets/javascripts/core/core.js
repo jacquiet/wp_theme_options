@@ -12,9 +12,8 @@
         // Enable jQuery through the variable $
         var $ = jQuery;
 
-        // Set variable for the slider
-        var sly = null;
-
+        // Wrapper for the page galleries
+        var galleries = [];
 
         // Private: Components
         var components = {
@@ -48,9 +47,14 @@
         var metafields = {
             any: function() {},
             gallery: function() {
+
+                // Set variable for the slider
+                var sly = null;
+
+                // Toggle image controls
                 var toggleImageControls = function() {
 
-                    // Toggle image controls
+                    // on hover
                     $('.gallery-image-wrapper, .view-image-upload-box').hover(function() {
                         // show controls
                         $(this).find('.gallery-image-controls').fadeIn(300);
@@ -60,8 +64,8 @@
                     });
                 };
 
+                // initialize image magnification
                 var enableMagnification = function() {
-                    // initialize image magnification
                     $('.view-metafield[data-view-metafield=gallery] .gallery-image-wrapper').magnificPopup({
                         delegate: '.gallery-image-link',
                         tLoading: 'Loading image #%curr%...',
@@ -72,9 +76,20 @@
                     });
                 };
 
-                var enableSlider = function() {
+                var enableSliders = function() {
+                    var $sliders = $('.gallery-frame');
+
+                    for (var i = 0, j = $sliders.length; i < j; i++) {
+                        var id = $sliders.eq(i).attr('id');
+
+                        // initialize slider
+                        initSlider(id);
+                    }
+                };
+
+                var initSlider = function(id) {
                     // Call Sly on frame
-                    sly = new Sly('.gallery-frame', {
+                    sly = new Sly('#' + id, {
                         horizontal: 1,
                         itemNav: 'basic',
                         smart: 1,
@@ -91,44 +106,60 @@
                         clickBar: 1
                     }, function() {}).init();
 
+                    galleries.push({
+                        slider: sly,
+                        id: id
+                    });
+
                     increaseSliderWidth();
                 };
 
+                var reloadSliders = function() {
+                    var $sliders = $('.gallery-frame');
+
+                    for (var i = 0, l = $sliders.length; i < l; i++) {
+                        galleries[i].slider.destroy();
+
+                        $sliders.eq(i).attr('id', galleries[i].id);
+
+                        initSlider(galleries[i].id);
+                    }
+                };
+
+                // increase slider width to fit all images
                 var increaseSliderWidth = function() {
-                    // this function fixes a defect with the slider width
 
-                    // Get slider
-                    var $frame = $('.gallery-frame');
-
-                    // increase slider width
-                    var sliderWidth = $frame.find('ul').width();
+                    // Get sliders
+                    var $sliders = $('.gallery-frame');
 
                     // Set offset for the slider width
                     var offset = 10;
 
-                    // Update slider width
-                    sliderWidth += offset;
+                    for (var i = 0, j = $sliders.length; i < j; i++) {
 
-                    // Update slider
-                    $frame.find('ul').css({width: sliderWidth + 'px'});
+                        // Get slider
+                        var $slider = $sliders.eq(i).find('ul');
+
+                        // Get slider width
+                        var sliderWidth = $slider.width();
+
+                        // Update slider width
+                        sliderWidth += offset;
+
+                        // Update slider
+                        $slider.css({width: sliderWidth + 'px'});
+                    }
                 };
 
-                $('.button-remove-gallery-image').on('click', function(e) {
-                    e.preventDefault();
-                    sly.reload();
-                    increaseSliderWidth();
-                });
-
+                // enable slider after 100 milliseconds
                 setTimeout(function() {
-                    // enable slider after 100 milliseconds
-
                     try {
-                        enableSlider();
+                        console.log('init');
+                        enableSliders();
                     } catch(e) {
-                        $('.gallery-frame').sly(false);
-                        enableSlider();
+                        console.log('reload');
+                        reloadSliders();
                     }
-
                 }, 100);
 
                 // toggle image controls
@@ -140,6 +171,7 @@
             image_upload: function() {
 
                 var enableMagnification = function() {
+
                     // initialize image magnification
                     $('.view-metafield[data-view-metafield=image_upload] .gallery-image-link').magnificPopup({
                         type: 'image'
@@ -292,6 +324,8 @@
                     });
                 }
 
+
+                // initialize pie-charts
                 new Chartist.Pie('.widget-activity-posts-pie-chart', dataPosts, {});
                 new Chartist.Pie('.widget-activity-videos-pie-chart', dataVideos, {});
                 new Chartist.Pie('.widget-activity-pages-pie-chart', dataPages, {});
@@ -307,6 +341,8 @@
 
         // Private: Call active components
         var call = function(type) {
+
+            var galleryCounter = 0;
 
             // set selector
             var selector    = 'view-' + type;
@@ -352,13 +388,13 @@
                  }
                  */
             }
-
         };
 
 
         // Public: Initialize
         var init = function() {
 
+            // Call all components
             call('component');
             call('widget');
             call('metafield');
@@ -368,6 +404,7 @@
         // Public: Start
         var start = function(collection, component) {
 
+            // start specific component
             switch (collection) {
                 case 'component':
                     if ( components.hasOwnProperty(component) ) {
@@ -390,7 +427,9 @@
 
         // Return public API
         return {
+            // initialize the whole module
             init: init,
+            // start programatically specific component
             start: start
         };
 
