@@ -42,6 +42,20 @@
             }
         };
 
+        var notifications = {
+            save: function(args) {
+                // Display notification for SAVE
+                $('.module-view').append('<div class="notification save"><p><span class="mdi-action-done"></span>' + args['title'] + '</p><p>' + args['subtitle'] + '</p></div>');
+
+                // Hide notification for SAVE
+                setTimeout(function() {
+                    $('.notification.save').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }, 2500);
+            }
+        };
+
 
         // Private: Metafields
         var metafields = {
@@ -76,6 +90,7 @@
                     });
                 };
 
+                // enable sliders
                 var enableSliders = function() {
                     var $sliders = $('.gallery-frame');
 
@@ -180,6 +195,24 @@
 
                 // enable magnification
                 enableMagnification();
+            },
+            map: function() {
+
+                $('.button-open-map-settings').on('click', function(e) {
+                    e.preventDefault();
+
+                    var isOpened = $(this).attr('data-control-opened') !== 'false';
+                    $('.map-controls').addClass('active');
+
+                    if ( isOpened ) {
+                        $(this).parent().removeClass('active');
+                        $(this).attr('data-control-opened', false);
+
+                    } else {
+                        $(this).parent().addClass('active');
+                        $(this).attr('data-control-opened', true);
+                    }
+                });
             }
         };
 
@@ -342,8 +375,6 @@
         // Private: Call active components
         var call = function(type) {
 
-            var galleryCounter = 0;
-
             // set selector
             var selector    = 'view-' + type;
 
@@ -425,12 +456,24 @@
         };
 
 
+        // Public Notify
+        var notify = function(event, args) {
+            switch (event) {
+                case 'save':
+                    notifications.save(args);
+                    break;
+            }
+        };
+
+
         // Return public API
         return {
             // initialize the whole module
             init: init,
             // start programatically specific component
-            start: start
+            start: start,
+            // notify for given event
+            notify: notify
         };
 
     })();

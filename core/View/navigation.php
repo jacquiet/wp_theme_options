@@ -9,14 +9,30 @@
 // Get module
 global $module;
 
+// Instantiate helper
+$helper = new Helper();
+
 // Get url request
 $module_url = get_site_url() . $_SERVER['REQUEST_URI'];
 
-// Evaluate request to find out if module page param exists
-if ( strpos($module_url, $module['params']['page']) ) {
+// If module data has been saved
+if ( $helper->isUpdated($module_url) ) {
+    ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
 
-    // Instantiate helper
-    $helper = new Helper();
+                // notify for save
+                $.themeOptions.App.notify('save', {
+                    title: '<?php echo __('Data saved'); ?>',
+                    subtitle: '<?php echo __('Theme options saved successfully.'); ?>'
+                });
+            });
+        </script>
+    <?php
+}
+
+// Evaluate request to find out if module page param exists
+if ( $helper->isOpened($module_url) ) {
 
     // Clear module params
     $module_url = $helper->clearParams($module_url);
@@ -24,6 +40,7 @@ if ( strpos($module_url, $module['params']['page']) ) {
     // Get page index
     $page_index = $helper->getPageIndex();
 }
+
 ?>
 
 <!-- view-component [navigation] -->

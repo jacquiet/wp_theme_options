@@ -156,6 +156,14 @@ $settings = get_option('sa_options', $sa_options);
                             'required'      => true
                         ));
 
+                        // Create metabox [gallery]
+                        $metabox->createField('gallery', array(
+                            'name'          => 'gallery_4',
+                            'title'         => 'Gallery',
+                            'description'   => __('Upload images here'),
+                            'required'      => true
+                        ));
+
                         // Create metabox [image upload]
                         $metabox->createField('image_upload', array(
                             'name'          => 'img_upload_1',

@@ -9,7 +9,7 @@
   text-align: center;
 }
 
-.button-image-upload {
+.button-image-upload, .button-update-map {
   background-color: $highlight-color-hover;
   border: none;
   outline: none;
@@ -48,11 +48,6 @@
   padding-top: 20px;
   width: 52px;
   color: $highlight-color;
-  @include transition(all, 0.3s);
-
-  &:hover {
-    @include transition(all, 0.3s);
-  }
 
   span {
     font-size: 52px;
@@ -75,4 +70,27 @@
 
 .button-remove-file.active {
   display: block;
+}
+
+.button-update-map {
+  margin: 10px 0px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+
+  &:hover {
+    color: white;
+  }
+}
+
+.button-open-map-settings {
+  position: absolute;
+  right: 0px;
+  top: -1px;
+  padding: 10px;
+  background-color: white;
+  right: -51px;
+  font-size: 30px;
+  border: 1px solid rgba(0,0,0,0.16);
+  border-left: none;
 }

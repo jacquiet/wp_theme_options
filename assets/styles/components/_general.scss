@@ -86,9 +86,17 @@
 .view-metafield {
   position: relative;
   margin-bottom: 20px;
+  overflow: hidden;
 
   &:last-child {
     margin-bottom: 0px;
+  }
+}
+
+.view-metafield[data-view-metafield="gallery"] {
+  .button-image-upload {
+    position: relative;
+    bottom: 5px;
   }
 }
 
@@ -107,6 +115,10 @@
 
 .view-field, .view-dropdown-single {
   min-width: 250px;
+}
+
+.view-field-small {
+  min-width: 150px;
 }
 
 .view-dropdown-multiple {
@@ -231,4 +243,57 @@
 .disabled-plugin {
   @extend .post-legend;
   background-color: $nonactive-plugin-color;
+}
+
+.notification {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  padding: 25px;
+
+  p {
+    margin: 0px;
+
+    &:first-child {
+      font-size: 22px;
+      text-transform: uppercase;
+    }
+
+    &:last-child {
+      font-size: 14px;
+    }
+  }
+}
+
+.notification.save {
+  background-color: $success-color;
+  color: $success-font-color;
+}
+
+.view-field-map {
+  width: auto;
+  height: 400px;
+  border: 1px solid #efefef;
+}
+
+.map-controls {
+  width: auto;
+  left: -215px;
+  position: absolute;
+  background-color: #ffffff;
+  z-index: 10;
+  top: 80px;
+  border-left: 1px solid #efefef;
+  padding: 10px 20px;
+  @extend .z-depth-1;
+  @include transition(all, 0.3s);
+
+  a {
+    color: #414141;
+  }
+}
+
+.map-controls.active {
+  left: 0px;
+  @include transition(all, 0.3s);
 }

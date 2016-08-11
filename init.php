@@ -51,14 +51,17 @@ function module_theme_options_scripts() {
 
     $script_suffix = ($module['mode'] === 'development') ? '.js' : '.min.js';
 
-    // Enqueue main script
-    wp_enqueue_script('custom_admin_script', get_bloginfo('template_url').'/modules/' . $module['name'] . '/assets/javascripts/main' . $script_suffix, array('jquery'));
-
     // Enable support for jquery datepicker
     wp_enqueue_script('jquery-ui-datepicker');
 
     // Enable support for file uploader
     wp_enqueue_media();
+
+    // Enable google maps
+    wp_enqueue_script('google_map', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCRo5AVP7roq_ODO0zwKhrTVfhjHb8Mz5g');
+
+    // Enqueue main script
+    wp_enqueue_script('custom_admin_script', get_bloginfo('template_url').'/modules/' . $module['name'] . '/assets/javascripts/main' . $script_suffix, array('jquery'));
 }
 
 

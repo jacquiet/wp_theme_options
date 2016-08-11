@@ -3,6 +3,7 @@
  */
 
 .module-view[data-view="index"] {
+  position: relative;
 
   .view-main {
     background-color: $view-main-color-index;

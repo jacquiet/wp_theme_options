@@ -93,10 +93,10 @@ $settings = get_option( 'sa_options', $sa_options );
                         <?php
 
                         // Create wysiwyg
-                        $metabox->createField('wysiwyg', array(
-                            'name'          => 'wysiwyg_3',
-                            'title'         => 'WYSIWYG',
-                            'description'   => __('WYSIWYG editor 2'),
+                        $metabox->createField('map', array(
+                            'name'          => 'map_1',
+                            'title'         => 'Map',
+                            'description'   => __('Map'),
                             'required'      => false
                         ));
 
@@ -127,35 +127,11 @@ $settings = get_option( 'sa_options', $sa_options );
 
                         <?php
 
-                        // Create metabox [page_id_home]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_contact_field_1',
-                            'title'         => 'Field 1',
-                            'description'   => __('Field 1'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [page_id_blog]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_contact_field_2',
-                            'title'         => 'Field 2',
-                            'description'   => __('Field 2'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [page_id_contact]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_contact_field_3',
-                            'title'         => 'Field 3',
-                            'description'   => __('Field 3'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [page_id_about]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_contact_field_4',
-                            'title'         => 'Field 4',
-                            'description'   => __('Field 4'),
+                        // Create wysiwyg
+                        $metabox->createField('wysiwyg', array(
+                            'name'          => 'wysiwyg_3',
+                            'title'         => 'WYSIWYG',
+                            'description'   => __('WYSIWYG editor 2'),
                             'required'      => false
                         ));
 

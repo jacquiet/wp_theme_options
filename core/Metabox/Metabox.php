@@ -4,16 +4,18 @@
 
 // Supported public metafields through the createdField public method:
 
-// - input[type=text]
-// - input[type=number]
-// - input[type=checkbox]
-// - input[date-picker]
-// - image-uploader
-// - file-uploader
+// - input_text
+// - input_number
+// - input_checkbox
+// - input_date
+// - image_uploader
+// - file_uploader
+// - gallery
 // - textarea
-// - select [single choice]
-// - checkbox [multiple_choice]
-// - WYSIWYG
+// - dropdown_simple
+// - dropdown_multiple
+// - wysiwyg
+// - map
 
 
 class Metabox {
@@ -56,6 +58,9 @@ class Metabox {
                 break;
             case 'wysiwyg':
                 $this->_createWYSIWYG($args);
+                break;
+            case 'map':
+                $this->_createMap($args);
                 break;
         }
     }
@@ -508,7 +513,7 @@ class Metabox {
             '<p class="view-field-title">' . $args['title'] . '</p>' .
             '<div class="view-gallery-wrapper" id="' . $args['name'] . '-gallery-wrapper' . '">' . $gallery_html . '</div>' .
             '<textarea class="textarea-hidden" name="' . 'sa_options['.$args['name'].']' . '">' . $field_value . '</textarea>' .
-            '<input type="button" class="button-image-upload" id="' . $args['name'] . '-button' . '" value="'. __('Select image') . '" title="' . $args['description'] . '"/>' .
+            '<input type="button" class="button-image-upload" id="' . $args['name'] . '-button' . '" value="'. __('Select images') . '" title="' . $args['description'] . '"/>' .
             '</div>';
         ?>
         <script type="text/javascript">
@@ -779,6 +784,505 @@ class Metabox {
                     var editorVal = $('#<?php echo $field_id; ?>').html();
                     var encodedVal = editorVal.replace(/"/g, "'");
                     $('textarea[name=<?php echo $field_name; ?>]').val(encodedVal);
+                });
+            });
+        </script>
+        <?php
+
+        echo $html;
+    }
+
+
+    // @param array $args
+    // @echo string $html
+    protected function _createMap($args) {
+        global $module;
+
+        global $sa_options;
+
+        // Get module options
+        $settings = get_option('sa_options', $sa_options);
+
+        // Get field value
+        $field_value = $settings[$args['name']];
+
+        // Decode values
+        $values = json_decode($field_value);
+
+        $default_lat_val = 20;
+        $default_lng_val = 5;
+        $default_zoom_val = 11;
+
+        $lat_val = isset($values->lat) && !empty($values->lat) ? $values->lat : $default_lat_val;
+        $lng_val = isset($values->lng) && !empty($values->lng) ? $values->lng : $default_lng_val;
+        $zoom_val = isset($values->zoom) && !empty($values->zoom) ? $values->zoom : $default_zoom_val;
+
+        $lat_val_base = $lat_val === $default_lat_val ? '' : $lat_val;
+        $lng_val_base = $lng_val === $default_lng_val ? '' : $lng_val;
+        $zoom_val_base = $zoom_val === $default_zoom_val ? '' : $zoom_val;
+
+        // Set field name
+        $field_name = 'sa_options[' . $args['name'] . ']';
+
+        // Set field id
+        $field_id = $args['name'] . '-wysiwyg';
+
+        // Set required
+        $required = $args['required'] ? 'required="required"' : '';
+
+        // Set field markup
+        $html =
+            '<div class="view-metafield" data-view-metafield="map">' .
+            '<div class="map-controls">' .
+            '<a href="#" class="button-open-map-settings" title="' . __('Toggle map settings') . '" data-control-opened="false"><span class="mdi-action-settings"></span></a>' .
+            '<label>' . __('Latitude') . '</label><br/>' .
+            '<p><input type="text" name="' . $args['name'] . '_lat" class="view-field-small" value="' . $lat_val_base . '"/></p>' .
+            '<label>' . __('Longitude') . '</label><br/>' .
+            '<p><input type="text" name="' . $args['name'] . '_lng" class="view-field-small" value="' . $lng_val_base . '"/></p>' .
+            '<label>' . __('Zoom level') . '</label><br/>' .
+            '<p><input type="text" name="' . $args['name'] . '_zoom" class="view-field-small" value="' . $zoom_val_base . '"/></p>' .
+            '<a href="#" class="button-update-map">' . __('Update map') . '</a>' .
+            '</div>' .
+            '<textarea class="textarea-hidden" name="' . $field_name . '">' . $field_value . '</textarea>' .
+            '<p class="view-field-title">' . $args['title'] . '</p>' .
+            '<div id="' . $field_id . '" class="view-field-map">' .
+            '</div>' .
+            '</div>';
+
+        ?>
+        <script type="text/javascript">
+            // Helper
+            jQuery(document).ready(function($) {
+
+                var mapStyle = [
+                    {
+                        "featureType": "administrative.country",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            },
+                            {
+                                "color": "#1c99ed"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.country",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#1f79b5"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.province",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#6d6d6d"
+                            },
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.locality",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#555555"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.neighborhood",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#999999"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "color": "#f2f2f2"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape.natural",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape.natural.landcover",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.attraction",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.business",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.government",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.medical",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.park",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#e1eddd"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.place_of_worship",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.school",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.sports_complex",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": "-100"
+                            },
+                            {
+                                "lightness": "45"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#ff9500"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            },
+                            {
+                                "hue": "#009aff"
+                            },
+                            {
+                                "saturation": "100"
+                            },
+                            {
+                                "lightness": "5"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway.controlled_access",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway.controlled_access",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#ff9500"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway.controlled_access",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway.controlled_access",
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "lightness": "1"
+                            },
+                            {
+                                "saturation": "100"
+                            },
+                            {
+                                "hue": "#009aff"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#ffffff"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#8a8a8a"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.local",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#ffffff"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station.airport",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station.airport",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "lightness": "33"
+                            },
+                            {
+                                "saturation": "-100"
+                            },
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station.bus",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.station.rail",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "color": "#46bcec"
+                            },
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#4db4f8"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#ffffff"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    }
+                ];
+
+                var mapDiv = document.getElementById('<?php echo $field_id; ?>');
+                var map = new google.maps.Map(mapDiv, {
+                    center: {
+                        lat: <?php echo $lat_val; ?>,
+                        lng: <?php echo $lng_val; ?>
+                    },
+                    zoom: <?php echo $zoom_val; ?>,
+                    styles: mapStyle
+                });
+
+                var marker = new google.maps.Marker({
+                    position: {
+                        lat: <?php echo $lat_val; ?>,
+                        lng: <?php echo $lng_val; ?>
+                    },
+                    map: map,
+                    title: 'Selected location',
+                    icon: '<?php echo get_template_directory_uri(); ?>' + '/modules/' + '<?php echo $module['name']; ?>' + '/assets/images/map-marker.png'
+                });
+
+                $(window).resize(function() {
+                    google.maps.event.trigger(map, "resize");
+                });
+
+                $('.map-controls input').on('keyup keydown keypress', function(e) {
+
+                    var data = {
+                        lat: $('input[name=<?php echo $args['name'] . '_lat'; ?>]').val(),
+                        lng: $('input[name=<?php echo $args['name'] . '_lng'; ?>]').val(),
+                        zoom: $('input[name=<?php echo $args['name'] . '_zoom'; ?>]').val()
+                    };
+
+                    $('textarea[name="<?php echo $field_name; ?>"]').html(JSON.stringify(data));
+                });
+
+                $('.button-update-map').on('click', function(e) {
+                    var data = {
+                        lat: parseFloat($('input[name=<?php echo $args['name'] . '_lat'; ?>]').val()),
+                        lng: parseFloat($('input[name=<?php echo $args['name'] . '_lng'; ?>]').val()),
+                        zoom: parseInt($('input[name=<?php echo $args['name'] . '_zoom'; ?>]').val())
+                    };
+
+                    var map = new google.maps.Map(mapDiv, {
+                        center: {
+                            lat: data.lat,
+                            lng: data.lng
+                        },
+                        zoom: data.zoom,
+                        styles: mapStyle
+                    });
+
+                    var marker = new google.maps.Marker({
+                        position: {
+                            lat: data.lat,
+                            lng: data.lng
+                        },
+                        map: map,
+                        title: 'Selected location',
+                        icon: '<?php echo get_template_directory_uri(); ?>' + '/modules/' + '<?php echo $module['name']; ?>' + '/assets/images/map-marker.png'
+                    });
                 });
             });
         </script>

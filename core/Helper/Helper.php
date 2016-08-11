@@ -24,7 +24,7 @@ class Helper {
         $url = preg_replace('/' . $module['params']['page'] . '=\d+/', '', $url, 1);
 
         // If update param exists
-        if ( strpos($url, $module['params']['updated']) ) {
+        if ( $this->isUpdated($url) ) {
 
             // Strip update param
             $url = preg_replace('/' . $module['params']['updated'] . '=[a-z]+/', '', $url, 1);
@@ -35,5 +35,24 @@ class Helper {
 
         // Strip special chars and return
         return preg_replace('/&+/', '', $url, 1);
+    }
+
+
+    // @param string $url
+    // @return string
+    public function isOpened($url) {
+        global $module;
+
+        return strpos($url, $module['params']['page']);
+    }
+
+
+    // @param string $url
+    // @return boolean
+    public function isUpdated($url) {
+        global $module;
+
+        // If update param exists
+        return strpos($url, $module['params']['updated']);
     }
 }
