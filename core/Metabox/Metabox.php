@@ -836,12 +836,12 @@ class Metabox {
             '<div class="map-controls">' .
             '<a href="#" class="button-open-map-settings" title="' . __('Toggle map settings') . '" data-control-opened="false"><span class="mdi-action-settings"></span></a>' .
             '<label>' . __('Latitude') . '</label><br/>' .
-            '<p><input type="text" name="' . $args['name'] . '_lat" class="view-field-small" value="' . $lat_val_base . '"/></p>' .
+            '<p><input type="number" min="-200" max="200" step="0.0000001" name="' . $args['name'] . '_lat" class="view-field-small" value="' . $lat_val_base . '"/></p>' .
             '<label>' . __('Longitude') . '</label><br/>' .
-            '<p><input type="text" name="' . $args['name'] . '_lng" class="view-field-small" value="' . $lng_val_base . '"/></p>' .
+            '<p><input type="number" min="-200" max="200"  step="0.0000001" name="' . $args['name'] . '_lng" class="view-field-small" value="' . $lng_val_base . '"/></p>' .
             '<label>' . __('Zoom level') . '</label><br/>' .
-            '<p><input type="text" name="' . $args['name'] . '_zoom" class="view-field-small" value="' . $zoom_val_base . '"/></p>' .
-            '<a href="#" class="button-update-map">' . __('Update map') . '</a>' .
+            '<p><input type="number" min="0" max="22"  name="' . $args['name'] . '_zoom" class="view-field-small" value="' . $zoom_val_base . '"/></p>' .
+            '<a href="#" class="button-update-map" title="' . __('Press to update the map') . '">' . __('Update map') . '</a>' .
             '</div>' .
             '<textarea class="textarea-hidden" name="' . $field_name . '">' . $field_value . '</textarea>' .
             '<p class="view-field-title">' . $args['title'] . '</p>' .
@@ -858,14 +858,7 @@ class Metabox {
                     {
                         "featureType": "administrative.country",
                         "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            },
-                            {
-                                "color": "#1c99ed"
-                            }
-                        ]
+                        "stylers": [{ "visibility": "on" }, { "color": "#1c99ed" }]
                     },
                     {
                         "featureType": "administrative.country",
@@ -1243,11 +1236,13 @@ class Metabox {
                     icon: '<?php echo get_template_directory_uri(); ?>' + '/modules/' + '<?php echo $module['name']; ?>' + '/assets/images/map-marker.png'
                 });
 
-                $(window).resize(function() {
+                google.maps.event.addDomListener(window, "resize", function() {
+                    var center = map.getCenter();
                     google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
                 });
 
-                $('.map-controls input').on('keyup keydown keypress', function(e) {
+                $('.map-controls input').on('keyup keydown keypress click', function(e) {
 
                     var data = {
                         lat: $('input[name=<?php echo $args['name'] . '_lat'; ?>]').val(),

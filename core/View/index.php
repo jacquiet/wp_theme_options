@@ -21,7 +21,7 @@ $controller = new Controller();
 
     <!-- heading -->
     <div class="view-heading">
-        <div class="view-title">
+        <div class="view-title" title="<?php echo __('Developed by KenobiSoft') ?>">
             <p><?php echo __($module['title']); ?></p>
         </div>
 

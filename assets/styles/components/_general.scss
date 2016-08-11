@@ -188,6 +188,8 @@
 }
 
 .view-gallery-wrapper {
+  border-top: 1px solid $light-grey;
+  padding-top: 5px;
 
   img {
     height: 140px;
@@ -250,6 +252,13 @@
   top: 15px;
   right: 30px;
   padding: 25px;
+  @extend .z-depth-1;
+  @include transition(all, 0.3s);
+
+  &:hover {
+    @include transition(all, 0.3s);
+    @extend .z-depth-2;
+  }
 
   p {
     margin: 0px;
@@ -278,7 +287,7 @@
 
 .map-controls {
   width: auto;
-  left: -215px;
+  left: -195px;
   position: absolute;
   background-color: #ffffff;
   z-index: 10;

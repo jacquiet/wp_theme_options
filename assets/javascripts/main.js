@@ -7010,6 +7010,7 @@ jQuery.trumbowyg = {
                 };
 
                 var initSlider = function (id) {
+
                     // Call Sly on frame
                     sly = new Sly('#' + id, {
                         horizontal: 1,
