@@ -38,3 +38,23 @@
     @include transition(all, 0.3s);
   }
 }
+
+.button-submit-hidden {
+  display: none;
+}
+
+.button-download-file {
+  display: none;
+  padding-top: 20px;
+  width: 52px;
+  color: $highlight-color;
+  @include transition(all, 0.3s);
+
+  &:hover {
+    @include transition(all, 0.3s);
+  }
+
+  span {
+    font-size: 52px;
+  }
+}

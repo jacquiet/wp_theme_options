@@ -4,8 +4,11 @@
 // Author: KenobiSoft
 
 
-// Set module settings
+// Globalize module
 global $module;
+
+
+// Set module settings
 $module = array(
     // Set mode - can be 'development' or 'production
     'mode'          => 'development',

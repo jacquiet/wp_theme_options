@@ -23,10 +23,12 @@ $comments_data = wp_count_comments();
             <p class="block-title"><?php echo __('Statistics') ?></p>
             <p class="block-subtitle"><?php echo __('Statistical information about the website.'); ?></p>
         </div>
+        <!-- /title -->
 
         <!-- content -->
         <div class="view-block-content">
 
+            <!-- block-section -->
             <div class="view-block-section">
                 <p class="view-block-section-heading"><?php echo __('Users'); ?></p>
                 <div class="row">
@@ -55,7 +57,9 @@ $comments_data = wp_count_comments();
                     </div>
                 </div>
             </div>
+            <!-- /block-section -->
 
+            <!-- block-section -->
             <div class="view-block-section">
                 <p class="view-block-section-heading"><?php echo __('Comments'); ?></p>
                 <div class="row">
@@ -64,10 +68,10 @@ $comments_data = wp_count_comments();
                     </div>
                 </div>
             </div>
+            <!-- /block-section -->
 
         </div>
-
-
+        <!-- /content -->
 
     </div>
     <!-- /view-block -->

@@ -11,3 +11,15 @@
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
+
+.widget-box-medium {
+  width: 100%;
+}
+
+.col-full-mobile {
+
+  @media (max-width:$breakpoint-md) {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}

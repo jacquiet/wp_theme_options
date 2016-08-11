@@ -8,6 +8,9 @@
 // Get posts data
 $posts_data = wp_count_posts('post');
 
+// Get videos data
+$videos_data = wp_count_posts('video');
+
 // Get pages data
 $pages_data = wp_count_posts('page');
 ?>
@@ -23,24 +26,12 @@ $pages_data = wp_count_posts('page');
             <p class="block-title"><?php echo __('Activity') ?></p>
             <p class="block-subtitle"><?php echo __('Activity information about posts.'); ?></p>
         </div>
+        <!-- /title -->
 
         <!-- content -->
         <div class="view-block-content">
 
-            <div class="view-block-section">
-                <div class="row">
-                    <div class="col-sm-12 col-md-4">
-                        <p class="view-block-section-heading"><?php echo __('Posts'); ?></p>
-                        <p><span class="view-block-label"><?php echo __('Published posts:'); ?></span> <span class="view-block-count"><?php echo $posts_data->publish; ?></span> <span class="publish-posts"></span></p>
-                        <p><span class="view-block-label"><?php echo __('Draft posts:'); ?></span> <span class="view-block-count"><?php echo $posts_data->draft; ?></span> <span class="draft-posts"></span></p>
-                        <p><span class="view-block-label"><?php echo __('Trashed posts:'); ?></span> <span class="view-block-count"><?php echo $posts_data->trash; ?></span> <span class="trash-posts"></span></p>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="widget-activity-posts-pie-chart" data-chart-data="<?php echo stripcslashes(htmlentities(json_encode($posts_data))); ?>"></div>
-                    </div>
-                </div>
-            </div>
-
+            <!-- block-section -->
             <div class="view-block-section">
                 <div class="row">
                     <div class="col-sm-12 col-md-4">
@@ -54,8 +45,43 @@ $pages_data = wp_count_posts('page');
                     </div>
                 </div>
             </div>
+            <!-- /block-section -->
+
+            <!-- block-section -->
+            <div class="view-block-section">
+                <div class="row">
+                    <div class="col-sm-12 col-md-4">
+                        <p class="view-block-section-heading"><?php echo __('Posts'); ?></p>
+                        <p><span class="view-block-label"><?php echo __('Published posts:'); ?></span> <span class="view-block-count"><?php echo $posts_data->publish; ?></span> <span class="publish-posts"></span></p>
+                        <p><span class="view-block-label"><?php echo __('Draft posts:'); ?></span> <span class="view-block-count"><?php echo $posts_data->draft; ?></span> <span class="draft-posts"></span></p>
+                        <p><span class="view-block-label"><?php echo __('Trashed posts:'); ?></span> <span class="view-block-count"><?php echo $posts_data->trash; ?></span> <span class="trash-posts"></span></p>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="widget-activity-posts-pie-chart" data-chart-data="<?php echo stripcslashes(htmlentities(json_encode($posts_data))); ?>"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /block-section -->
+
+            <!-- block-section -->
+            <div class="view-block-section">
+                <div class="row">
+                    <div class="col-sm-12 col-md-4">
+                        <p class="view-block-section-heading"><?php echo __('Videos'); ?></p>
+                        <p><span class="view-block-label"><?php echo __('Published videos:'); ?></span> <span class="view-block-count"><?php echo $videos_data->publish; ?></span> <span class="publish-posts"></span></p>
+                        <p><span class="view-block-label"><?php echo __('Draft videos:'); ?></span> <span class="view-block-count"><?php echo $videos_data->draft; ?></span> <span class="draft-posts"></span></p>
+                        <p><span class="view-block-label"><?php echo __('Trashed videos:'); ?></span> <span class="view-block-count"><?php echo $videos_data->trash; ?></span> <span class="trash-posts"></span></p>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6">
+                        <div class="widget-activity-videos-pie-chart" data-chart-data="<?php echo stripcslashes(htmlentities(json_encode($videos_data))); ?>"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /block-section -->
 
         </div>
+        <!-- /content -->
 
     </div>
     <!-- /view-block -->

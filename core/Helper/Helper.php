@@ -6,7 +6,7 @@
 
 class Helper {
 
-
+    // @return boolean
     public function getPageIndex() {
         global $module;
 
@@ -16,6 +16,7 @@ class Helper {
 
 
     // @param string $url
+    // @return string
     public function clearParams($url) {
         global $module;
 

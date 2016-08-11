@@ -12,6 +12,15 @@ global $sa_options;
 // Instantiate metabox
 $metabox = new Metabox();
 
+// Instantiate model
+$model = new Model();
+
+// Get videos
+$videos = $model->getPosts(array(
+    'post_type'      => 'video',
+    'posts_per_page' => -1
+));
+
 // Instantiate controller
 $controller = new Controller();
 
@@ -86,37 +95,15 @@ $settings = get_option( 'sa_options', $sa_options );
                     <div class="view-block-content">
 
                         <?php
-                        // Create metabox [page_id_home]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_blog_field_1',
-                            'title'         => 'Field 1',
-                            'description'   => __('Field 1'),
+
+                        // Create wysiwyg
+                        $metabox->createField('wysiwyg', array(
+                            'name'          => 'wysiwyg_3',
+                            'title'         => 'WYSIWYG',
+                            'description'   => __('WYSIWYG editor 2'),
                             'required'      => false
                         ));
 
-                        // Create metabox [page_id_blog]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_blog_field_2',
-                            'title'         => 'Field 2',
-                            'description'   => __('Field 2'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [page_id_contact]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_blog_field_3',
-                            'title'         => 'Field 3',
-                            'description'   => __('Field 3'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [page_id_about]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'page_blog_field_4',
-                            'title'         => 'Field 4',
-                            'description'   => __('Field 4'),
-                            'required'      => false
-                        ));
                         ?>
 
                     </div>
@@ -185,6 +172,9 @@ $settings = get_option( 'sa_options', $sa_options );
             </div>
         </div>
 
+        <!-- REQUIRED: button-submit-hidden -->
+        <!-- This hidden button is triggered via JS, without it the form validation doesn't work -->
+        <input type="submit" class="button-submit-hidden"/>
     </form>
     <!-- /form -->
 

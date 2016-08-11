@@ -3,6 +3,9 @@
  */
 
 
+/** Breakpoints */
+$breakpoint-md: 767px;
+
 /** View [index] */
 $view-heading-color-index: #F7F7F7;
 $view-navigation-color-index: #FFFFFF;
@@ -19,3 +22,11 @@ $highlight-color-hover: $view-navigation-hover-color-index;
 $publish-posts-color: #e52c65;
 $draft-posts-color: #ff8c53;
 $trash-posts-color: #ffc851;
+
+$delete-color: red;
+$add-color: blue;
+$caution-color: lightyellow;
+$alert-color: red;
+
+$active-plugin-color: #87D37C;
+$nonactive-plugin-color: #F62459;

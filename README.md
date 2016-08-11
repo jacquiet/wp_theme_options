@@ -16,7 +16,7 @@ CONTENTS
 ------------------------------------------------------------
 Theme Options (TO) is a stand-alone module, which display the options of the theme under Appearance - Theme Options.
 
-Under the hood, TO is a OO single-page configuration MVC application, which utilises the SOLID design pattern. The core of TO is
+Under the hood, TO is a object-oriented single-page configuration MVC application. The core of TO is
 broken down into meaningful files. Here's the structure:
 
 - Controller    - contains Controller.php, which communicates with the views
@@ -103,7 +103,7 @@ Some of the configuration options include:
     - base_view - base view for the module
     - params    - GET params, used by the module
 
-If you want to add module pages, make sure to add the new page in the module settings in settings.php and also make sure to add the new view under moduledir/core/View
+If you want to add module pages, make sure to add the new page in the module settings in settings.php and also make sure to add the new view under moduledir/core/View. The system will then pick up and initialize the new pages.
 
 
 

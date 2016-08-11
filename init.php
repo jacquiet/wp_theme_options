@@ -8,6 +8,7 @@
 require_once('settings.php');
 
 
+// Get module
 global $module;
 
 

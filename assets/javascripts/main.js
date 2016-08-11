@@ -1469,6 +1469,3985 @@ startAngle=endAngle;}this.eventEmitter.emit('created',{chartRect:chartRect,svg:t
    * });
    */function Pie(query,data,options,responsiveOptions){Chartist.Pie.super.constructor.call(this,query,data,defaultOptions,Chartist.extend({},defaultOptions,options),responsiveOptions);}// Creating pie chart type in Chartist namespace
 Chartist.Pie=Chartist.Base.extend({constructor:Pie,createChart:createChart,determineAnchorPosition:determineAnchorPosition});})(window,document,Chartist);return Chartist;});
+;/*! Magnific Popup - v1.1.0 - 2016-02-20
+* http://dimsemenov.com/plugins/magnific-popup/
+* Copyright (c) 2016 Dmitry Semenov; */
+;(function (factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module. 
+		define(['jquery'], factory);
+	} else if (typeof exports === 'object') {
+		// Node/CommonJS 
+		factory(require('jquery'));
+	} else {
+		// Browser globals 
+		factory(window.jQuery || window.Zepto);
+	}
+})(function ($) {
+
+	/*>>core*/
+	/**
+  * 
+  * Magnific Popup Core JS file
+  * 
+  */
+
+	/**
+  * Private static constants
+  */
+	var CLOSE_EVENT = 'Close',
+	    BEFORE_CLOSE_EVENT = 'BeforeClose',
+	    AFTER_CLOSE_EVENT = 'AfterClose',
+	    BEFORE_APPEND_EVENT = 'BeforeAppend',
+	    MARKUP_PARSE_EVENT = 'MarkupParse',
+	    OPEN_EVENT = 'Open',
+	    CHANGE_EVENT = 'Change',
+	    NS = 'mfp',
+	    EVENT_NS = '.' + NS,
+	    READY_CLASS = 'mfp-ready',
+	    REMOVING_CLASS = 'mfp-removing',
+	    PREVENT_CLOSE_CLASS = 'mfp-prevent-close';
+
+	/**
+  * Private vars 
+  */
+	/*jshint -W079 */
+	var mfp,
+	    // As we have only one instance of MagnificPopup object, we define it locally to not to use 'this'
+	MagnificPopup = function () {},
+	    _isJQ = !!window.jQuery,
+	    _prevStatus,
+	    _window = $(window),
+	    _document,
+	    _prevContentType,
+	    _wrapClasses,
+	    _currPopupType;
+
+	/**
+  * Private functions
+  */
+	var _mfpOn = function (name, f) {
+		mfp.ev.on(NS + name + EVENT_NS, f);
+	},
+	    _getEl = function (className, appendTo, html, raw) {
+		var el = document.createElement('div');
+		el.className = 'mfp-' + className;
+		if (html) {
+			el.innerHTML = html;
+		}
+		if (!raw) {
+			el = $(el);
+			if (appendTo) {
+				el.appendTo(appendTo);
+			}
+		} else if (appendTo) {
+			appendTo.appendChild(el);
+		}
+		return el;
+	},
+	    _mfpTrigger = function (e, data) {
+		mfp.ev.triggerHandler(NS + e, data);
+
+		if (mfp.st.callbacks) {
+			// converts "mfpEventName" to "eventName" callback and triggers it if it's present
+			e = e.charAt(0).toLowerCase() + e.slice(1);
+			if (mfp.st.callbacks[e]) {
+				mfp.st.callbacks[e].apply(mfp, $.isArray(data) ? data : [data]);
+			}
+		}
+	},
+	    _getCloseBtn = function (type) {
+		if (type !== _currPopupType || !mfp.currTemplate.closeBtn) {
+			mfp.currTemplate.closeBtn = $(mfp.st.closeMarkup.replace('%title%', mfp.st.tClose));
+			_currPopupType = type;
+		}
+		return mfp.currTemplate.closeBtn;
+	},
+
+	// Initialize Magnific Popup only when called at least once
+	_checkInstance = function () {
+		if (!$.magnificPopup.instance) {
+			/*jshint -W020 */
+			mfp = new MagnificPopup();
+			mfp.init();
+			$.magnificPopup.instance = mfp;
+		}
+	},
+
+	// CSS transition detection, http://stackoverflow.com/questions/7264899/detect-css-transitions-using-javascript-and-without-modernizr
+	supportsTransitions = function () {
+		var s = document.createElement('p').style,
+		    // 's' for style. better to create an element if body yet to exist
+		v = ['ms', 'O', 'Moz', 'Webkit']; // 'v' for vendor
+
+		if (s['transition'] !== undefined) {
+			return true;
+		}
+
+		while (v.length) {
+			if (v.pop() + 'Transition' in s) {
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	/**
+  * Public functions
+  */
+	MagnificPopup.prototype = {
+
+		constructor: MagnificPopup,
+
+		/**
+   * Initializes Magnific Popup plugin. 
+   * This function is triggered only once when $.fn.magnificPopup or $.magnificPopup is executed
+   */
+		init: function () {
+			var appVersion = navigator.appVersion;
+			mfp.isLowIE = mfp.isIE8 = document.all && !document.addEventListener;
+			mfp.isAndroid = /android/gi.test(appVersion);
+			mfp.isIOS = /iphone|ipad|ipod/gi.test(appVersion);
+			mfp.supportsTransition = supportsTransitions();
+
+			// We disable fixed positioned lightbox on devices that don't handle it nicely.
+			// If you know a better way of detecting this - let me know.
+			mfp.probablyMobile = mfp.isAndroid || mfp.isIOS || /(Opera Mini)|Kindle|webOS|BlackBerry|(Opera Mobi)|(Windows Phone)|IEMobile/i.test(navigator.userAgent);
+			_document = $(document);
+
+			mfp.popupsCache = {};
+		},
+
+		/**
+   * Opens popup
+   * @param  data [description]
+   */
+		open: function (data) {
+
+			var i;
+
+			if (data.isObj === false) {
+				// convert jQuery collection to array to avoid conflicts later
+				mfp.items = data.items.toArray();
+
+				mfp.index = 0;
+				var items = data.items,
+				    item;
+				for (i = 0; i < items.length; i++) {
+					item = items[i];
+					if (item.parsed) {
+						item = item.el[0];
+					}
+					if (item === data.el[0]) {
+						mfp.index = i;
+						break;
+					}
+				}
+			} else {
+				mfp.items = $.isArray(data.items) ? data.items : [data.items];
+				mfp.index = data.index || 0;
+			}
+
+			// if popup is already opened - we just update the content
+			if (mfp.isOpen) {
+				mfp.updateItemHTML();
+				return;
+			}
+
+			mfp.types = [];
+			_wrapClasses = '';
+			if (data.mainEl && data.mainEl.length) {
+				mfp.ev = data.mainEl.eq(0);
+			} else {
+				mfp.ev = _document;
+			}
+
+			if (data.key) {
+				if (!mfp.popupsCache[data.key]) {
+					mfp.popupsCache[data.key] = {};
+				}
+				mfp.currTemplate = mfp.popupsCache[data.key];
+			} else {
+				mfp.currTemplate = {};
+			}
+
+			mfp.st = $.extend(true, {}, $.magnificPopup.defaults, data);
+			mfp.fixedContentPos = mfp.st.fixedContentPos === 'auto' ? !mfp.probablyMobile : mfp.st.fixedContentPos;
+
+			if (mfp.st.modal) {
+				mfp.st.closeOnContentClick = false;
+				mfp.st.closeOnBgClick = false;
+				mfp.st.showCloseBtn = false;
+				mfp.st.enableEscapeKey = false;
+			}
+
+			// Building markup
+			// main containers are created only once
+			if (!mfp.bgOverlay) {
+
+				// Dark overlay
+				mfp.bgOverlay = _getEl('bg').on('click' + EVENT_NS, function () {
+					mfp.close();
+				});
+
+				mfp.wrap = _getEl('wrap').attr('tabindex', -1).on('click' + EVENT_NS, function (e) {
+					if (mfp._checkIfClose(e.target)) {
+						mfp.close();
+					}
+				});
+
+				mfp.container = _getEl('container', mfp.wrap);
+			}
+
+			mfp.contentContainer = _getEl('content');
+			if (mfp.st.preloader) {
+				mfp.preloader = _getEl('preloader', mfp.container, mfp.st.tLoading);
+			}
+
+			// Initializing modules
+			var modules = $.magnificPopup.modules;
+			for (i = 0; i < modules.length; i++) {
+				var n = modules[i];
+				n = n.charAt(0).toUpperCase() + n.slice(1);
+				mfp['init' + n].call(mfp);
+			}
+			_mfpTrigger('BeforeOpen');
+
+			if (mfp.st.showCloseBtn) {
+				// Close button
+				if (!mfp.st.closeBtnInside) {
+					mfp.wrap.append(_getCloseBtn());
+				} else {
+					_mfpOn(MARKUP_PARSE_EVENT, function (e, template, values, item) {
+						values.close_replaceWith = _getCloseBtn(item.type);
+					});
+					_wrapClasses += ' mfp-close-btn-in';
+				}
+			}
+
+			if (mfp.st.alignTop) {
+				_wrapClasses += ' mfp-align-top';
+			}
+
+			if (mfp.fixedContentPos) {
+				mfp.wrap.css({
+					overflow: mfp.st.overflowY,
+					overflowX: 'hidden',
+					overflowY: mfp.st.overflowY
+				});
+			} else {
+				mfp.wrap.css({
+					top: _window.scrollTop(),
+					position: 'absolute'
+				});
+			}
+			if (mfp.st.fixedBgPos === false || mfp.st.fixedBgPos === 'auto' && !mfp.fixedContentPos) {
+				mfp.bgOverlay.css({
+					height: _document.height(),
+					position: 'absolute'
+				});
+			}
+
+			if (mfp.st.enableEscapeKey) {
+				// Close on ESC key
+				_document.on('keyup' + EVENT_NS, function (e) {
+					if (e.keyCode === 27) {
+						mfp.close();
+					}
+				});
+			}
+
+			_window.on('resize' + EVENT_NS, function () {
+				mfp.updateSize();
+			});
+
+			if (!mfp.st.closeOnContentClick) {
+				_wrapClasses += ' mfp-auto-cursor';
+			}
+
+			if (_wrapClasses) mfp.wrap.addClass(_wrapClasses);
+
+			// this triggers recalculation of layout, so we get it once to not to trigger twice
+			var windowHeight = mfp.wH = _window.height();
+
+			var windowStyles = {};
+
+			if (mfp.fixedContentPos) {
+				if (mfp._hasScrollBar(windowHeight)) {
+					var s = mfp._getScrollbarSize();
+					if (s) {
+						windowStyles.marginRight = s;
+					}
+				}
+			}
+
+			if (mfp.fixedContentPos) {
+				if (!mfp.isIE7) {
+					windowStyles.overflow = 'hidden';
+				} else {
+					// ie7 double-scroll bug
+					$('body, html').css('overflow', 'hidden');
+				}
+			}
+
+			var classesToadd = mfp.st.mainClass;
+			if (mfp.isIE7) {
+				classesToadd += ' mfp-ie7';
+			}
+			if (classesToadd) {
+				mfp._addClassToMFP(classesToadd);
+			}
+
+			// add content
+			mfp.updateItemHTML();
+
+			_mfpTrigger('BuildControls');
+
+			// remove scrollbar, add margin e.t.c
+			$('html').css(windowStyles);
+
+			// add everything to DOM
+			mfp.bgOverlay.add(mfp.wrap).prependTo(mfp.st.prependTo || $(document.body));
+
+			// Save last focused element
+			mfp._lastFocusedEl = document.activeElement;
+
+			// Wait for next cycle to allow CSS transition
+			setTimeout(function () {
+
+				if (mfp.content) {
+					mfp._addClassToMFP(READY_CLASS);
+					mfp._setFocus();
+				} else {
+					// if content is not defined (not loaded e.t.c) we add class only for BG
+					mfp.bgOverlay.addClass(READY_CLASS);
+				}
+
+				// Trap the focus in popup
+				_document.on('focusin' + EVENT_NS, mfp._onFocusIn);
+			}, 16);
+
+			mfp.isOpen = true;
+			mfp.updateSize(windowHeight);
+			_mfpTrigger(OPEN_EVENT);
+
+			return data;
+		},
+
+		/**
+   * Closes the popup
+   */
+		close: function () {
+			if (!mfp.isOpen) return;
+			_mfpTrigger(BEFORE_CLOSE_EVENT);
+
+			mfp.isOpen = false;
+			// for CSS3 animation
+			if (mfp.st.removalDelay && !mfp.isLowIE && mfp.supportsTransition) {
+				mfp._addClassToMFP(REMOVING_CLASS);
+				setTimeout(function () {
+					mfp._close();
+				}, mfp.st.removalDelay);
+			} else {
+				mfp._close();
+			}
+		},
+
+		/**
+   * Helper for close() function
+   */
+		_close: function () {
+			_mfpTrigger(CLOSE_EVENT);
+
+			var classesToRemove = REMOVING_CLASS + ' ' + READY_CLASS + ' ';
+
+			mfp.bgOverlay.detach();
+			mfp.wrap.detach();
+			mfp.container.empty();
+
+			if (mfp.st.mainClass) {
+				classesToRemove += mfp.st.mainClass + ' ';
+			}
+
+			mfp._removeClassFromMFP(classesToRemove);
+
+			if (mfp.fixedContentPos) {
+				var windowStyles = { marginRight: '' };
+				if (mfp.isIE7) {
+					$('body, html').css('overflow', '');
+				} else {
+					windowStyles.overflow = '';
+				}
+				$('html').css(windowStyles);
+			}
+
+			_document.off('keyup' + EVENT_NS + ' focusin' + EVENT_NS);
+			mfp.ev.off(EVENT_NS);
+
+			// clean up DOM elements that aren't removed
+			mfp.wrap.attr('class', 'mfp-wrap').removeAttr('style');
+			mfp.bgOverlay.attr('class', 'mfp-bg');
+			mfp.container.attr('class', 'mfp-container');
+
+			// remove close button from target element
+			if (mfp.st.showCloseBtn && (!mfp.st.closeBtnInside || mfp.currTemplate[mfp.currItem.type] === true)) {
+				if (mfp.currTemplate.closeBtn) mfp.currTemplate.closeBtn.detach();
+			}
+
+			if (mfp.st.autoFocusLast && mfp._lastFocusedEl) {
+				$(mfp._lastFocusedEl).focus(); // put tab focus back
+			}
+			mfp.currItem = null;
+			mfp.content = null;
+			mfp.currTemplate = null;
+			mfp.prevHeight = 0;
+
+			_mfpTrigger(AFTER_CLOSE_EVENT);
+		},
+
+		updateSize: function (winHeight) {
+
+			if (mfp.isIOS) {
+				// fixes iOS nav bars https://github.com/dimsemenov/Magnific-Popup/issues/2
+				var zoomLevel = document.documentElement.clientWidth / window.innerWidth;
+				var height = window.innerHeight * zoomLevel;
+				mfp.wrap.css('height', height);
+				mfp.wH = height;
+			} else {
+				mfp.wH = winHeight || _window.height();
+			}
+			// Fixes #84: popup incorrectly positioned with position:relative on body
+			if (!mfp.fixedContentPos) {
+				mfp.wrap.css('height', mfp.wH);
+			}
+
+			_mfpTrigger('Resize');
+		},
+
+		/**
+   * Set content of popup based on current index
+   */
+		updateItemHTML: function () {
+			var item = mfp.items[mfp.index];
+
+			// Detach and perform modifications
+			mfp.contentContainer.detach();
+
+			if (mfp.content) mfp.content.detach();
+
+			if (!item.parsed) {
+				item = mfp.parseEl(mfp.index);
+			}
+
+			var type = item.type;
+
+			_mfpTrigger('BeforeChange', [mfp.currItem ? mfp.currItem.type : '', type]);
+			// BeforeChange event works like so:
+			// _mfpOn('BeforeChange', function(e, prevType, newType) { });
+
+			mfp.currItem = item;
+
+			if (!mfp.currTemplate[type]) {
+				var markup = mfp.st[type] ? mfp.st[type].markup : false;
+
+				// allows to modify markup
+				_mfpTrigger('FirstMarkupParse', markup);
+
+				if (markup) {
+					mfp.currTemplate[type] = $(markup);
+				} else {
+					// if there is no markup found we just define that template is parsed
+					mfp.currTemplate[type] = true;
+				}
+			}
+
+			if (_prevContentType && _prevContentType !== item.type) {
+				mfp.container.removeClass('mfp-' + _prevContentType + '-holder');
+			}
+
+			var newContent = mfp['get' + type.charAt(0).toUpperCase() + type.slice(1)](item, mfp.currTemplate[type]);
+			mfp.appendContent(newContent, type);
+
+			item.preloaded = true;
+
+			_mfpTrigger(CHANGE_EVENT, item);
+			_prevContentType = item.type;
+
+			// Append container back after its content changed
+			mfp.container.prepend(mfp.contentContainer);
+
+			_mfpTrigger('AfterChange');
+		},
+
+		/**
+   * Set HTML content of popup
+   */
+		appendContent: function (newContent, type) {
+			mfp.content = newContent;
+
+			if (newContent) {
+				if (mfp.st.showCloseBtn && mfp.st.closeBtnInside && mfp.currTemplate[type] === true) {
+					// if there is no markup, we just append close button element inside
+					if (!mfp.content.find('.mfp-close').length) {
+						mfp.content.append(_getCloseBtn());
+					}
+				} else {
+					mfp.content = newContent;
+				}
+			} else {
+				mfp.content = '';
+			}
+
+			_mfpTrigger(BEFORE_APPEND_EVENT);
+			mfp.container.addClass('mfp-' + type + '-holder');
+
+			mfp.contentContainer.append(mfp.content);
+		},
+
+		/**
+   * Creates Magnific Popup data object based on given data
+   * @param  {int} index Index of item to parse
+   */
+		parseEl: function (index) {
+			var item = mfp.items[index],
+			    type;
+
+			if (item.tagName) {
+				item = { el: $(item) };
+			} else {
+				type = item.type;
+				item = { data: item, src: item.src };
+			}
+
+			if (item.el) {
+				var types = mfp.types;
+
+				// check for 'mfp-TYPE' class
+				for (var i = 0; i < types.length; i++) {
+					if (item.el.hasClass('mfp-' + types[i])) {
+						type = types[i];
+						break;
+					}
+				}
+
+				item.src = item.el.attr('data-mfp-src');
+				if (!item.src) {
+					item.src = item.el.attr('href');
+				}
+			}
+
+			item.type = type || mfp.st.type || 'inline';
+			item.index = index;
+			item.parsed = true;
+			mfp.items[index] = item;
+			_mfpTrigger('ElementParse', item);
+
+			return mfp.items[index];
+		},
+
+		/**
+   * Initializes single popup or a group of popups
+   */
+		addGroup: function (el, options) {
+			var eHandler = function (e) {
+				e.mfpEl = this;
+				mfp._openClick(e, el, options);
+			};
+
+			if (!options) {
+				options = {};
+			}
+
+			var eName = 'click.magnificPopup';
+			options.mainEl = el;
+
+			if (options.items) {
+				options.isObj = true;
+				el.off(eName).on(eName, eHandler);
+			} else {
+				options.isObj = false;
+				if (options.delegate) {
+					el.off(eName).on(eName, options.delegate, eHandler);
+				} else {
+					options.items = el;
+					el.off(eName).on(eName, eHandler);
+				}
+			}
+		},
+		_openClick: function (e, el, options) {
+			var midClick = options.midClick !== undefined ? options.midClick : $.magnificPopup.defaults.midClick;
+
+			if (!midClick && (e.which === 2 || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey)) {
+				return;
+			}
+
+			var disableOn = options.disableOn !== undefined ? options.disableOn : $.magnificPopup.defaults.disableOn;
+
+			if (disableOn) {
+				if ($.isFunction(disableOn)) {
+					if (!disableOn.call(mfp)) {
+						return true;
+					}
+				} else {
+					// else it's number
+					if (_window.width() < disableOn) {
+						return true;
+					}
+				}
+			}
+
+			if (e.type) {
+				e.preventDefault();
+
+				// This will prevent popup from closing if element is inside and popup is already opened
+				if (mfp.isOpen) {
+					e.stopPropagation();
+				}
+			}
+
+			options.el = $(e.mfpEl);
+			if (options.delegate) {
+				options.items = el.find(options.delegate);
+			}
+			mfp.open(options);
+		},
+
+		/**
+   * Updates text on preloader
+   */
+		updateStatus: function (status, text) {
+
+			if (mfp.preloader) {
+				if (_prevStatus !== status) {
+					mfp.container.removeClass('mfp-s-' + _prevStatus);
+				}
+
+				if (!text && status === 'loading') {
+					text = mfp.st.tLoading;
+				}
+
+				var data = {
+					status: status,
+					text: text
+				};
+				// allows to modify status
+				_mfpTrigger('UpdateStatus', data);
+
+				status = data.status;
+				text = data.text;
+
+				mfp.preloader.html(text);
+
+				mfp.preloader.find('a').on('click', function (e) {
+					e.stopImmediatePropagation();
+				});
+
+				mfp.container.addClass('mfp-s-' + status);
+				_prevStatus = status;
+			}
+		},
+
+		/*
+  	"Private" helpers that aren't private at all
+   */
+		// Check to close popup or not
+		// "target" is an element that was clicked
+		_checkIfClose: function (target) {
+
+			if ($(target).hasClass(PREVENT_CLOSE_CLASS)) {
+				return;
+			}
+
+			var closeOnContent = mfp.st.closeOnContentClick;
+			var closeOnBg = mfp.st.closeOnBgClick;
+
+			if (closeOnContent && closeOnBg) {
+				return true;
+			} else {
+
+				// We close the popup if click is on close button or on preloader. Or if there is no content.
+				if (!mfp.content || $(target).hasClass('mfp-close') || mfp.preloader && target === mfp.preloader[0]) {
+					return true;
+				}
+
+				// if click is outside the content
+				if (target !== mfp.content[0] && !$.contains(mfp.content[0], target)) {
+					if (closeOnBg) {
+						// last check, if the clicked element is in DOM, (in case it's removed onclick)
+						if ($.contains(document, target)) {
+							return true;
+						}
+					}
+				} else if (closeOnContent) {
+					return true;
+				}
+			}
+			return false;
+		},
+		_addClassToMFP: function (cName) {
+			mfp.bgOverlay.addClass(cName);
+			mfp.wrap.addClass(cName);
+		},
+		_removeClassFromMFP: function (cName) {
+			this.bgOverlay.removeClass(cName);
+			mfp.wrap.removeClass(cName);
+		},
+		_hasScrollBar: function (winHeight) {
+			return (mfp.isIE7 ? _document.height() : document.body.scrollHeight) > (winHeight || _window.height());
+		},
+		_setFocus: function () {
+			(mfp.st.focus ? mfp.content.find(mfp.st.focus).eq(0) : mfp.wrap).focus();
+		},
+		_onFocusIn: function (e) {
+			if (e.target !== mfp.wrap[0] && !$.contains(mfp.wrap[0], e.target)) {
+				mfp._setFocus();
+				return false;
+			}
+		},
+		_parseMarkup: function (template, values, item) {
+			var arr;
+			if (item.data) {
+				values = $.extend(item.data, values);
+			}
+			_mfpTrigger(MARKUP_PARSE_EVENT, [template, values, item]);
+
+			$.each(values, function (key, value) {
+				if (value === undefined || value === false) {
+					return true;
+				}
+				arr = key.split('_');
+				if (arr.length > 1) {
+					var el = template.find(EVENT_NS + '-' + arr[0]);
+
+					if (el.length > 0) {
+						var attr = arr[1];
+						if (attr === 'replaceWith') {
+							if (el[0] !== value[0]) {
+								el.replaceWith(value);
+							}
+						} else if (attr === 'img') {
+							if (el.is('img')) {
+								el.attr('src', value);
+							} else {
+								el.replaceWith($('<img>').attr('src', value).attr('class', el.attr('class')));
+							}
+						} else {
+							el.attr(arr[1], value);
+						}
+					}
+				} else {
+					template.find(EVENT_NS + '-' + key).html(value);
+				}
+			});
+		},
+
+		_getScrollbarSize: function () {
+			// thx David
+			if (mfp.scrollbarSize === undefined) {
+				var scrollDiv = document.createElement("div");
+				scrollDiv.style.cssText = 'width: 99px; height: 99px; overflow: scroll; position: absolute; top: -9999px;';
+				document.body.appendChild(scrollDiv);
+				mfp.scrollbarSize = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+				document.body.removeChild(scrollDiv);
+			}
+			return mfp.scrollbarSize;
+		}
+
+	}; /* MagnificPopup core prototype end */
+
+	/**
+  * Public static functions
+  */
+	$.magnificPopup = {
+		instance: null,
+		proto: MagnificPopup.prototype,
+		modules: [],
+
+		open: function (options, index) {
+			_checkInstance();
+
+			if (!options) {
+				options = {};
+			} else {
+				options = $.extend(true, {}, options);
+			}
+
+			options.isObj = true;
+			options.index = index || 0;
+			return this.instance.open(options);
+		},
+
+		close: function () {
+			return $.magnificPopup.instance && $.magnificPopup.instance.close();
+		},
+
+		registerModule: function (name, module) {
+			if (module.options) {
+				$.magnificPopup.defaults[name] = module.options;
+			}
+			$.extend(this.proto, module.proto);
+			this.modules.push(name);
+		},
+
+		defaults: {
+
+			// Info about options is in docs:
+			// http://dimsemenov.com/plugins/magnific-popup/documentation.html#options
+
+			disableOn: 0,
+
+			key: null,
+
+			midClick: false,
+
+			mainClass: '',
+
+			preloader: true,
+
+			focus: '', // CSS selector of input to focus after popup is opened
+
+			closeOnContentClick: false,
+
+			closeOnBgClick: true,
+
+			closeBtnInside: true,
+
+			showCloseBtn: true,
+
+			enableEscapeKey: true,
+
+			modal: false,
+
+			alignTop: false,
+
+			removalDelay: 0,
+
+			prependTo: null,
+
+			fixedContentPos: 'auto',
+
+			fixedBgPos: 'auto',
+
+			overflowY: 'auto',
+
+			closeMarkup: '<button title="%title%" type="button" class="mfp-close">&#215;</button>',
+
+			tClose: 'Close (Esc)',
+
+			tLoading: 'Loading...',
+
+			autoFocusLast: true
+
+		}
+	};
+
+	$.fn.magnificPopup = function (options) {
+		_checkInstance();
+
+		var jqEl = $(this);
+
+		// We call some API method of first param is a string
+		if (typeof options === "string") {
+
+			if (options === 'open') {
+				var items,
+				    itemOpts = _isJQ ? jqEl.data('magnificPopup') : jqEl[0].magnificPopup,
+				    index = parseInt(arguments[1], 10) || 0;
+
+				if (itemOpts.items) {
+					items = itemOpts.items[index];
+				} else {
+					items = jqEl;
+					if (itemOpts.delegate) {
+						items = items.find(itemOpts.delegate);
+					}
+					items = items.eq(index);
+				}
+				mfp._openClick({ mfpEl: items }, jqEl, itemOpts);
+			} else {
+				if (mfp.isOpen) mfp[options].apply(mfp, Array.prototype.slice.call(arguments, 1));
+			}
+		} else {
+			// clone options obj
+			options = $.extend(true, {}, options);
+
+			/*
+    * As Zepto doesn't support .data() method for objects
+    * and it works only in normal browsers
+    * we assign "options" object directly to the DOM element. FTW!
+    */
+			if (_isJQ) {
+				jqEl.data('magnificPopup', options);
+			} else {
+				jqEl[0].magnificPopup = options;
+			}
+
+			mfp.addGroup(jqEl, options);
+		}
+		return jqEl;
+	};
+
+	/*>>core*/
+
+	/*>>inline*/
+
+	var INLINE_NS = 'inline',
+	    _hiddenClass,
+	    _inlinePlaceholder,
+	    _lastInlineElement,
+	    _putInlineElementsBack = function () {
+		if (_lastInlineElement) {
+			_inlinePlaceholder.after(_lastInlineElement.addClass(_hiddenClass)).detach();
+			_lastInlineElement = null;
+		}
+	};
+
+	$.magnificPopup.registerModule(INLINE_NS, {
+		options: {
+			hiddenClass: 'hide', // will be appended with `mfp-` prefix
+			markup: '',
+			tNotFound: 'Content not found'
+		},
+		proto: {
+
+			initInline: function () {
+				mfp.types.push(INLINE_NS);
+
+				_mfpOn(CLOSE_EVENT + '.' + INLINE_NS, function () {
+					_putInlineElementsBack();
+				});
+			},
+
+			getInline: function (item, template) {
+
+				_putInlineElementsBack();
+
+				if (item.src) {
+					var inlineSt = mfp.st.inline,
+					    el = $(item.src);
+
+					if (el.length) {
+
+						// If target element has parent - we replace it with placeholder and put it back after popup is closed
+						var parent = el[0].parentNode;
+						if (parent && parent.tagName) {
+							if (!_inlinePlaceholder) {
+								_hiddenClass = inlineSt.hiddenClass;
+								_inlinePlaceholder = _getEl(_hiddenClass);
+								_hiddenClass = 'mfp-' + _hiddenClass;
+							}
+							// replace target inline element with placeholder
+							_lastInlineElement = el.after(_inlinePlaceholder).detach().removeClass(_hiddenClass);
+						}
+
+						mfp.updateStatus('ready');
+					} else {
+						mfp.updateStatus('error', inlineSt.tNotFound);
+						el = $('<div>');
+					}
+
+					item.inlineElement = el;
+					return el;
+				}
+
+				mfp.updateStatus('ready');
+				mfp._parseMarkup(template, {}, item);
+				return template;
+			}
+		}
+	});
+
+	/*>>inline*/
+
+	/*>>ajax*/
+	var AJAX_NS = 'ajax',
+	    _ajaxCur,
+	    _removeAjaxCursor = function () {
+		if (_ajaxCur) {
+			$(document.body).removeClass(_ajaxCur);
+		}
+	},
+	    _destroyAjaxRequest = function () {
+		_removeAjaxCursor();
+		if (mfp.req) {
+			mfp.req.abort();
+		}
+	};
+
+	$.magnificPopup.registerModule(AJAX_NS, {
+
+		options: {
+			settings: null,
+			cursor: 'mfp-ajax-cur',
+			tError: '<a href="%url%">The content</a> could not be loaded.'
+		},
+
+		proto: {
+			initAjax: function () {
+				mfp.types.push(AJAX_NS);
+				_ajaxCur = mfp.st.ajax.cursor;
+
+				_mfpOn(CLOSE_EVENT + '.' + AJAX_NS, _destroyAjaxRequest);
+				_mfpOn('BeforeChange.' + AJAX_NS, _destroyAjaxRequest);
+			},
+			getAjax: function (item) {
+
+				if (_ajaxCur) {
+					$(document.body).addClass(_ajaxCur);
+				}
+
+				mfp.updateStatus('loading');
+
+				var opts = $.extend({
+					url: item.src,
+					success: function (data, textStatus, jqXHR) {
+						var temp = {
+							data: data,
+							xhr: jqXHR
+						};
+
+						_mfpTrigger('ParseAjax', temp);
+
+						mfp.appendContent($(temp.data), AJAX_NS);
+
+						item.finished = true;
+
+						_removeAjaxCursor();
+
+						mfp._setFocus();
+
+						setTimeout(function () {
+							mfp.wrap.addClass(READY_CLASS);
+						}, 16);
+
+						mfp.updateStatus('ready');
+
+						_mfpTrigger('AjaxContentAdded');
+					},
+					error: function () {
+						_removeAjaxCursor();
+						item.finished = item.loadError = true;
+						mfp.updateStatus('error', mfp.st.ajax.tError.replace('%url%', item.src));
+					}
+				}, mfp.st.ajax.settings);
+
+				mfp.req = $.ajax(opts);
+
+				return '';
+			}
+		}
+	});
+
+	/*>>ajax*/
+
+	/*>>image*/
+	var _imgInterval,
+	    _getTitle = function (item) {
+		if (item.data && item.data.title !== undefined) return item.data.title;
+
+		var src = mfp.st.image.titleSrc;
+
+		if (src) {
+			if ($.isFunction(src)) {
+				return src.call(mfp, item);
+			} else if (item.el) {
+				return item.el.attr(src) || '';
+			}
+		}
+		return '';
+	};
+
+	$.magnificPopup.registerModule('image', {
+
+		options: {
+			markup: '<div class="mfp-figure">' + '<div class="mfp-close"></div>' + '<figure>' + '<div class="mfp-img"></div>' + '<figcaption>' + '<div class="mfp-bottom-bar">' + '<div class="mfp-title"></div>' + '<div class="mfp-counter"></div>' + '</div>' + '</figcaption>' + '</figure>' + '</div>',
+			cursor: 'mfp-zoom-out-cur',
+			titleSrc: 'title',
+			verticalFit: true,
+			tError: '<a href="%url%">The image</a> could not be loaded.'
+		},
+
+		proto: {
+			initImage: function () {
+				var imgSt = mfp.st.image,
+				    ns = '.image';
+
+				mfp.types.push('image');
+
+				_mfpOn(OPEN_EVENT + ns, function () {
+					if (mfp.currItem.type === 'image' && imgSt.cursor) {
+						$(document.body).addClass(imgSt.cursor);
+					}
+				});
+
+				_mfpOn(CLOSE_EVENT + ns, function () {
+					if (imgSt.cursor) {
+						$(document.body).removeClass(imgSt.cursor);
+					}
+					_window.off('resize' + EVENT_NS);
+				});
+
+				_mfpOn('Resize' + ns, mfp.resizeImage);
+				if (mfp.isLowIE) {
+					_mfpOn('AfterChange', mfp.resizeImage);
+				}
+			},
+			resizeImage: function () {
+				var item = mfp.currItem;
+				if (!item || !item.img) return;
+
+				if (mfp.st.image.verticalFit) {
+					var decr = 0;
+					// fix box-sizing in ie7/8
+					if (mfp.isLowIE) {
+						decr = parseInt(item.img.css('padding-top'), 10) + parseInt(item.img.css('padding-bottom'), 10);
+					}
+					item.img.css('max-height', mfp.wH - decr);
+				}
+			},
+			_onImageHasSize: function (item) {
+				if (item.img) {
+
+					item.hasSize = true;
+
+					if (_imgInterval) {
+						clearInterval(_imgInterval);
+					}
+
+					item.isCheckingImgSize = false;
+
+					_mfpTrigger('ImageHasSize', item);
+
+					if (item.imgHidden) {
+						if (mfp.content) mfp.content.removeClass('mfp-loading');
+
+						item.imgHidden = false;
+					}
+				}
+			},
+
+			/**
+    * Function that loops until the image has size to display elements that rely on it asap
+    */
+			findImageSize: function (item) {
+
+				var counter = 0,
+				    img = item.img[0],
+				    mfpSetInterval = function (delay) {
+
+					if (_imgInterval) {
+						clearInterval(_imgInterval);
+					}
+					// decelerating interval that checks for size of an image
+					_imgInterval = setInterval(function () {
+						if (img.naturalWidth > 0) {
+							mfp._onImageHasSize(item);
+							return;
+						}
+
+						if (counter > 200) {
+							clearInterval(_imgInterval);
+						}
+
+						counter++;
+						if (counter === 3) {
+							mfpSetInterval(10);
+						} else if (counter === 40) {
+							mfpSetInterval(50);
+						} else if (counter === 100) {
+							mfpSetInterval(500);
+						}
+					}, delay);
+				};
+
+				mfpSetInterval(1);
+			},
+
+			getImage: function (item, template) {
+
+				var guard = 0,
+
+
+				// image load complete handler
+				onLoadComplete = function () {
+					if (item) {
+						if (item.img[0].complete) {
+							item.img.off('.mfploader');
+
+							if (item === mfp.currItem) {
+								mfp._onImageHasSize(item);
+
+								mfp.updateStatus('ready');
+							}
+
+							item.hasSize = true;
+							item.loaded = true;
+
+							_mfpTrigger('ImageLoadComplete');
+						} else {
+							// if image complete check fails 200 times (20 sec), we assume that there was an error.
+							guard++;
+							if (guard < 200) {
+								setTimeout(onLoadComplete, 100);
+							} else {
+								onLoadError();
+							}
+						}
+					}
+				},
+
+
+				// image error handler
+				onLoadError = function () {
+					if (item) {
+						item.img.off('.mfploader');
+						if (item === mfp.currItem) {
+							mfp._onImageHasSize(item);
+							mfp.updateStatus('error', imgSt.tError.replace('%url%', item.src));
+						}
+
+						item.hasSize = true;
+						item.loaded = true;
+						item.loadError = true;
+					}
+				},
+				    imgSt = mfp.st.image;
+
+				var el = template.find('.mfp-img');
+				if (el.length) {
+					var img = document.createElement('img');
+					img.className = 'mfp-img';
+					if (item.el && item.el.find('img').length) {
+						img.alt = item.el.find('img').attr('alt');
+					}
+					item.img = $(img).on('load.mfploader', onLoadComplete).on('error.mfploader', onLoadError);
+					img.src = item.src;
+
+					// without clone() "error" event is not firing when IMG is replaced by new IMG
+					// TODO: find a way to avoid such cloning
+					if (el.is('img')) {
+						item.img = item.img.clone();
+					}
+
+					img = item.img[0];
+					if (img.naturalWidth > 0) {
+						item.hasSize = true;
+					} else if (!img.width) {
+						item.hasSize = false;
+					}
+				}
+
+				mfp._parseMarkup(template, {
+					title: _getTitle(item),
+					img_replaceWith: item.img
+				}, item);
+
+				mfp.resizeImage();
+
+				if (item.hasSize) {
+					if (_imgInterval) clearInterval(_imgInterval);
+
+					if (item.loadError) {
+						template.addClass('mfp-loading');
+						mfp.updateStatus('error', imgSt.tError.replace('%url%', item.src));
+					} else {
+						template.removeClass('mfp-loading');
+						mfp.updateStatus('ready');
+					}
+					return template;
+				}
+
+				mfp.updateStatus('loading');
+				item.loading = true;
+
+				if (!item.hasSize) {
+					item.imgHidden = true;
+					template.addClass('mfp-loading');
+					mfp.findImageSize(item);
+				}
+
+				return template;
+			}
+		}
+	});
+
+	/*>>image*/
+
+	/*>>zoom*/
+	var hasMozTransform,
+	    getHasMozTransform = function () {
+		if (hasMozTransform === undefined) {
+			hasMozTransform = document.createElement('p').style.MozTransform !== undefined;
+		}
+		return hasMozTransform;
+	};
+
+	$.magnificPopup.registerModule('zoom', {
+
+		options: {
+			enabled: false,
+			easing: 'ease-in-out',
+			duration: 300,
+			opener: function (element) {
+				return element.is('img') ? element : element.find('img');
+			}
+		},
+
+		proto: {
+
+			initZoom: function () {
+				var zoomSt = mfp.st.zoom,
+				    ns = '.zoom',
+				    image;
+
+				if (!zoomSt.enabled || !mfp.supportsTransition) {
+					return;
+				}
+
+				var duration = zoomSt.duration,
+				    getElToAnimate = function (image) {
+					var newImg = image.clone().removeAttr('style').removeAttr('class').addClass('mfp-animated-image'),
+					    transition = 'all ' + zoomSt.duration / 1000 + 's ' + zoomSt.easing,
+					    cssObj = {
+						position: 'fixed',
+						zIndex: 9999,
+						left: 0,
+						top: 0,
+						'-webkit-backface-visibility': 'hidden'
+					},
+					    t = 'transition';
+
+					cssObj['-webkit-' + t] = cssObj['-moz-' + t] = cssObj['-o-' + t] = cssObj[t] = transition;
+
+					newImg.css(cssObj);
+					return newImg;
+				},
+				    showMainContent = function () {
+					mfp.content.css('visibility', 'visible');
+				},
+				    openTimeout,
+				    animatedImg;
+
+				_mfpOn('BuildControls' + ns, function () {
+					if (mfp._allowZoom()) {
+
+						clearTimeout(openTimeout);
+						mfp.content.css('visibility', 'hidden');
+
+						// Basically, all code below does is clones existing image, puts in on top of the current one and animated it
+
+						image = mfp._getItemToZoom();
+
+						if (!image) {
+							showMainContent();
+							return;
+						}
+
+						animatedImg = getElToAnimate(image);
+
+						animatedImg.css(mfp._getOffset());
+
+						mfp.wrap.append(animatedImg);
+
+						openTimeout = setTimeout(function () {
+							animatedImg.css(mfp._getOffset(true));
+							openTimeout = setTimeout(function () {
+
+								showMainContent();
+
+								setTimeout(function () {
+									animatedImg.remove();
+									image = animatedImg = null;
+									_mfpTrigger('ZoomAnimationEnded');
+								}, 16); // avoid blink when switching images
+							}, duration); // this timeout equals animation duration
+						}, 16); // by adding this timeout we avoid short glitch at the beginning of animation
+
+
+						// Lots of timeouts...
+					}
+				});
+				_mfpOn(BEFORE_CLOSE_EVENT + ns, function () {
+					if (mfp._allowZoom()) {
+
+						clearTimeout(openTimeout);
+
+						mfp.st.removalDelay = duration;
+
+						if (!image) {
+							image = mfp._getItemToZoom();
+							if (!image) {
+								return;
+							}
+							animatedImg = getElToAnimate(image);
+						}
+
+						animatedImg.css(mfp._getOffset(true));
+						mfp.wrap.append(animatedImg);
+						mfp.content.css('visibility', 'hidden');
+
+						setTimeout(function () {
+							animatedImg.css(mfp._getOffset());
+						}, 16);
+					}
+				});
+
+				_mfpOn(CLOSE_EVENT + ns, function () {
+					if (mfp._allowZoom()) {
+						showMainContent();
+						if (animatedImg) {
+							animatedImg.remove();
+						}
+						image = null;
+					}
+				});
+			},
+
+			_allowZoom: function () {
+				return mfp.currItem.type === 'image';
+			},
+
+			_getItemToZoom: function () {
+				if (mfp.currItem.hasSize) {
+					return mfp.currItem.img;
+				} else {
+					return false;
+				}
+			},
+
+			// Get element postion relative to viewport
+			_getOffset: function (isLarge) {
+				var el;
+				if (isLarge) {
+					el = mfp.currItem.img;
+				} else {
+					el = mfp.st.zoom.opener(mfp.currItem.el || mfp.currItem);
+				}
+
+				var offset = el.offset();
+				var paddingTop = parseInt(el.css('padding-top'), 10);
+				var paddingBottom = parseInt(el.css('padding-bottom'), 10);
+				offset.top -= $(window).scrollTop() - paddingTop;
+
+				/*
+    	Animating left + top + width/height looks glitchy in Firefox, but perfect in Chrome. And vice-versa.
+    	 */
+				var obj = {
+					width: el.width(),
+					// fix Zepto height+padding issue
+					height: (_isJQ ? el.innerHeight() : el[0].offsetHeight) - paddingBottom - paddingTop
+				};
+
+				// I hate to do this, but there is no another option
+				if (getHasMozTransform()) {
+					obj['-moz-transform'] = obj['transform'] = 'translate(' + offset.left + 'px,' + offset.top + 'px)';
+				} else {
+					obj.left = offset.left;
+					obj.top = offset.top;
+				}
+				return obj;
+			}
+
+		}
+	});
+
+	/*>>zoom*/
+
+	/*>>iframe*/
+
+	var IFRAME_NS = 'iframe',
+	    _emptyPage = '//about:blank',
+	    _fixIframeBugs = function (isShowing) {
+		if (mfp.currTemplate[IFRAME_NS]) {
+			var el = mfp.currTemplate[IFRAME_NS].find('iframe');
+			if (el.length) {
+				// reset src after the popup is closed to avoid "video keeps playing after popup is closed" bug
+				if (!isShowing) {
+					el[0].src = _emptyPage;
+				}
+
+				// IE8 black screen bug fix
+				if (mfp.isIE8) {
+					el.css('display', isShowing ? 'block' : 'none');
+				}
+			}
+		}
+	};
+
+	$.magnificPopup.registerModule(IFRAME_NS, {
+
+		options: {
+			markup: '<div class="mfp-iframe-scaler">' + '<div class="mfp-close"></div>' + '<iframe class="mfp-iframe" src="//about:blank" frameborder="0" allowfullscreen></iframe>' + '</div>',
+
+			srcAction: 'iframe_src',
+
+			// we don't care and support only one default type of URL by default
+			patterns: {
+				youtube: {
+					index: 'youtube.com',
+					id: 'v=',
+					src: '//www.youtube.com/embed/%id%?autoplay=1'
+				},
+				vimeo: {
+					index: 'vimeo.com/',
+					id: '/',
+					src: '//player.vimeo.com/video/%id%?autoplay=1'
+				},
+				gmaps: {
+					index: '//maps.google.',
+					src: '%id%&output=embed'
+				}
+			}
+		},
+
+		proto: {
+			initIframe: function () {
+				mfp.types.push(IFRAME_NS);
+
+				_mfpOn('BeforeChange', function (e, prevType, newType) {
+					if (prevType !== newType) {
+						if (prevType === IFRAME_NS) {
+							_fixIframeBugs(); // iframe if removed
+						} else if (newType === IFRAME_NS) {
+							_fixIframeBugs(true); // iframe is showing
+						}
+					} // else {
+					// iframe source is switched, don't do anything
+					//}
+				});
+
+				_mfpOn(CLOSE_EVENT + '.' + IFRAME_NS, function () {
+					_fixIframeBugs();
+				});
+			},
+
+			getIframe: function (item, template) {
+				var embedSrc = item.src;
+				var iframeSt = mfp.st.iframe;
+
+				$.each(iframeSt.patterns, function () {
+					if (embedSrc.indexOf(this.index) > -1) {
+						if (this.id) {
+							if (typeof this.id === 'string') {
+								embedSrc = embedSrc.substr(embedSrc.lastIndexOf(this.id) + this.id.length, embedSrc.length);
+							} else {
+								embedSrc = this.id.call(this, embedSrc);
+							}
+						}
+						embedSrc = this.src.replace('%id%', embedSrc);
+						return false; // break;
+					}
+				});
+
+				var dataObj = {};
+				if (iframeSt.srcAction) {
+					dataObj[iframeSt.srcAction] = embedSrc;
+				}
+				mfp._parseMarkup(template, dataObj, item);
+
+				mfp.updateStatus('ready');
+
+				return template;
+			}
+		}
+	});
+
+	/*>>iframe*/
+
+	/*>>gallery*/
+	/**
+  * Get looped index depending on number of slides
+  */
+	var _getLoopedId = function (index) {
+		var numSlides = mfp.items.length;
+		if (index > numSlides - 1) {
+			return index - numSlides;
+		} else if (index < 0) {
+			return numSlides + index;
+		}
+		return index;
+	},
+	    _replaceCurrTotal = function (text, curr, total) {
+		return text.replace(/%curr%/gi, curr + 1).replace(/%total%/gi, total);
+	};
+
+	$.magnificPopup.registerModule('gallery', {
+
+		options: {
+			enabled: false,
+			arrowMarkup: '<button title="%title%" type="button" class="mfp-arrow mfp-arrow-%dir%"></button>',
+			preload: [0, 2],
+			navigateByImgClick: true,
+			arrows: true,
+
+			tPrev: 'Previous (Left arrow key)',
+			tNext: 'Next (Right arrow key)',
+			tCounter: '%curr% of %total%'
+		},
+
+		proto: {
+			initGallery: function () {
+
+				var gSt = mfp.st.gallery,
+				    ns = '.mfp-gallery';
+
+				mfp.direction = true; // true - next, false - prev
+
+				if (!gSt || !gSt.enabled) return false;
+
+				_wrapClasses += ' mfp-gallery';
+
+				_mfpOn(OPEN_EVENT + ns, function () {
+
+					if (gSt.navigateByImgClick) {
+						mfp.wrap.on('click' + ns, '.mfp-img', function () {
+							if (mfp.items.length > 1) {
+								mfp.next();
+								return false;
+							}
+						});
+					}
+
+					_document.on('keydown' + ns, function (e) {
+						if (e.keyCode === 37) {
+							mfp.prev();
+						} else if (e.keyCode === 39) {
+							mfp.next();
+						}
+					});
+				});
+
+				_mfpOn('UpdateStatus' + ns, function (e, data) {
+					if (data.text) {
+						data.text = _replaceCurrTotal(data.text, mfp.currItem.index, mfp.items.length);
+					}
+				});
+
+				_mfpOn(MARKUP_PARSE_EVENT + ns, function (e, element, values, item) {
+					var l = mfp.items.length;
+					values.counter = l > 1 ? _replaceCurrTotal(gSt.tCounter, item.index, l) : '';
+				});
+
+				_mfpOn('BuildControls' + ns, function () {
+					if (mfp.items.length > 1 && gSt.arrows && !mfp.arrowLeft) {
+						var markup = gSt.arrowMarkup,
+						    arrowLeft = mfp.arrowLeft = $(markup.replace(/%title%/gi, gSt.tPrev).replace(/%dir%/gi, 'left')).addClass(PREVENT_CLOSE_CLASS),
+						    arrowRight = mfp.arrowRight = $(markup.replace(/%title%/gi, gSt.tNext).replace(/%dir%/gi, 'right')).addClass(PREVENT_CLOSE_CLASS);
+
+						arrowLeft.click(function () {
+							mfp.prev();
+						});
+						arrowRight.click(function () {
+							mfp.next();
+						});
+
+						mfp.container.append(arrowLeft.add(arrowRight));
+					}
+				});
+
+				_mfpOn(CHANGE_EVENT + ns, function () {
+					if (mfp._preloadTimeout) clearTimeout(mfp._preloadTimeout);
+
+					mfp._preloadTimeout = setTimeout(function () {
+						mfp.preloadNearbyImages();
+						mfp._preloadTimeout = null;
+					}, 16);
+				});
+
+				_mfpOn(CLOSE_EVENT + ns, function () {
+					_document.off(ns);
+					mfp.wrap.off('click' + ns);
+					mfp.arrowRight = mfp.arrowLeft = null;
+				});
+			},
+			next: function () {
+				mfp.direction = true;
+				mfp.index = _getLoopedId(mfp.index + 1);
+				mfp.updateItemHTML();
+			},
+			prev: function () {
+				mfp.direction = false;
+				mfp.index = _getLoopedId(mfp.index - 1);
+				mfp.updateItemHTML();
+			},
+			goTo: function (newIndex) {
+				mfp.direction = newIndex >= mfp.index;
+				mfp.index = newIndex;
+				mfp.updateItemHTML();
+			},
+			preloadNearbyImages: function () {
+				var p = mfp.st.gallery.preload,
+				    preloadBefore = Math.min(p[0], mfp.items.length),
+				    preloadAfter = Math.min(p[1], mfp.items.length),
+				    i;
+
+				for (i = 1; i <= (mfp.direction ? preloadAfter : preloadBefore); i++) {
+					mfp._preloadItem(mfp.index + i);
+				}
+				for (i = 1; i <= (mfp.direction ? preloadBefore : preloadAfter); i++) {
+					mfp._preloadItem(mfp.index - i);
+				}
+			},
+			_preloadItem: function (index) {
+				index = _getLoopedId(index);
+
+				if (mfp.items[index].preloaded) {
+					return;
+				}
+
+				var item = mfp.items[index];
+				if (!item.parsed) {
+					item = mfp.parseEl(index);
+				}
+
+				_mfpTrigger('LazyLoad', item);
+
+				if (item.type === 'image') {
+					item.img = $('<img class="mfp-img" />').on('load.mfploader', function () {
+						item.hasSize = true;
+					}).on('error.mfploader', function () {
+						item.hasSize = true;
+						item.loadError = true;
+						_mfpTrigger('LazyLoadError', item);
+					}).attr('src', item.src);
+				}
+
+				item.preloaded = true;
+			}
+		}
+	});
+
+	/*>>gallery*/
+
+	/*>>retina*/
+
+	var RETINA_NS = 'retina';
+
+	$.magnificPopup.registerModule(RETINA_NS, {
+		options: {
+			replaceSrc: function (item) {
+				return item.src.replace(/\.\w+$/, function (m) {
+					return '@2x' + m;
+				});
+			},
+			ratio: 1 // Function or number.  Set to 1 to disable.
+		},
+		proto: {
+			initRetina: function () {
+				if (window.devicePixelRatio > 1) {
+
+					var st = mfp.st.retina,
+					    ratio = st.ratio;
+
+					ratio = !isNaN(ratio) ? ratio : ratio();
+
+					if (ratio > 1) {
+						_mfpOn('ImageHasSize' + '.' + RETINA_NS, function (e, item) {
+							item.img.css({
+								'max-width': item.img[0].naturalWidth / ratio,
+								'width': '100%'
+							});
+						});
+						_mfpOn('ElementParse' + '.' + RETINA_NS, function (e, item) {
+							item.src = st.replaceSrc(item, ratio);
+						});
+					}
+				}
+			}
+		}
+	});
+
+	/*>>retina*/
+	_checkInstance();
+});
+;/*!
+ * sly 1.6.1 - 8th Aug 2015
+ * https://github.com/darsain/sly
+ *
+ * Licensed under the MIT license.
+ * http://opensource.org/licenses/MIT
+ */
+
+;(function ($, w, undefined) {
+	'use strict';
+
+	var pluginName = 'sly';
+	var className = 'Sly';
+	var namespace = pluginName;
+
+	// Local WindowAnimationTiming interface
+	var cAF = w.cancelAnimationFrame || w.cancelRequestAnimationFrame;
+	var rAF = w.requestAnimationFrame;
+
+	// Support indicators
+	var transform, gpuAcceleration;
+
+	// Other global values
+	var $doc = $(document);
+	var dragInitEvents = 'touchstart.' + namespace + ' mousedown.' + namespace;
+	var dragMouseEvents = 'mousemove.' + namespace + ' mouseup.' + namespace;
+	var dragTouchEvents = 'touchmove.' + namespace + ' touchend.' + namespace;
+	var wheelEvent = (document.implementation.hasFeature('Event.wheel', '3.0') ? 'wheel.' : 'mousewheel.') + namespace;
+	var clickEvent = 'click.' + namespace;
+	var mouseDownEvent = 'mousedown.' + namespace;
+	var interactiveElements = ['INPUT', 'SELECT', 'BUTTON', 'TEXTAREA'];
+	var tmpArray = [];
+	var time;
+
+	// Math shorthands
+	var abs = Math.abs;
+	var sqrt = Math.sqrt;
+	var pow = Math.pow;
+	var round = Math.round;
+	var max = Math.max;
+	var min = Math.min;
+
+	// Keep track of last fired global wheel event
+	var lastGlobalWheel = 0;
+	$doc.on(wheelEvent, function (event) {
+		var sly = event.originalEvent[namespace];
+		var time = +new Date();
+		// Update last global wheel time, but only when event didn't originate
+		// in Sly frame, or the origin was less than scrollHijack time ago
+		if (!sly || sly.options.scrollHijack < time - lastGlobalWheel) lastGlobalWheel = time;
+	});
+
+	/**
+  * Sly.
+  *
+  * @class
+  *
+  * @param {Element} frame       DOM element of sly container.
+  * @param {Object}  options     Object with options.
+  * @param {Object}  callbackMap Callbacks map.
+  */
+	function Sly(frame, options, callbackMap) {
+		if (!(this instanceof Sly)) return new Sly(frame, options, callbackMap);
+
+		// Extend options
+		var o = $.extend({}, Sly.defaults, options);
+
+		// Private variables
+		var self = this;
+		var parallax = isNumber(frame);
+
+		// Frame
+		var $frame = $(frame);
+		var $slidee = o.slidee ? $(o.slidee).eq(0) : $frame.children().eq(0);
+		var frameSize = 0;
+		var slideeSize = 0;
+		var pos = {
+			start: 0,
+			center: 0,
+			end: 0,
+			cur: 0,
+			dest: 0
+		};
+
+		// Scrollbar
+		var $sb = $(o.scrollBar).eq(0);
+		var $handle = $sb.children().eq(0);
+		var sbSize = 0;
+		var handleSize = 0;
+		var hPos = {
+			start: 0,
+			end: 0,
+			cur: 0
+		};
+
+		// Pagesbar
+		var $pb = $(o.pagesBar);
+		var $pages = 0;
+		var pages = [];
+
+		// Items
+		var $items = 0;
+		var items = [];
+		var rel = {
+			firstItem: 0,
+			lastItem: 0,
+			centerItem: 0,
+			activeItem: null,
+			activePage: 0
+		};
+
+		// Styles
+		var frameStyles = new StyleRestorer($frame[0]);
+		var slideeStyles = new StyleRestorer($slidee[0]);
+		var sbStyles = new StyleRestorer($sb[0]);
+		var handleStyles = new StyleRestorer($handle[0]);
+
+		// Navigation type booleans
+		var basicNav = o.itemNav === 'basic';
+		var forceCenteredNav = o.itemNav === 'forceCentered';
+		var centeredNav = o.itemNav === 'centered' || forceCenteredNav;
+		var itemNav = !parallax && (basicNav || centeredNav || forceCenteredNav);
+
+		// Miscellaneous
+		var $scrollSource = o.scrollSource ? $(o.scrollSource) : $frame;
+		var $dragSource = o.dragSource ? $(o.dragSource) : $frame;
+		var $forwardButton = $(o.forward);
+		var $backwardButton = $(o.backward);
+		var $prevButton = $(o.prev);
+		var $nextButton = $(o.next);
+		var $prevPageButton = $(o.prevPage);
+		var $nextPageButton = $(o.nextPage);
+		var callbacks = {};
+		var last = {};
+		var animation = {};
+		var move = {};
+		var dragging = {
+			released: 1
+		};
+		var scrolling = {
+			last: 0,
+			delta: 0,
+			resetTime: 200
+		};
+		var renderID = 0;
+		var historyID = 0;
+		var cycleID = 0;
+		var continuousID = 0;
+		var i, l;
+
+		// Normalizing frame
+		if (!parallax) {
+			frame = $frame[0];
+		}
+
+		// Expose properties
+		self.initialized = 0;
+		self.frame = frame;
+		self.slidee = $slidee[0];
+		self.pos = pos;
+		self.rel = rel;
+		self.items = items;
+		self.pages = pages;
+		self.isPaused = 0;
+		self.options = o;
+		self.dragging = dragging;
+
+		/**
+   * Loading function.
+   *
+   * Populate arrays, set sizes, bind events, ...
+   *
+   * @param {Boolean} [isInit] Whether load is called from within self.init().
+   * @return {Void}
+   */
+		function load(isInit) {
+			// Local variables
+			var lastItemsCount = 0;
+			var lastPagesCount = pages.length;
+
+			// Save old position
+			pos.old = $.extend({}, pos);
+
+			// Reset global variables
+			frameSize = parallax ? 0 : $frame[o.horizontal ? 'width' : 'height']();
+			sbSize = $sb[o.horizontal ? 'width' : 'height']();
+			slideeSize = parallax ? frame : $slidee[o.horizontal ? 'outerWidth' : 'outerHeight']();
+			pages.length = 0;
+
+			// Set position limits & relatives
+			pos.start = 0;
+			pos.end = max(slideeSize - frameSize, 0);
+
+			// Sizes & offsets for item based navigations
+			if (itemNav) {
+				// Save the number of current items
+				lastItemsCount = items.length;
+
+				// Reset itemNav related variables
+				$items = $slidee.children(o.itemSelector);
+				items.length = 0;
+
+				// Needed variables
+				var paddingStart = getPx($slidee, o.horizontal ? 'paddingLeft' : 'paddingTop');
+				var paddingEnd = getPx($slidee, o.horizontal ? 'paddingRight' : 'paddingBottom');
+				var borderBox = $($items).css('boxSizing') === 'border-box';
+				var areFloated = $items.css('float') !== 'none';
+				var ignoredMargin = 0;
+				var lastItemIndex = $items.length - 1;
+				var lastItem;
+
+				// Reset slideeSize
+				slideeSize = 0;
+
+				// Iterate through items
+				$items.each(function (i, element) {
+					// Item
+					var $item = $(element);
+					var rect = element.getBoundingClientRect();
+					var itemSize = round(o.horizontal ? rect.width || rect.right - rect.left : rect.height || rect.bottom - rect.top);
+					var itemMarginStart = getPx($item, o.horizontal ? 'marginLeft' : 'marginTop');
+					var itemMarginEnd = getPx($item, o.horizontal ? 'marginRight' : 'marginBottom');
+					var itemSizeFull = itemSize + itemMarginStart + itemMarginEnd;
+					var singleSpaced = !itemMarginStart || !itemMarginEnd;
+					var item = {};
+					item.el = element;
+					item.size = singleSpaced ? itemSize : itemSizeFull;
+					item.half = item.size / 2;
+					item.start = slideeSize + (singleSpaced ? itemMarginStart : 0);
+					item.center = item.start - round(frameSize / 2 - item.size / 2);
+					item.end = item.start - frameSize + item.size;
+
+					// Account for slidee padding
+					if (!i) {
+						slideeSize += paddingStart;
+					}
+
+					// Increment slidee size for size of the active element
+					slideeSize += itemSizeFull;
+
+					// Try to account for vertical margin collapsing in vertical mode
+					// It's not bulletproof, but should work in 99% of cases
+					if (!o.horizontal && !areFloated) {
+						// Subtract smaller margin, but only when top margin is not 0, and this is not the first element
+						if (itemMarginEnd && itemMarginStart && i > 0) {
+							slideeSize -= min(itemMarginStart, itemMarginEnd);
+						}
+					}
+
+					// Things to be done on last item
+					if (i === lastItemIndex) {
+						item.end += paddingEnd;
+						slideeSize += paddingEnd;
+						ignoredMargin = singleSpaced ? itemMarginEnd : 0;
+					}
+
+					// Add item object to items array
+					items.push(item);
+					lastItem = item;
+				});
+
+				// Resize SLIDEE to fit all items
+				$slidee[0].style[o.horizontal ? 'width' : 'height'] = (borderBox ? slideeSize : slideeSize - paddingStart - paddingEnd) + 'px';
+
+				// Adjust internal SLIDEE size for last margin
+				slideeSize -= ignoredMargin;
+
+				// Set limits
+				if (items.length) {
+					pos.start = items[0][forceCenteredNav ? 'center' : 'start'];
+					pos.end = forceCenteredNav ? lastItem.center : frameSize < slideeSize ? lastItem.end : pos.start;
+				} else {
+					pos.start = pos.end = 0;
+				}
+			}
+
+			// Calculate SLIDEE center position
+			pos.center = round(pos.end / 2 + pos.start / 2);
+
+			// Update relative positions
+			updateRelatives();
+
+			// Scrollbar
+			if ($handle.length && sbSize > 0) {
+				// Stretch scrollbar handle to represent the visible area
+				if (o.dynamicHandle) {
+					handleSize = pos.start === pos.end ? sbSize : round(sbSize * frameSize / slideeSize);
+					handleSize = within(handleSize, o.minHandleSize, sbSize);
+					$handle[0].style[o.horizontal ? 'width' : 'height'] = handleSize + 'px';
+				} else {
+					handleSize = $handle[o.horizontal ? 'outerWidth' : 'outerHeight']();
+				}
+
+				hPos.end = sbSize - handleSize;
+
+				if (!renderID) {
+					syncScrollbar();
+				}
+			}
+
+			// Pages
+			if (!parallax && frameSize > 0) {
+				var tempPagePos = pos.start;
+				var pagesHtml = '';
+
+				// Populate pages array
+				if (itemNav) {
+					$.each(items, function (i, item) {
+						if (forceCenteredNav) {
+							pages.push(item.center);
+						} else if (item.start + item.size > tempPagePos && tempPagePos <= pos.end) {
+							tempPagePos = item.start;
+							pages.push(tempPagePos);
+							tempPagePos += frameSize;
+							if (tempPagePos > pos.end && tempPagePos < pos.end + frameSize) {
+								pages.push(pos.end);
+							}
+						}
+					});
+				} else {
+					while (tempPagePos - frameSize < pos.end) {
+						pages.push(tempPagePos);
+						tempPagePos += frameSize;
+					}
+				}
+
+				// Pages bar
+				if ($pb[0] && lastPagesCount !== pages.length) {
+					for (var i = 0; i < pages.length; i++) {
+						pagesHtml += o.pageBuilder.call(self, i);
+					}
+					$pages = $pb.html(pagesHtml).children();
+					$pages.eq(rel.activePage).addClass(o.activeClass);
+				}
+			}
+
+			// Extend relative variables object with some useful info
+			rel.slideeSize = slideeSize;
+			rel.frameSize = frameSize;
+			rel.sbSize = sbSize;
+			rel.handleSize = handleSize;
+
+			// Activate requested position
+			if (itemNav) {
+				if (isInit && o.startAt != null) {
+					activate(o.startAt);
+					self[centeredNav ? 'toCenter' : 'toStart'](o.startAt);
+				}
+				// Fix possible overflowing
+				var activeItem = items[rel.activeItem];
+				slideTo(centeredNav && activeItem ? activeItem.center : within(pos.dest, pos.start, pos.end));
+			} else {
+				if (isInit) {
+					if (o.startAt != null) slideTo(o.startAt, 1);
+				} else {
+					// Fix possible overflowing
+					slideTo(within(pos.dest, pos.start, pos.end));
+				}
+			}
+
+			// Trigger load event
+			trigger('load');
+		}
+		self.reload = function () {
+			load();
+		};
+
+		/**
+   * Animate to a position.
+   *
+   * @param {Int}  newPos    New position.
+   * @param {Bool} immediate Reposition immediately without an animation.
+   * @param {Bool} dontAlign Do not align items, use the raw position passed in first argument.
+   *
+   * @return {Void}
+   */
+		function slideTo(newPos, immediate, dontAlign) {
+			// Align items
+			if (itemNav && dragging.released && !dontAlign) {
+				var tempRel = getRelatives(newPos);
+				var isNotBordering = newPos > pos.start && newPos < pos.end;
+
+				if (centeredNav) {
+					if (isNotBordering) {
+						newPos = items[tempRel.centerItem].center;
+					}
+					if (forceCenteredNav && o.activateMiddle) {
+						activate(tempRel.centerItem);
+					}
+				} else if (isNotBordering) {
+					newPos = items[tempRel.firstItem].start;
+				}
+			}
+
+			// Handle overflowing position limits
+			if (dragging.init && dragging.slidee && o.elasticBounds) {
+				if (newPos > pos.end) {
+					newPos = pos.end + (newPos - pos.end) / 6;
+				} else if (newPos < pos.start) {
+					newPos = pos.start + (newPos - pos.start) / 6;
+				}
+			} else {
+				newPos = within(newPos, pos.start, pos.end);
+			}
+
+			// Update the animation object
+			animation.start = +new Date();
+			animation.time = 0;
+			animation.from = pos.cur;
+			animation.to = newPos;
+			animation.delta = newPos - pos.cur;
+			animation.tweesing = dragging.tweese || dragging.init && !dragging.slidee;
+			animation.immediate = !animation.tweesing && (immediate || dragging.init && dragging.slidee || !o.speed);
+
+			// Reset dragging tweesing request
+			dragging.tweese = 0;
+
+			// Start animation rendering
+			if (newPos !== pos.dest) {
+				pos.dest = newPos;
+				trigger('change');
+				if (!renderID) {
+					render();
+				}
+			}
+
+			// Reset next cycle timeout
+			resetCycle();
+
+			// Synchronize states
+			updateRelatives();
+			updateButtonsState();
+			syncPagesbar();
+		}
+
+		/**
+   * Render animation frame.
+   *
+   * @return {Void}
+   */
+		function render() {
+			if (!self.initialized) {
+				return;
+			}
+
+			// If first render call, wait for next animationFrame
+			if (!renderID) {
+				renderID = rAF(render);
+				if (dragging.released) {
+					trigger('moveStart');
+				}
+				return;
+			}
+
+			// If immediate repositioning is requested, don't animate.
+			if (animation.immediate) {
+				pos.cur = animation.to;
+			}
+			// Use tweesing for animations without known end point
+			else if (animation.tweesing) {
+					animation.tweeseDelta = animation.to - pos.cur;
+					// Fuck Zeno's paradox
+					if (abs(animation.tweeseDelta) < 0.1) {
+						pos.cur = animation.to;
+					} else {
+						pos.cur += animation.tweeseDelta * (dragging.released ? o.swingSpeed : o.syncSpeed);
+					}
+				}
+				// Use tweening for basic animations with known end point
+				else {
+						animation.time = min(+new Date() - animation.start, o.speed);
+						pos.cur = animation.from + animation.delta * $.easing[o.easing](animation.time / o.speed, animation.time, 0, 1, o.speed);
+					}
+
+			// If there is nothing more to render break the rendering loop, otherwise request new animation frame.
+			if (animation.to === pos.cur) {
+				pos.cur = animation.to;
+				dragging.tweese = renderID = 0;
+			} else {
+				renderID = rAF(render);
+			}
+
+			trigger('move');
+
+			// Update SLIDEE position
+			if (!parallax) {
+				if (transform) {
+					$slidee[0].style[transform] = gpuAcceleration + (o.horizontal ? 'translateX' : 'translateY') + '(' + -pos.cur + 'px)';
+				} else {
+					$slidee[0].style[o.horizontal ? 'left' : 'top'] = -round(pos.cur) + 'px';
+				}
+			}
+
+			// When animation reached the end, and dragging is not active, trigger moveEnd
+			if (!renderID && dragging.released) {
+				trigger('moveEnd');
+			}
+
+			syncScrollbar();
+		}
+
+		/**
+   * Synchronizes scrollbar with the SLIDEE.
+   *
+   * @return {Void}
+   */
+		function syncScrollbar() {
+			if ($handle.length) {
+				hPos.cur = pos.start === pos.end ? 0 : ((dragging.init && !dragging.slidee ? pos.dest : pos.cur) - pos.start) / (pos.end - pos.start) * hPos.end;
+				hPos.cur = within(round(hPos.cur), hPos.start, hPos.end);
+				if (last.hPos !== hPos.cur) {
+					last.hPos = hPos.cur;
+					if (transform) {
+						$handle[0].style[transform] = gpuAcceleration + (o.horizontal ? 'translateX' : 'translateY') + '(' + hPos.cur + 'px)';
+					} else {
+						$handle[0].style[o.horizontal ? 'left' : 'top'] = hPos.cur + 'px';
+					}
+				}
+			}
+		}
+
+		/**
+   * Synchronizes pagesbar with SLIDEE.
+   *
+   * @return {Void}
+   */
+		function syncPagesbar() {
+			if ($pages[0] && last.page !== rel.activePage) {
+				last.page = rel.activePage;
+				$pages.removeClass(o.activeClass).eq(rel.activePage).addClass(o.activeClass);
+				trigger('activePage', last.page);
+			}
+		}
+
+		/**
+   * Returns the position object.
+   *
+   * @param {Mixed} item
+   *
+   * @return {Object}
+   */
+		self.getPos = function (item) {
+			if (itemNav) {
+				var index = getIndex(item);
+				return index !== -1 ? items[index] : false;
+			} else {
+				var $item = $slidee.find(item).eq(0);
+
+				if ($item[0]) {
+					var offset = o.horizontal ? $item.offset().left - $slidee.offset().left : $item.offset().top - $slidee.offset().top;
+					var size = $item[o.horizontal ? 'outerWidth' : 'outerHeight']();
+
+					return {
+						start: offset,
+						center: offset - frameSize / 2 + size / 2,
+						end: offset - frameSize + size,
+						size: size
+					};
+				} else {
+					return false;
+				}
+			}
+		};
+
+		/**
+   * Continuous move in a specified direction.
+   *
+   * @param  {Bool} forward True for forward movement, otherwise it'll go backwards.
+   * @param  {Int}  speed   Movement speed in pixels per frame. Overrides options.moveBy value.
+   *
+   * @return {Void}
+   */
+		self.moveBy = function (speed) {
+			move.speed = speed;
+			// If already initiated, or there is nowhere to move, abort
+			if (dragging.init || !move.speed || pos.cur === (move.speed > 0 ? pos.end : pos.start)) {
+				return;
+			}
+			// Initiate move object
+			move.lastTime = +new Date();
+			move.startPos = pos.cur;
+			// Set dragging as initiated
+			continuousInit('button');
+			dragging.init = 1;
+			// Start movement
+			trigger('moveStart');
+			cAF(continuousID);
+			moveLoop();
+		};
+
+		/**
+   * Continuous movement loop.
+   *
+   * @return {Void}
+   */
+		function moveLoop() {
+			// If there is nowhere to move anymore, stop
+			if (!move.speed || pos.cur === (move.speed > 0 ? pos.end : pos.start)) {
+				self.stop();
+			}
+			// Request new move loop if it hasn't been stopped
+			continuousID = dragging.init ? rAF(moveLoop) : 0;
+			// Update move object
+			move.now = +new Date();
+			move.pos = pos.cur + (move.now - move.lastTime) / 1000 * move.speed;
+			// Slide
+			slideTo(dragging.init ? move.pos : round(move.pos));
+			// Normally, this is triggered in render(), but if there
+			// is nothing to render, we have to do it manually here.
+			if (!dragging.init && pos.cur === pos.dest) {
+				trigger('moveEnd');
+			}
+			// Update times for future iteration
+			move.lastTime = move.now;
+		}
+
+		/**
+   * Stops continuous movement.
+   *
+   * @return {Void}
+   */
+		self.stop = function () {
+			if (dragging.source === 'button') {
+				dragging.init = 0;
+				dragging.released = 1;
+			}
+		};
+
+		/**
+   * Activate previous item.
+   *
+   * @return {Void}
+   */
+		self.prev = function () {
+			self.activate(rel.activeItem == null ? 0 : rel.activeItem - 1);
+		};
+
+		/**
+   * Activate next item.
+   *
+   * @return {Void}
+   */
+		self.next = function () {
+			self.activate(rel.activeItem == null ? 0 : rel.activeItem + 1);
+		};
+
+		/**
+   * Activate previous page.
+   *
+   * @return {Void}
+   */
+		self.prevPage = function () {
+			self.activatePage(rel.activePage - 1);
+		};
+
+		/**
+   * Activate next page.
+   *
+   * @return {Void}
+   */
+		self.nextPage = function () {
+			self.activatePage(rel.activePage + 1);
+		};
+
+		/**
+   * Slide SLIDEE by amount of pixels.
+   *
+   * @param {Int}  delta     Pixels/Items. Positive means forward, negative means backward.
+   * @param {Bool} immediate Reposition immediately without an animation.
+   *
+   * @return {Void}
+   */
+		self.slideBy = function (delta, immediate) {
+			if (!delta) {
+				return;
+			}
+			if (itemNav) {
+				self[centeredNav ? 'toCenter' : 'toStart'](within((centeredNav ? rel.centerItem : rel.firstItem) + o.scrollBy * delta, 0, items.length));
+			} else {
+				slideTo(pos.dest + delta, immediate);
+			}
+		};
+
+		/**
+   * Animate SLIDEE to a specific position.
+   *
+   * @param {Int}  pos       New position.
+   * @param {Bool} immediate Reposition immediately without an animation.
+   *
+   * @return {Void}
+   */
+		self.slideTo = function (pos, immediate) {
+			slideTo(pos, immediate);
+		};
+
+		/**
+   * Core method for handling `toLocation` methods.
+   *
+   * @param  {String} location
+   * @param  {Mixed}  item
+   * @param  {Bool}   immediate
+   *
+   * @return {Void}
+   */
+		function to(location, item, immediate) {
+			// Optional arguments logic
+			if (type(item) === 'boolean') {
+				immediate = item;
+				item = undefined;
+			}
+
+			if (item === undefined) {
+				slideTo(pos[location], immediate);
+			} else {
+				// You can't align items to sides of the frame
+				// when centered navigation type is enabled
+				if (centeredNav && location !== 'center') {
+					return;
+				}
+
+				var itemPos = self.getPos(item);
+				if (itemPos) {
+					slideTo(itemPos[location], immediate, !centeredNav);
+				}
+			}
+		}
+
+		/**
+   * Animate element or the whole SLIDEE to the start of the frame.
+   *
+   * @param {Mixed} item      Item DOM element, or index starting at 0. Omitting will animate SLIDEE.
+   * @param {Bool}  immediate Reposition immediately without an animation.
+   *
+   * @return {Void}
+   */
+		self.toStart = function (item, immediate) {
+			to('start', item, immediate);
+		};
+
+		/**
+   * Animate element or the whole SLIDEE to the end of the frame.
+   *
+   * @param {Mixed} item      Item DOM element, or index starting at 0. Omitting will animate SLIDEE.
+   * @param {Bool}  immediate Reposition immediately without an animation.
+   *
+   * @return {Void}
+   */
+		self.toEnd = function (item, immediate) {
+			to('end', item, immediate);
+		};
+
+		/**
+   * Animate element or the whole SLIDEE to the center of the frame.
+   *
+   * @param {Mixed} item      Item DOM element, or index starting at 0. Omitting will animate SLIDEE.
+   * @param {Bool}  immediate Reposition immediately without an animation.
+   *
+   * @return {Void}
+   */
+		self.toCenter = function (item, immediate) {
+			to('center', item, immediate);
+		};
+
+		/**
+   * Get the index of an item in SLIDEE.
+   *
+   * @param {Mixed} item     Item DOM element.
+   *
+   * @return {Int}  Item index, or -1 if not found.
+   */
+		function getIndex(item) {
+			return item != null ? isNumber(item) ? item >= 0 && item < items.length ? item : -1 : $items.index(item) : -1;
+		}
+		// Expose getIndex without lowering the compressibility of it,
+		// as it is used quite often throughout Sly.
+		self.getIndex = getIndex;
+
+		/**
+   * Get index of an item in SLIDEE based on a variety of input types.
+   *
+   * @param  {Mixed} item DOM element, positive or negative integer.
+   *
+   * @return {Int}   Item index, or -1 if not found.
+   */
+		function getRelativeIndex(item) {
+			return getIndex(isNumber(item) && item < 0 ? item + items.length : item);
+		}
+
+		/**
+   * Activates an item.
+   *
+   * @param  {Mixed} item Item DOM element, or index starting at 0.
+   *
+   * @return {Mixed} Activated item index or false on fail.
+   */
+		function activate(item, force) {
+			var index = getIndex(item);
+
+			if (!itemNav || index < 0) {
+				return false;
+			}
+
+			// Update classes, last active index, and trigger active event only when there
+			// has been a change. Otherwise just return the current active index.
+			if (last.active !== index || force) {
+				// Update classes
+				$items.eq(rel.activeItem).removeClass(o.activeClass);
+				$items.eq(index).addClass(o.activeClass);
+
+				last.active = rel.activeItem = index;
+
+				updateButtonsState();
+				trigger('active', index);
+			}
+
+			return index;
+		}
+
+		/**
+   * Activates an item and helps with further navigation when o.smart is enabled.
+   *
+   * @param {Mixed} item      Item DOM element, or index starting at 0.
+   * @param {Bool}  immediate Whether to reposition immediately in smart navigation.
+   *
+   * @return {Void}
+   */
+		self.activate = function (item, immediate) {
+			var index = activate(item);
+
+			// Smart navigation
+			if (o.smart && index !== false) {
+				// When centeredNav is enabled, center the element.
+				// Otherwise, determine where to position the element based on its current position.
+				// If the element is currently on the far end side of the frame, assume that user is
+				// moving forward and animate it to the start of the visible frame, and vice versa.
+				if (centeredNav) {
+					self.toCenter(index, immediate);
+				} else if (index >= rel.lastItem) {
+					self.toStart(index, immediate);
+				} else if (index <= rel.firstItem) {
+					self.toEnd(index, immediate);
+				} else {
+					resetCycle();
+				}
+			}
+		};
+
+		/**
+   * Activates a page.
+   *
+   * @param {Int}  index     Page index, starting from 0.
+   * @param {Bool} immediate Whether to reposition immediately without animation.
+   *
+   * @return {Void}
+   */
+		self.activatePage = function (index, immediate) {
+			if (isNumber(index)) {
+				slideTo(pages[within(index, 0, pages.length - 1)], immediate);
+			}
+		};
+
+		/**
+   * Return relative positions of items based on their visibility within FRAME.
+   *
+   * @param {Int} slideePos Position of SLIDEE.
+   *
+   * @return {Void}
+   */
+		function getRelatives(slideePos) {
+			slideePos = within(isNumber(slideePos) ? slideePos : pos.dest, pos.start, pos.end);
+
+			var relatives = {};
+			var centerOffset = forceCenteredNav ? 0 : frameSize / 2;
+
+			// Determine active page
+			if (!parallax) {
+				for (var p = 0, pl = pages.length; p < pl; p++) {
+					if (slideePos >= pos.end || p === pages.length - 1) {
+						relatives.activePage = pages.length - 1;
+						break;
+					}
+
+					if (slideePos <= pages[p] + centerOffset) {
+						relatives.activePage = p;
+						break;
+					}
+				}
+			}
+
+			// Relative item indexes
+			if (itemNav) {
+				var first = false;
+				var last = false;
+				var center = false;
+
+				// From start
+				for (var i = 0, il = items.length; i < il; i++) {
+					// First item
+					if (first === false && slideePos <= items[i].start + items[i].half) {
+						first = i;
+					}
+
+					// Center item
+					if (center === false && slideePos <= items[i].center + items[i].half) {
+						center = i;
+					}
+
+					// Last item
+					if (i === il - 1 || slideePos <= items[i].end + items[i].half) {
+						last = i;
+						break;
+					}
+				}
+
+				// Safe assignment, just to be sure the false won't be returned
+				relatives.firstItem = isNumber(first) ? first : 0;
+				relatives.centerItem = isNumber(center) ? center : relatives.firstItem;
+				relatives.lastItem = isNumber(last) ? last : relatives.centerItem;
+			}
+
+			return relatives;
+		}
+
+		/**
+   * Update object with relative positions.
+   *
+   * @param {Int} newPos
+   *
+   * @return {Void}
+   */
+		function updateRelatives(newPos) {
+			$.extend(rel, getRelatives(newPos));
+		}
+
+		/**
+   * Disable navigation buttons when needed.
+   *
+   * Adds disabledClass, and when the button is <button> or <input>, activates :disabled state.
+   *
+   * @return {Void}
+   */
+		function updateButtonsState() {
+			var isStart = pos.dest <= pos.start;
+			var isEnd = pos.dest >= pos.end;
+			var slideePosState = (isStart ? 1 : 0) | (isEnd ? 2 : 0);
+
+			// Update paging buttons only if there has been a change in SLIDEE position
+			if (last.slideePosState !== slideePosState) {
+				last.slideePosState = slideePosState;
+
+				if ($prevPageButton.is('button,input')) {
+					$prevPageButton.prop('disabled', isStart);
+				}
+
+				if ($nextPageButton.is('button,input')) {
+					$nextPageButton.prop('disabled', isEnd);
+				}
+
+				$prevPageButton.add($backwardButton)[isStart ? 'addClass' : 'removeClass'](o.disabledClass);
+				$nextPageButton.add($forwardButton)[isEnd ? 'addClass' : 'removeClass'](o.disabledClass);
+			}
+
+			// Forward & Backward buttons need a separate state caching because we cannot "property disable"
+			// them while they are being used, as disabled buttons stop emitting mouse events.
+			if (last.fwdbwdState !== slideePosState && dragging.released) {
+				last.fwdbwdState = slideePosState;
+
+				if ($backwardButton.is('button,input')) {
+					$backwardButton.prop('disabled', isStart);
+				}
+
+				if ($forwardButton.is('button,input')) {
+					$forwardButton.prop('disabled', isEnd);
+				}
+			}
+
+			// Item navigation
+			if (itemNav && rel.activeItem != null) {
+				var isFirst = rel.activeItem === 0;
+				var isLast = rel.activeItem >= items.length - 1;
+				var itemsButtonState = (isFirst ? 1 : 0) | (isLast ? 2 : 0);
+
+				if (last.itemsButtonState !== itemsButtonState) {
+					last.itemsButtonState = itemsButtonState;
+
+					if ($prevButton.is('button,input')) {
+						$prevButton.prop('disabled', isFirst);
+					}
+
+					if ($nextButton.is('button,input')) {
+						$nextButton.prop('disabled', isLast);
+					}
+
+					$prevButton[isFirst ? 'addClass' : 'removeClass'](o.disabledClass);
+					$nextButton[isLast ? 'addClass' : 'removeClass'](o.disabledClass);
+				}
+			}
+		}
+
+		/**
+   * Resume cycling.
+   *
+   * @param {Int} priority Resume pause with priority lower or equal than this. Used internally for pauseOnHover.
+   *
+   * @return {Void}
+   */
+		self.resume = function (priority) {
+			if (!o.cycleBy || !o.cycleInterval || o.cycleBy === 'items' && (!items[0] || rel.activeItem == null) || priority < self.isPaused) {
+				return;
+			}
+
+			self.isPaused = 0;
+
+			if (cycleID) {
+				cycleID = clearTimeout(cycleID);
+			} else {
+				trigger('resume');
+			}
+
+			cycleID = setTimeout(function () {
+				trigger('cycle');
+				switch (o.cycleBy) {
+					case 'items':
+						self.activate(rel.activeItem >= items.length - 1 ? 0 : rel.activeItem + 1);
+						break;
+
+					case 'pages':
+						self.activatePage(rel.activePage >= pages.length - 1 ? 0 : rel.activePage + 1);
+						break;
+				}
+			}, o.cycleInterval);
+		};
+
+		/**
+   * Pause cycling.
+   *
+   * @param {Int} priority Pause priority. 100 is default. Used internally for pauseOnHover.
+   *
+   * @return {Void}
+   */
+		self.pause = function (priority) {
+			if (priority < self.isPaused) {
+				return;
+			}
+
+			self.isPaused = priority || 100;
+
+			if (cycleID) {
+				cycleID = clearTimeout(cycleID);
+				trigger('pause');
+			}
+		};
+
+		/**
+   * Toggle cycling.
+   *
+   * @return {Void}
+   */
+		self.toggle = function () {
+			self[cycleID ? 'pause' : 'resume']();
+		};
+
+		/**
+   * Updates a signle or multiple option values.
+   *
+   * @param {Mixed} name  Name of the option that should be updated, or object that will extend the options.
+   * @param {Mixed} value New option value.
+   *
+   * @return {Void}
+   */
+		self.set = function (name, value) {
+			if ($.isPlainObject(name)) {
+				$.extend(o, name);
+			} else if (o.hasOwnProperty(name)) {
+				o[name] = value;
+			}
+		};
+
+		/**
+   * Add one or multiple items to the SLIDEE end, or a specified position index.
+   *
+   * @param {Mixed} element Node element, or HTML string.
+   * @param {Int}   index   Index of a new item position. By default item is appended at the end.
+   *
+   * @return {Void}
+   */
+		self.add = function (element, index) {
+			var $element = $(element);
+
+			if (itemNav) {
+				// Insert the element(s)
+				if (index == null || !items[0] || index >= items.length) {
+					$element.appendTo($slidee);
+				} else if (items.length) {
+					$element.insertBefore(items[index].el);
+				}
+
+				// Adjust the activeItem index
+				if (rel.activeItem != null && index <= rel.activeItem) {
+					last.active = rel.activeItem += $element.length;
+				}
+			} else {
+				$slidee.append($element);
+			}
+
+			// Reload
+			load();
+		};
+
+		/**
+   * Remove an item from SLIDEE.
+   *
+   * @param {Mixed} element Item index, or DOM element.
+   * @param {Int}   index   Index of a new item position. By default item is appended at the end.
+   *
+   * @return {Void}
+   */
+		self.remove = function (element) {
+			if (itemNav) {
+				var index = getRelativeIndex(element);
+
+				if (index > -1) {
+					// Remove the element
+					$items.eq(index).remove();
+
+					// If the current item is being removed, activate new one after reload
+					var reactivate = index === rel.activeItem;
+
+					// Adjust the activeItem index
+					if (rel.activeItem != null && index < rel.activeItem) {
+						last.active = --rel.activeItem;
+					}
+
+					// Reload
+					load();
+
+					// Activate new item at the removed position
+					if (reactivate) {
+						last.active = null;
+						self.activate(rel.activeItem);
+					}
+				}
+			} else {
+				$(element).remove();
+				load();
+			}
+		};
+
+		/**
+   * Helps re-arranging items.
+   *
+   * @param  {Mixed} item     Item DOM element, or index starting at 0. Use negative numbers to select items from the end.
+   * @param  {Mixed} position Item insertion anchor. Accepts same input types as item argument.
+   * @param  {Bool}  after    Insert after instead of before the anchor.
+   *
+   * @return {Void}
+   */
+		function moveItem(item, position, after) {
+			item = getRelativeIndex(item);
+			position = getRelativeIndex(position);
+
+			// Move only if there is an actual change requested
+			if (item > -1 && position > -1 && item !== position && (!after || position !== item - 1) && (after || position !== item + 1)) {
+				$items.eq(item)[after ? 'insertAfter' : 'insertBefore'](items[position].el);
+
+				var shiftStart = item < position ? item : after ? position : position - 1;
+				var shiftEnd = item > position ? item : after ? position + 1 : position;
+				var shiftsUp = item > position;
+
+				// Update activeItem index
+				if (rel.activeItem != null) {
+					if (item === rel.activeItem) {
+						last.active = rel.activeItem = after ? shiftsUp ? position + 1 : position : shiftsUp ? position : position - 1;
+					} else if (rel.activeItem > shiftStart && rel.activeItem < shiftEnd) {
+						last.active = rel.activeItem += shiftsUp ? 1 : -1;
+					}
+				}
+
+				// Reload
+				load();
+			}
+		}
+
+		/**
+   * Move item after the target anchor.
+   *
+   * @param  {Mixed} item     Item to be moved. Can be DOM element or item index.
+   * @param  {Mixed} position Target position anchor. Can be DOM element or item index.
+   *
+   * @return {Void}
+   */
+		self.moveAfter = function (item, position) {
+			moveItem(item, position, 1);
+		};
+
+		/**
+   * Move item before the target anchor.
+   *
+   * @param  {Mixed} item     Item to be moved. Can be DOM element or item index.
+   * @param  {Mixed} position Target position anchor. Can be DOM element or item index.
+   *
+   * @return {Void}
+   */
+		self.moveBefore = function (item, position) {
+			moveItem(item, position);
+		};
+
+		/**
+   * Registers callbacks.
+   *
+   * @param  {Mixed} name  Event name, or callbacks map.
+   * @param  {Mixed} fn    Callback, or an array of callback functions.
+   *
+   * @return {Void}
+   */
+		self.on = function (name, fn) {
+			// Callbacks map
+			if (type(name) === 'object') {
+				for (var key in name) {
+					if (name.hasOwnProperty(key)) {
+						self.on(key, name[key]);
+					}
+				}
+				// Callback
+			} else if (type(fn) === 'function') {
+				var names = name.split(' ');
+				for (var n = 0, nl = names.length; n < nl; n++) {
+					callbacks[names[n]] = callbacks[names[n]] || [];
+					if (callbackIndex(names[n], fn) === -1) {
+						callbacks[names[n]].push(fn);
+					}
+				}
+				// Callbacks array
+			} else if (type(fn) === 'array') {
+				for (var f = 0, fl = fn.length; f < fl; f++) {
+					self.on(name, fn[f]);
+				}
+			}
+		};
+
+		/**
+   * Registers callbacks to be executed only once.
+   *
+   * @param  {Mixed} name  Event name, or callbacks map.
+   * @param  {Mixed} fn    Callback, or an array of callback functions.
+   *
+   * @return {Void}
+   */
+		self.one = function (name, fn) {
+			function proxy() {
+				fn.apply(self, arguments);
+				self.off(name, proxy);
+			}
+			self.on(name, proxy);
+		};
+
+		/**
+   * Remove one or all callbacks.
+   *
+   * @param  {String} name Event name.
+   * @param  {Mixed}  fn   Callback, or an array of callback functions. Omit to remove all callbacks.
+   *
+   * @return {Void}
+   */
+		self.off = function (name, fn) {
+			if (fn instanceof Array) {
+				for (var f = 0, fl = fn.length; f < fl; f++) {
+					self.off(name, fn[f]);
+				}
+			} else {
+				var names = name.split(' ');
+				for (var n = 0, nl = names.length; n < nl; n++) {
+					callbacks[names[n]] = callbacks[names[n]] || [];
+					if (fn == null) {
+						callbacks[names[n]].length = 0;
+					} else {
+						var index = callbackIndex(names[n], fn);
+						if (index !== -1) {
+							callbacks[names[n]].splice(index, 1);
+						}
+					}
+				}
+			}
+		};
+
+		/**
+   * Returns callback array index.
+   *
+   * @param  {String}   name Event name.
+   * @param  {Function} fn   Function
+   *
+   * @return {Int} Callback array index, or -1 if isn't registered.
+   */
+		function callbackIndex(name, fn) {
+			for (var i = 0, l = callbacks[name].length; i < l; i++) {
+				if (callbacks[name][i] === fn) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		/**
+   * Reset next cycle timeout.
+   *
+   * @return {Void}
+   */
+		function resetCycle() {
+			if (dragging.released && !self.isPaused) {
+				self.resume();
+			}
+		}
+
+		/**
+   * Calculate SLIDEE representation of handle position.
+   *
+   * @param  {Int} handlePos
+   *
+   * @return {Int}
+   */
+		function handleToSlidee(handlePos) {
+			return round(within(handlePos, hPos.start, hPos.end) / hPos.end * (pos.end - pos.start)) + pos.start;
+		}
+
+		/**
+   * Keeps track of a dragging delta history.
+   *
+   * @return {Void}
+   */
+		function draggingHistoryTick() {
+			// Looking at this, I know what you're thinking :) But as we need only 4 history states, doing it this way
+			// as opposed to a proper loop is ~25 bytes smaller (when minified with GCC), a lot faster, and doesn't
+			// generate garbage. The loop version would create 2 new variables on every tick. Unexaptable!
+			dragging.history[0] = dragging.history[1];
+			dragging.history[1] = dragging.history[2];
+			dragging.history[2] = dragging.history[3];
+			dragging.history[3] = dragging.delta;
+		}
+
+		/**
+   * Initialize continuous movement.
+   *
+   * @return {Void}
+   */
+		function continuousInit(source) {
+			dragging.released = 0;
+			dragging.source = source;
+			dragging.slidee = source === 'slidee';
+		}
+
+		/**
+   * Dragging initiator.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function dragInit(event) {
+			var isTouch = event.type === 'touchstart';
+			var source = event.data.source;
+			var isSlidee = source === 'slidee';
+
+			// Ignore when already in progress, or interactive element in non-touch navivagion
+			if (dragging.init || !isTouch && isInteractive(event.target)) {
+				return;
+			}
+
+			// Handle dragging conditions
+			if (source === 'handle' && (!o.dragHandle || hPos.start === hPos.end)) {
+				return;
+			}
+
+			// SLIDEE dragging conditions
+			if (isSlidee && !(isTouch ? o.touchDragging : o.mouseDragging && event.which < 2)) {
+				return;
+			}
+
+			if (!isTouch) {
+				// prevents native image dragging in Firefox
+				stopDefault(event);
+			}
+
+			// Reset dragging object
+			continuousInit(source);
+
+			// Properties used in dragHandler
+			dragging.init = 0;
+			dragging.$source = $(event.target);
+			dragging.touch = isTouch;
+			dragging.pointer = isTouch ? event.originalEvent.touches[0] : event;
+			dragging.initX = dragging.pointer.pageX;
+			dragging.initY = dragging.pointer.pageY;
+			dragging.initPos = isSlidee ? pos.cur : hPos.cur;
+			dragging.start = +new Date();
+			dragging.time = 0;
+			dragging.path = 0;
+			dragging.delta = 0;
+			dragging.locked = 0;
+			dragging.history = [0, 0, 0, 0];
+			dragging.pathToLock = isSlidee ? isTouch ? 30 : 10 : 0;
+
+			// Bind dragging events
+			$doc.on(isTouch ? dragTouchEvents : dragMouseEvents, dragHandler);
+
+			// Pause ongoing cycle
+			self.pause(1);
+
+			// Add dragging class
+			(isSlidee ? $slidee : $handle).addClass(o.draggedClass);
+
+			// Trigger moveStart event
+			trigger('moveStart');
+
+			// Keep track of a dragging path history. This is later used in the
+			// dragging release swing calculation when dragging SLIDEE.
+			if (isSlidee) {
+				historyID = setInterval(draggingHistoryTick, 10);
+			}
+		}
+
+		/**
+   * Handler for dragging scrollbar handle or SLIDEE.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function dragHandler(event) {
+			dragging.released = event.type === 'mouseup' || event.type === 'touchend';
+			dragging.pointer = dragging.touch ? event.originalEvent[dragging.released ? 'changedTouches' : 'touches'][0] : event;
+			dragging.pathX = dragging.pointer.pageX - dragging.initX;
+			dragging.pathY = dragging.pointer.pageY - dragging.initY;
+			dragging.path = sqrt(pow(dragging.pathX, 2) + pow(dragging.pathY, 2));
+			dragging.delta = o.horizontal ? dragging.pathX : dragging.pathY;
+
+			if (!dragging.released && dragging.path < 1) return;
+
+			// We haven't decided whether this is a drag or not...
+			if (!dragging.init) {
+				// If the drag path was very short, maybe it's not a drag?
+				if (dragging.path < o.dragThreshold) {
+					// If the pointer was released, the path will not become longer and it's
+					// definitely not a drag. If not released yet, decide on next iteration
+					return dragging.released ? dragEnd() : undefined;
+				} else {
+					// If dragging path is sufficiently long we can confidently start a drag
+					// if drag is in different direction than scroll, ignore it
+					if (o.horizontal ? abs(dragging.pathX) > abs(dragging.pathY) : abs(dragging.pathX) < abs(dragging.pathY)) {
+						dragging.init = 1;
+					} else {
+						return dragEnd();
+					}
+				}
+			}
+
+			stopDefault(event);
+
+			// Disable click on a source element, as it is unwelcome when dragging
+			if (!dragging.locked && dragging.path > dragging.pathToLock && dragging.slidee) {
+				dragging.locked = 1;
+				dragging.$source.on(clickEvent, disableOneEvent);
+			}
+
+			// Cancel dragging on release
+			if (dragging.released) {
+				dragEnd();
+
+				// Adjust path with a swing on mouse release
+				if (o.releaseSwing && dragging.slidee) {
+					dragging.swing = (dragging.delta - dragging.history[0]) / 40 * 300;
+					dragging.delta += dragging.swing;
+					dragging.tweese = abs(dragging.swing) > 10;
+				}
+			}
+
+			slideTo(dragging.slidee ? round(dragging.initPos - dragging.delta) : handleToSlidee(dragging.initPos + dragging.delta));
+		}
+
+		/**
+   * Stops dragging and cleans up after it.
+   *
+   * @return {Void}
+   */
+		function dragEnd() {
+			clearInterval(historyID);
+			dragging.released = true;
+			$doc.off(dragging.touch ? dragTouchEvents : dragMouseEvents, dragHandler);
+			(dragging.slidee ? $slidee : $handle).removeClass(o.draggedClass);
+
+			// Make sure that disableOneEvent is not active in next tick.
+			setTimeout(function () {
+				dragging.$source.off(clickEvent, disableOneEvent);
+			});
+
+			// Normally, this is triggered in render(), but if there
+			// is nothing to render, we have to do it manually here.
+			if (pos.cur === pos.dest && dragging.init) {
+				trigger('moveEnd');
+			}
+
+			// Resume ongoing cycle
+			self.resume(1);
+
+			dragging.init = 0;
+		}
+
+		/**
+   * Check whether element is interactive.
+   *
+   * @return {Boolean}
+   */
+		function isInteractive(element) {
+			return ~$.inArray(element.nodeName, interactiveElements) || $(element).is(o.interactive);
+		}
+
+		/**
+   * Continuous movement cleanup on mouseup.
+   *
+   * @return {Void}
+   */
+		function movementReleaseHandler() {
+			self.stop();
+			$doc.off('mouseup', movementReleaseHandler);
+		}
+
+		/**
+   * Buttons navigation handler.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function buttonsHandler(event) {
+			/*jshint validthis:true */
+			stopDefault(event);
+			switch (this) {
+				case $forwardButton[0]:
+				case $backwardButton[0]:
+					self.moveBy($forwardButton.is(this) ? o.moveBy : -o.moveBy);
+					$doc.on('mouseup', movementReleaseHandler);
+					break;
+
+				case $prevButton[0]:
+					self.prev();
+					break;
+
+				case $nextButton[0]:
+					self.next();
+					break;
+
+				case $prevPageButton[0]:
+					self.prevPage();
+					break;
+
+				case $nextPageButton[0]:
+					self.nextPage();
+					break;
+			}
+		}
+
+		/**
+   * Mouse wheel delta normalization.
+   *
+   * @param  {Event} event
+   *
+   * @return {Int}
+   */
+		function normalizeWheelDelta(event) {
+			// wheelDelta needed only for IE8-
+			scrolling.curDelta = (o.horizontal ? event.deltaY || event.deltaX : event.deltaY) || -event.wheelDelta;
+			scrolling.curDelta /= event.deltaMode === 1 ? 3 : 100;
+			if (!itemNav) {
+				return scrolling.curDelta;
+			}
+			time = +new Date();
+			if (scrolling.last < time - scrolling.resetTime) {
+				scrolling.delta = 0;
+			}
+			scrolling.last = time;
+			scrolling.delta += scrolling.curDelta;
+			if (abs(scrolling.delta) < 1) {
+				scrolling.finalDelta = 0;
+			} else {
+				scrolling.finalDelta = round(scrolling.delta / 1);
+				scrolling.delta %= 1;
+			}
+			return scrolling.finalDelta;
+		}
+
+		/**
+   * Mouse scrolling handler.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function scrollHandler(event) {
+			// Mark event as originating in a Sly instance
+			event.originalEvent[namespace] = self;
+			// Don't hijack global scrolling
+			var time = +new Date();
+			if (lastGlobalWheel + o.scrollHijack > time && $scrollSource[0] !== document && $scrollSource[0] !== window) {
+				lastGlobalWheel = time;
+				return;
+			}
+			// Ignore if there is no scrolling to be done
+			if (!o.scrollBy || pos.start === pos.end) {
+				return;
+			}
+			var delta = normalizeWheelDelta(event.originalEvent);
+			// Trap scrolling only when necessary and/or requested
+			if (o.scrollTrap || delta > 0 && pos.dest < pos.end || delta < 0 && pos.dest > pos.start) {
+				stopDefault(event, 1);
+			}
+			self.slideBy(o.scrollBy * delta);
+		}
+
+		/**
+   * Scrollbar click handler.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function scrollbarHandler(event) {
+			// Only clicks on scroll bar. Ignore the handle.
+			if (o.clickBar && event.target === $sb[0]) {
+				stopDefault(event);
+				// Calculate new handle position and sync SLIDEE to it
+				slideTo(handleToSlidee((o.horizontal ? event.pageX - $sb.offset().left : event.pageY - $sb.offset().top) - handleSize / 2));
+			}
+		}
+
+		/**
+   * Keyboard input handler.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function keyboardHandler(event) {
+			if (!o.keyboardNavBy) {
+				return;
+			}
+
+			switch (event.which) {
+				// Left or Up
+				case o.horizontal ? 37 : 38:
+					stopDefault(event);
+					self[o.keyboardNavBy === 'pages' ? 'prevPage' : 'prev']();
+					break;
+
+				// Right or Down
+				case o.horizontal ? 39 : 40:
+					stopDefault(event);
+					self[o.keyboardNavBy === 'pages' ? 'nextPage' : 'next']();
+					break;
+			}
+		}
+
+		/**
+   * Click on item activation handler.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function activateHandler(event) {
+			/*jshint validthis:true */
+
+			// Ignore clicks on interactive elements.
+			if (isInteractive(this)) {
+				event.originalEvent[namespace + 'ignore'] = true;
+				return;
+			}
+
+			// Ignore events that:
+			// - are not originating from direct SLIDEE children
+			// - originated from interactive elements
+			if (this.parentNode !== $slidee[0] || event.originalEvent[namespace + 'ignore']) return;
+
+			self.activate(this);
+		}
+
+		/**
+   * Click on page button handler.
+   *
+   * @param {Event} event
+   *
+   * @return {Void}
+   */
+		function activatePageHandler() {
+			/*jshint validthis:true */
+			// Accept only events from direct pages bar children.
+			if (this.parentNode === $pb[0]) {
+				self.activatePage($pages.index(this));
+			}
+		}
+
+		/**
+   * Pause on hover handler.
+   *
+   * @param  {Event} event
+   *
+   * @return {Void}
+   */
+		function pauseOnHoverHandler(event) {
+			if (o.pauseOnHover) {
+				self[event.type === 'mouseenter' ? 'pause' : 'resume'](2);
+			}
+		}
+
+		/**
+   * Trigger callbacks for event.
+   *
+   * @param  {String} name Event name.
+   * @param  {Mixed}  argX Arguments passed to callbacks.
+   *
+   * @return {Void}
+   */
+		function trigger(name, arg1) {
+			if (callbacks[name]) {
+				l = callbacks[name].length;
+				// Callbacks will be stored and executed from a temporary array to not
+				// break the execution queue when one of the callbacks unbinds itself.
+				tmpArray.length = 0;
+				for (i = 0; i < l; i++) {
+					tmpArray.push(callbacks[name][i]);
+				}
+				// Execute the callbacks
+				for (i = 0; i < l; i++) {
+					tmpArray[i].call(self, name, arg1);
+				}
+			}
+		}
+
+		/**
+   * Destroys instance and everything it created.
+   *
+   * @return {Void}
+   */
+		self.destroy = function () {
+			// Remove the reference to itself
+			Sly.removeInstance(frame);
+
+			// Unbind all events
+			$scrollSource.add($handle).add($sb).add($pb).add($forwardButton).add($backwardButton).add($prevButton).add($nextButton).add($prevPageButton).add($nextPageButton).off('.' + namespace);
+
+			// Unbinding specifically as to not nuke out other instances
+			$doc.off('keydown', keyboardHandler);
+
+			// Remove classes
+			$prevButton.add($nextButton).add($prevPageButton).add($nextPageButton).removeClass(o.disabledClass);
+
+			if ($items && rel.activeItem != null) {
+				$items.eq(rel.activeItem).removeClass(o.activeClass);
+			}
+
+			// Remove page items
+			$pb.empty();
+
+			if (!parallax) {
+				// Unbind events from frame
+				$frame.off('.' + namespace);
+				// Restore original styles
+				frameStyles.restore();
+				slideeStyles.restore();
+				sbStyles.restore();
+				handleStyles.restore();
+				// Remove the instance from element data storage
+				$.removeData(frame, namespace);
+			}
+
+			// Clean up collections
+			items.length = pages.length = 0;
+			last = {};
+
+			// Reset initialized status and return the instance
+			self.initialized = 0;
+			return self;
+		};
+
+		/**
+   * Initialize.
+   *
+   * @return {Object}
+   */
+		self.init = function () {
+			if (self.initialized) {
+				return;
+			}
+
+			// Disallow multiple instances on the same element
+			if (Sly.getInstance(frame)) throw new Error('There is already a Sly instance on this element');
+
+			// Store the reference to itself
+			Sly.storeInstance(frame, self);
+
+			// Register callbacks map
+			self.on(callbackMap);
+
+			// Save styles
+			var holderProps = ['overflow', 'position'];
+			var movableProps = ['position', 'webkitTransform', 'msTransform', 'transform', 'left', 'top', 'width', 'height'];
+			frameStyles.save.apply(frameStyles, holderProps);
+			sbStyles.save.apply(sbStyles, holderProps);
+			slideeStyles.save.apply(slideeStyles, movableProps);
+			handleStyles.save.apply(handleStyles, movableProps);
+
+			// Set required styles
+			var $movables = $handle;
+			if (!parallax) {
+				$movables = $movables.add($slidee);
+				$frame.css('overflow', 'hidden');
+				if (!transform && $frame.css('position') === 'static') {
+					$frame.css('position', 'relative');
+				}
+			}
+			if (transform) {
+				if (gpuAcceleration) {
+					$movables.css(transform, gpuAcceleration);
+				}
+			} else {
+				if ($sb.css('position') === 'static') {
+					$sb.css('position', 'relative');
+				}
+				$movables.css({ position: 'absolute' });
+			}
+
+			// Navigation buttons
+			if (o.forward) {
+				$forwardButton.on(mouseDownEvent, buttonsHandler);
+			}
+			if (o.backward) {
+				$backwardButton.on(mouseDownEvent, buttonsHandler);
+			}
+			if (o.prev) {
+				$prevButton.on(clickEvent, buttonsHandler);
+			}
+			if (o.next) {
+				$nextButton.on(clickEvent, buttonsHandler);
+			}
+			if (o.prevPage) {
+				$prevPageButton.on(clickEvent, buttonsHandler);
+			}
+			if (o.nextPage) {
+				$nextPageButton.on(clickEvent, buttonsHandler);
+			}
+
+			// Scrolling navigation
+			$scrollSource.on(wheelEvent, scrollHandler);
+
+			// Clicking on scrollbar navigation
+			if ($sb[0]) {
+				$sb.on(clickEvent, scrollbarHandler);
+			}
+
+			// Click on items navigation
+			if (itemNav && o.activateOn) {
+				$frame.on(o.activateOn + '.' + namespace, '*', activateHandler);
+			}
+
+			// Pages navigation
+			if ($pb[0] && o.activatePageOn) {
+				$pb.on(o.activatePageOn + '.' + namespace, '*', activatePageHandler);
+			}
+
+			// Dragging navigation
+			$dragSource.on(dragInitEvents, { source: 'slidee' }, dragInit);
+
+			// Scrollbar dragging navigation
+			if ($handle) {
+				$handle.on(dragInitEvents, { source: 'handle' }, dragInit);
+			}
+
+			// Keyboard navigation
+			$doc.on('keydown', keyboardHandler);
+
+			if (!parallax) {
+				// Pause on hover
+				$frame.on('mouseenter.' + namespace + ' mouseleave.' + namespace, pauseOnHoverHandler);
+				// Reset native FRAME element scroll
+				$frame.on('scroll.' + namespace, resetScroll);
+			}
+
+			// Mark instance as initialized
+			self.initialized = 1;
+
+			// Load
+			load(true);
+
+			// Initiate automatic cycling
+			if (o.cycleBy && !parallax) {
+				self[o.startPaused ? 'pause' : 'resume']();
+			}
+
+			// Return instance
+			return self;
+		};
+	}
+
+	Sly.getInstance = function (element) {
+		return $.data(element, namespace);
+	};
+
+	Sly.storeInstance = function (element, sly) {
+		return $.data(element, namespace, sly);
+	};
+
+	Sly.removeInstance = function (element) {
+		return $.removeData(element, namespace);
+	};
+
+	/**
+  * Return type of the value.
+  *
+  * @param  {Mixed} value
+  *
+  * @return {String}
+  */
+	function type(value) {
+		if (value == null) {
+			return String(value);
+		}
+
+		if (typeof value === 'object' || typeof value === 'function') {
+			return Object.prototype.toString.call(value).match(/\s([a-z]+)/i)[1].toLowerCase() || 'object';
+		}
+
+		return typeof value;
+	}
+
+	/**
+  * Event preventDefault & stopPropagation helper.
+  *
+  * @param {Event} event     Event object.
+  * @param {Bool}  noBubbles Cancel event bubbling.
+  *
+  * @return {Void}
+  */
+	function stopDefault(event, noBubbles) {
+		event.preventDefault();
+		if (noBubbles) {
+			event.stopPropagation();
+		}
+	}
+
+	/**
+  * Disables an event it was triggered on and unbinds itself.
+  *
+  * @param  {Event} event
+  *
+  * @return {Void}
+  */
+	function disableOneEvent(event) {
+		/*jshint validthis:true */
+		stopDefault(event, 1);
+		$(this).off(event.type, disableOneEvent);
+	}
+
+	/**
+  * Resets native element scroll values to 0.
+  *
+  * @return {Void}
+  */
+	function resetScroll() {
+		/*jshint validthis:true */
+		this.scrollLeft = 0;
+		this.scrollTop = 0;
+	}
+
+	/**
+  * Check if variable is a number.
+  *
+  * @param {Mixed} value
+  *
+  * @return {Boolean}
+  */
+	function isNumber(value) {
+		return !isNaN(parseFloat(value)) && isFinite(value);
+	}
+
+	/**
+  * Parse style to pixels.
+  *
+  * @param {Object}   $item    jQuery object with element.
+  * @param {Property} property CSS property to get the pixels from.
+  *
+  * @return {Int}
+  */
+	function getPx($item, property) {
+		return 0 | round(String($item.css(property)).replace(/[^\-0-9.]/g, ''));
+	}
+
+	/**
+  * Make sure that number is within the limits.
+  *
+  * @param {Number} number
+  * @param {Number} min
+  * @param {Number} max
+  *
+  * @return {Number}
+  */
+	function within(number, min, max) {
+		return number < min ? min : number > max ? max : number;
+	}
+
+	/**
+  * Saves element styles for later restoration.
+  *
+  * Example:
+  *   var styles = new StyleRestorer(frame);
+  *   styles.save('position');
+  *   element.style.position = 'absolute';
+  *   styles.restore(); // restores to state before the assignment above
+  *
+  * @param {Element} element
+  */
+	function StyleRestorer(element) {
+		var self = {};
+		self.style = {};
+		self.save = function () {
+			if (!element || !element.nodeType) return;
+			for (var i = 0; i < arguments.length; i++) {
+				self.style[arguments[i]] = element.style[arguments[i]];
+			}
+			return self;
+		};
+		self.restore = function () {
+			if (!element || !element.nodeType) return;
+			for (var prop in self.style) {
+				if (self.style.hasOwnProperty(prop)) element.style[prop] = self.style[prop];
+			}
+			return self;
+		};
+		return self;
+	}
+
+	// Local WindowAnimationTiming interface polyfill
+	(function (w) {
+		rAF = w.requestAnimationFrame || w.webkitRequestAnimationFrame || fallback;
+
+		/**
+  * Fallback implementation.
+  */
+		var prev = new Date().getTime();
+		function fallback(fn) {
+			var curr = new Date().getTime();
+			var ms = Math.max(0, 16 - (curr - prev));
+			var req = setTimeout(fn, ms);
+			prev = curr;
+			return req;
+		}
+
+		/**
+  * Cancel.
+  */
+		var cancel = w.cancelAnimationFrame || w.webkitCancelAnimationFrame || w.clearTimeout;
+
+		cAF = function (id) {
+			cancel.call(w, id);
+		};
+	})(window);
+
+	// Feature detects
+	(function () {
+		var prefixes = ['', 'Webkit', 'Moz', 'ms', 'O'];
+		var el = document.createElement('div');
+
+		function testProp(prop) {
+			for (var p = 0, pl = prefixes.length; p < pl; p++) {
+				var prefixedProp = prefixes[p] ? prefixes[p] + prop.charAt(0).toUpperCase() + prop.slice(1) : prop;
+				if (el.style[prefixedProp] != null) {
+					return prefixedProp;
+				}
+			}
+		}
+
+		// Global support indicators
+		transform = testProp('transform');
+		gpuAcceleration = testProp('perspective') ? 'translateZ(0) ' : '';
+	})();
+
+	// Expose class globally
+	w[className] = Sly;
+
+	// jQuery proxy
+	$.fn[pluginName] = function (options, callbackMap) {
+		var method, methodArgs;
+
+		// Attributes logic
+		if (!$.isPlainObject(options)) {
+			if (type(options) === 'string' || options === false) {
+				method = options === false ? 'destroy' : options;
+				methodArgs = Array.prototype.slice.call(arguments, 1);
+			}
+			options = {};
+		}
+
+		// Apply to all elements
+		return this.each(function (i, element) {
+			// Call with prevention against multiple instantiations
+			var plugin = Sly.getInstance(element);
+
+			if (!plugin && !method) {
+				// Create a new object if it doesn't exist yet
+				plugin = new Sly(element, options, callbackMap).init();
+			} else if (plugin && method) {
+				// Call method
+				if (plugin[method]) {
+					plugin[method].apply(plugin, methodArgs);
+				}
+			}
+		});
+	};
+
+	// Default options
+	Sly.defaults = {
+		slidee: null, // Selector, DOM element, or jQuery object with DOM element representing SLIDEE.
+		horizontal: false, // Switch to horizontal mode.
+
+		// Item based navigation
+		itemNav: null, // Item navigation type. Can be: 'basic', 'centered', 'forceCentered'.
+		itemSelector: null, // Select only items that match this selector.
+		smart: false, // Repositions the activated item to help with further navigation.
+		activateOn: null, // Activate an item on this event. Can be: 'click', 'mouseenter', ...
+		activateMiddle: false, // Always activate the item in the middle of the FRAME. forceCentered only.
+
+		// Scrolling
+		scrollSource: null, // Element for catching the mouse wheel scrolling. Default is FRAME.
+		scrollBy: 0, // Pixels or items to move per one mouse scroll. 0 to disable scrolling.
+		scrollHijack: 300, // Milliseconds since last wheel event after which it is acceptable to hijack global scroll.
+		scrollTrap: false, // Don't bubble scrolling when hitting scrolling limits.
+
+		// Dragging
+		dragSource: null, // Selector or DOM element for catching dragging events. Default is FRAME.
+		mouseDragging: false, // Enable navigation by dragging the SLIDEE with mouse cursor.
+		touchDragging: false, // Enable navigation by dragging the SLIDEE with touch events.
+		releaseSwing: false, // Ease out on dragging swing release.
+		swingSpeed: 0.2, // Swing synchronization speed, where: 1 = instant, 0 = infinite.
+		elasticBounds: false, // Stretch SLIDEE position limits when dragging past FRAME boundaries.
+		dragThreshold: 3, // Distance in pixels before Sly recognizes dragging.
+		interactive: null, // Selector for special interactive elements.
+
+		// Scrollbar
+		scrollBar: null, // Selector or DOM element for scrollbar container.
+		dragHandle: false, // Whether the scrollbar handle should be draggable.
+		dynamicHandle: false, // Scrollbar handle represents the ratio between hidden and visible content.
+		minHandleSize: 50, // Minimal height or width (depends on sly direction) of a handle in pixels.
+		clickBar: false, // Enable navigation by clicking on scrollbar.
+		syncSpeed: 0.5, // Handle => SLIDEE synchronization speed, where: 1 = instant, 0 = infinite.
+
+		// Pagesbar
+		pagesBar: null, // Selector or DOM element for pages bar container.
+		activatePageOn: null, // Event used to activate page. Can be: click, mouseenter, ...
+		pageBuilder: // Page item generator.
+		function (index) {
+			return '<li>' + (index + 1) + '</li>';
+		},
+
+		// Navigation buttons
+		forward: null, // Selector or DOM element for "forward movement" button.
+		backward: null, // Selector or DOM element for "backward movement" button.
+		prev: null, // Selector or DOM element for "previous item" button.
+		next: null, // Selector or DOM element for "next item" button.
+		prevPage: null, // Selector or DOM element for "previous page" button.
+		nextPage: null, // Selector or DOM element for "next page" button.
+
+		// Automated cycling
+		cycleBy: null, // Enable automatic cycling by 'items' or 'pages'.
+		cycleInterval: 5000, // Delay between cycles in milliseconds.
+		pauseOnHover: false, // Pause cycling when mouse hovers over the FRAME.
+		startPaused: false, // Whether to start in paused sate.
+
+		// Mixed options
+		moveBy: 300, // Speed in pixels per second used by forward and backward buttons.
+		speed: 0, // Animations speed in milliseconds. 0 to disable animations.
+		easing: 'swing', // Easing for duration based (tweening) animations.
+		startAt: null, // Starting offset in pixels or items.
+		keyboardNavBy: null, // Enable keyboard navigation by 'items' or 'pages'.
+
+		// Classes
+		draggedClass: 'dragged', // Class for dragged elements (like SLIDEE or scrollbar handle).
+		activeClass: 'active', // Class for active items and pages.
+		disabledClass: 'disabled' // Class for disabled navigation elements.
+	};
+})(jQuery, window);
 ;/**
  * Trumbowyg v2.1.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
@@ -2926,12 +6905,25 @@ jQuery.trumbowyg = {
         }
     };
 })(navigator, window, document, jQuery);
-;jQuery(document).ready(function ($) {
+;
+// This module will be loaded in the context of jQuery
+// Exact namespace: $/jQuery.themeOptions
 
-    // JS class wrapper for module [theme_options]
-    var App = function () {
+// MODULE CODE BLOCK
+;(function (module, jQuery, document, undefined) {
+    "use strict";
 
-        // Components
+    // App class - wrapper for module functionality
+
+    var App = module.App = module.App || function () {
+
+        // Enable jQuery through the variable $
+        var $ = jQuery;
+
+        // Set variable for the slider
+        var sly = null;
+
+        // Private: Components
         var components = {
 
             // component [any] - executed on any page
@@ -2942,7 +6934,7 @@ jQuery.trumbowyg = {
                     e.preventDefault();
 
                     // submit view form
-                    $('.view-form').submit();
+                    $('.button-submit-hidden').click();
                 });
             },
 
@@ -2958,7 +6950,113 @@ jQuery.trumbowyg = {
             }
         };
 
-        // Widgets
+        // Private: Metafields
+        var metafields = {
+            any: function () {},
+            gallery: function () {
+                var toggleImageControls = function () {
+
+                    // Toggle image controls
+                    $('.gallery-image-wrapper, .view-image-upload-box').hover(function () {
+                        // show controls
+                        $(this).find('.gallery-image-controls').fadeIn(300);
+                    }, function () {
+                        // hide controls
+                        $(this).find('.gallery-image-controls').fadeOut(300);
+                    });
+                };
+
+                var enableMagnification = function () {
+                    // initialize image magnification
+                    $('.view-metafield[data-view-metafield=gallery] .gallery-image-wrapper').magnificPopup({
+                        delegate: '.gallery-image-link',
+                        tLoading: 'Loading image #%curr%...',
+                        type: 'image',
+                        gallery: {
+                            enabled: true
+                        }
+                    });
+                };
+
+                var enableSlider = function () {
+                    // Call Sly on frame
+                    sly = new Sly('.gallery-frame', {
+                        horizontal: 1,
+                        itemNav: 'basic',
+                        smart: 1,
+                        activateOn: 'click',
+                        mouseDragging: 1,
+                        touchDragging: 1,
+                        releaseSwing: 1,
+                        startAt: 0,
+                        scrollBy: 0,
+                        speed: 300,
+                        elasticBounds: 1,
+                        dragHandle: 1,
+                        dynamicHandle: 1,
+                        clickBar: 1
+                    }, function () {}).init();
+
+                    increaseSliderWidth();
+                };
+
+                var increaseSliderWidth = function () {
+                    // this function fixes a defect with the slider width
+
+                    // Get slider
+                    var $frame = $('.gallery-frame');
+
+                    // increase slider width
+                    var sliderWidth = $frame.find('ul').width();
+
+                    // Set offset for the slider width
+                    var offset = 10;
+
+                    // Update slider width
+                    sliderWidth += offset;
+
+                    // Update slider
+                    $frame.find('ul').css({ width: sliderWidth + 'px' });
+                };
+
+                $('.button-remove-gallery-image').on('click', function (e) {
+                    e.preventDefault();
+                    sly.reload();
+                    increaseSliderWidth();
+                });
+
+                setTimeout(function () {
+                    // enable slider after 100 milliseconds
+
+                    try {
+                        enableSlider();
+                    } catch (e) {
+                        $('.gallery-frame').sly(false);
+                        enableSlider();
+                    }
+                }, 100);
+
+                // toggle image controls
+                toggleImageControls();
+
+                // enable magnification
+                enableMagnification();
+            },
+            image_upload: function () {
+
+                var enableMagnification = function () {
+                    // initialize image magnification
+                    $('.view-metafield[data-view-metafield=image_upload] .gallery-image-link').magnificPopup({
+                        type: 'image'
+                    });
+                };
+
+                // enable magnification
+                enableMagnification();
+            }
+        };
+
+        // Private: Widgets
         var widgets = {
 
             // widget [any] - executed on any page
@@ -2967,12 +7065,18 @@ jQuery.trumbowyg = {
             // widget [activity]
             activity: function () {
                 var chartDataPosts = $('.widget-activity-posts-pie-chart').data('chart-data');
+                var chartDataVideos = $('.widget-activity-videos-pie-chart').data('chart-data');
                 var chartDataPages = $('.widget-activity-pages-pie-chart').data('chart-data');
 
                 var publishPosts = parseInt(chartDataPosts.publish);
                 var draftPosts = parseInt(chartDataPosts.draft);
                 var trashPosts = parseInt(chartDataPosts.trash);
                 var totalPosts = publishPosts + draftPosts + trashPosts;
+
+                var publishVideos = parseInt(chartDataVideos.publish);
+                var draftVideos = parseInt(chartDataVideos.draft);
+                var trashVideos = parseInt(chartDataVideos.trash);
+                var totalVideos = publishVideos + draftVideos + trashVideos;
 
                 var publishPages = parseInt(chartDataPages.publish);
                 var draftPages = parseInt(chartDataPages.draft);
@@ -2983,44 +7087,123 @@ jQuery.trumbowyg = {
                 var draftPostsPercentage = 100 * draftPosts / totalPosts;
                 var trashPostsPercentage = 100 * trashPosts / totalPosts;
 
+                var publishVideosPercentage = 100 * publishVideos / totalVideos;
+                var draftVideosPercentage = 100 * draftVideos / totalVideos;
+                var trashVideosPercentage = 100 * trashVideos / totalVideos;
+
                 var publishPagesPercentage = 100 * publishPages / totalPages;
                 var draftPagesPercentage = 100 * draftPages / totalPages;
                 var trashPagesPercentage = 100 * trashPages / totalPages;
 
+                // Posts data
                 var dataPosts = {
-                    labels: [publishPostsPercentage.toFixed(2) + '%', draftPostsPercentage.toFixed(2) + '%', trashPostsPercentage.toFixed(2) + '%'],
-                    series: [{
+                    labels: [],
+                    series: []
+                };
+
+                if (publishPosts > 0) {
+                    dataPosts.labels.push(publishPostsPercentage.toFixed(2) + '%');
+
+                    dataPosts.series.push({
                         value: publishPosts,
                         className: 'chart-publish-posts'
-                    }, {
+                    });
+                }
+
+                if (draftPosts > 0) {
+                    dataPosts.labels.push(draftPostsPercentage.toFixed(2) + '%');
+
+                    dataPosts.series.push({
                         value: draftPosts,
                         className: 'chart-draft-posts'
-                    }, {
+                    });
+                }
+
+                if (trashPosts > 0) {
+                    dataPosts.labels.push(trashPostsPercentage.toFixed(2) + '%');
+
+                    dataPosts.series.push({
                         value: trashPosts,
                         className: 'chart-trash-posts'
-                    }]
+                    });
+                }
+
+                // Videos data
+                var dataVideos = {
+                    labels: [],
+                    series: []
                 };
 
+                if (publishVideos > 0) {
+                    dataVideos.labels.push(publishVideosPercentage.toFixed(2) + '%');
+                    dataVideos.series.push({
+                        value: publishVideos,
+                        className: 'chart-publish-posts'
+                    });
+                }
+
+                if (draftVideos > 0) {
+                    dataVideos.labels.push(draftVideosPercentage.toFixed(2) + '%');
+
+                    dataVideos.series.push({
+                        value: draftVideos,
+                        className: 'chart-draft-posts'
+                    });
+                }
+
+                if (trashVideos > 0) {
+                    dataVideos.labels.push(trashVideosPercentage.toFixed(2) + '%');
+
+                    dataVideos.series.push({
+                        value: trashVideos,
+                        className: 'chart-trash-posts'
+                    });
+                }
+
+                // Pages data
                 var dataPages = {
-                    labels: [publishPagesPercentage.toFixed(2) + '%', draftPagesPercentage.toFixed(2) + '%', trashPagesPercentage.toFixed(2) + '%'],
-                    series: [{
+                    labels: [],
+                    series: []
+                };
+
+                if (publishPages > 0) {
+                    dataPages.labels.push(publishPagesPercentage.toFixed(2) + '%');
+
+                    dataPages.series.push({
                         value: publishPages,
                         className: 'chart-publish-posts'
-                    }, {
+                    });
+                }
+
+                if (draftPages > 0) {
+                    dataPages.labels.push(draftPagesPercentage.toFixed(2) + '%');
+
+                    dataPages.series.push({
                         value: draftPages,
                         className: 'chart-draft-posts'
-                    }, {
+                    });
+                }
+
+                if (trashPages > 0) {
+                    dataPages.labels.push(trashPagesPercentage.toFixed(2) + '%');
+
+                    dataPages.series.push({
                         value: trashPages,
                         className: 'chart-trash-posts'
-                    }]
-                };
+                    });
+                }
 
                 new Chartist.Pie('.widget-activity-posts-pie-chart', dataPosts, {});
+                new Chartist.Pie('.widget-activity-videos-pie-chart', dataVideos, {});
                 new Chartist.Pie('.widget-activity-pages-pie-chart', dataPages, {});
+            },
+            statistics: function () {},
+            plugins: function () {
+                console.log('Widget [plugins] initialized!');
             }
         };
 
-        // Call active components
+        // Private: Call active components
         var call = function (type) {
 
             // set selector
@@ -3030,7 +7213,19 @@ jQuery.trumbowyg = {
             var $components = $('.' + selector);
 
             // get collection
-            var collection = type === 'component' ? components : widgets;
+            var collection = components;
+
+            switch (type) {
+                case 'component':
+                    collection = components;
+                    break;
+                case 'widget':
+                    collection = widgets;
+                    break;
+                case 'metafield':
+                    collection = metafields;
+                    break;
+            }
 
             // execute any
             collection.any();
@@ -3046,28 +7241,57 @@ jQuery.trumbowyg = {
 
                     // execute component
                     collection[component]();
-                } else {
-
-                    // throw not found warning
-                    console.warn("Warning! " + type + " [" + component + "] not found. Make sure to define the component first.");
                 }
+                /* DEV: Uncomment to test which components are getting loaded successfully.
+                 else {
+                   // throw not found warning
+                 console.warn("Warning! " + type + " [" + component + "] not found. Make sure to define the component first.");
+                 }
+                 */
             }
         };
 
-        // Initialize
+        // Public: Initialize
         var init = function () {
 
             call('component');
             call('widget');
+            call('metafield');
+        };
+
+        // Public: Start
+        var start = function (collection, component) {
+
+            switch (collection) {
+                case 'component':
+                    if (components.hasOwnProperty(component)) {
+                        components[component]();
+                    }
+                    break;
+                case 'widget':
+                    if (widgets.hasOwnProperty(component)) {
+                        widgets[component]();
+                    }
+                    break;
+                case 'metafield':
+                    if (metafields.hasOwnProperty(component)) {
+                        metafields[component]();
+                    }
+                    break;
+            }
         };
 
         // Return public API
         return {
-            init: init
+            init: init,
+            start: start
         };
-    };
+    }();
+})(jQuery.themeOptions = jQuery.themeOptions || {}, jQuery, document);
 
-    // Initialize application
-    var app = new App();
-    app.init();
+// INITIALIZE CODE BLOCK
+jQuery(document).ready(function ($) {
+
+    // Initialize module [themeOptions]
+    $.themeOptions.App.init();
 });

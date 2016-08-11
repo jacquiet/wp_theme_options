@@ -7,6 +7,7 @@ class Controller {
 
 
     // $param int $view_id
+    // @return string $view
     public function getViewById($view_id) {
         global $module;
 
@@ -25,10 +26,8 @@ class Controller {
     }
 
 
+    // @return string $view
     public function getCurrentView() {
-
-        // Instantiate controller
-        $controller = new Controller();
 
         // Instantiate helper
         $helper = new Helper();
@@ -37,7 +36,7 @@ class Controller {
         $page_index = $helper->getPageIndex();
 
         // Get view
-        $view = $controller->getViewById($page_index);
+        $view = $this->getViewById($page_index);
 
         return $view;
     }

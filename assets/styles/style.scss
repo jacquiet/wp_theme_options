@@ -4,6 +4,9 @@
 
 @import 'settings/settings.scss';
 @import 'components/bootstrap.scss';
+@import 'components/icons-material-design.scss';
+@import 'components/icons-font-awesome.scss';
+@import 'components/fonts.scss';
 @import 'components/mixins.scss';
 @import 'components/effects.scss';
 @import 'components/helpers.scss';
@@ -15,4 +18,5 @@
 @import 'components/general.scss';
 @import 'components/header.scss';
 @import 'components/footer.scss';
+@import 'components/magnific-popup.scss';
 @import 'views/views.scss';

@@ -1,10 +1,10 @@
 <?php
-// Template component: pages
+// Page: pages
 // Displays the pages page
 ?>
 
 <?php
-// Component settings
+// Page settings
 
 // Get Controller
 $controller = new Controller();
@@ -26,8 +26,20 @@ $controller = new Controller();
 
         <div class="col-xs-12 col-sm-6 col-md-4 col-full">
 
-            <!-- load widget [statistics] -->
-            <?php $controller->loadWidget('statistics'); ?>
+            <div class="row row-full">
+                <div class="col-sm-12 col-full">
+
+                    <!-- load widget [statistics] -->
+                    <?php $controller->loadWidget('statistics'); ?>
+
+                </div>
+                <div class="col-sm-12 col-full">
+
+                    <!-- load widget [plugins] -->
+                    <?php $controller->loadWidget('plugins'); ?>
+
+                </div>
+            </div>
 
         </div>
     </div>

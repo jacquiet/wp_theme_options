@@ -1,10 +1,10 @@
 <?php
-// Template component: Settings
+// Page: Settings
 // Displays the settings page
 ?>
 
 <?php
-// Component settings
+// Page settings
 
 // Get module options
 global $sa_options;
@@ -136,8 +136,8 @@ $settings = get_option('sa_options', $sa_options);
 
                     <!-- title -->
                     <div class="view-block-title">
-                        <p class="block-title"><?php echo __('Social links') ?></p>
-                        <p class="block-subtitle"><?php echo __('These links appear in the website\'s footer.'); ?></p>
+                        <p class="block-title"><?php echo __('Galleries') ?></p>
+                        <p class="block-subtitle"><?php echo __('These galleries appear throughout the website.'); ?></p>
                     </div>
                     <!-- /title -->
 
@@ -145,61 +145,23 @@ $settings = get_option('sa_options', $sa_options);
                     <div class="view-block-content">
 
                         <?php
-                        // Create metabox [social_link_facebook]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'social_link_facebook',
-                            'title'         => 'Facebook',
-                            'description'   => __('The URL, leading to your Facebook page'),
-                            'required'      => false
+
+                        // Create metabox [gallery]
+                        $metabox->createField('gallery', array(
+                            'name'          => 'gallery_2',
+                            'title'         => 'Gallery',
+                            'description'   => __('Upload images here'),
+                            'required'      => true
                         ));
 
-                        // Create metabox [social_link_twitter]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'social_link_twitter',
-                            'title'         => 'Twitter',
-                            'description'   => __('The URL, leading to your Twitter page'),
-                            'required'      => false
+                        // Create metabox [image upload]
+                        $metabox->createField('image_upload', array(
+                            'name'          => 'img_upload_1',
+                            'title'         => 'Image upload',
+                            'description'   => __('Upload an image here'),
+                            'required'      => true
                         ));
 
-                        // Create metabox [social_link_linkedin]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'social_link_linkedin',
-                            'title'         => 'LinkedIn',
-                            'description'   => __('The URL, leading to your LinkedIn page'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [social_link_youtube]
-                        $metabox->createField('input_text', array(
-                            'name'          => 'social_link_youtube',
-                            'title'         => 'Youtube',
-                            'description'   => __('The URL, leading to your Youtube page'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [checkbox]
-                        $metabox->createField('input_checkbox', array(
-                            'name'          => 'page_id_4',
-                            'title'         => 'Checkbox',
-                            'description'   => __('Check this to enable something'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [checkbox]
-                        $metabox->createField('input_checkbox', array(
-                            'name'          => 'page_id_5',
-                            'title'         => 'Checkbox',
-                            'description'   => __('Check this to enable something'),
-                            'required'      => false
-                        ));
-
-                        // Create metabox [checkbox]
-                        $metabox->createField('input_checkbox', array(
-                            'name'          => 'page_id_6',
-                            'title'         => 'Checkbox',
-                            'description'   => __('Check this to enable something'),
-                            'required'      => false
-                        ));
                         ?>
 
                     </div>
@@ -229,7 +191,16 @@ $settings = get_option('sa_options', $sa_options);
                         // Create metabox [videos_dropdown]
                         $metabox->createField('dropdown_single', array(
                             'name'          => 'videos_dropdown',
-                            'title'         => 'Videos',
+                            'title'         => 'Dropdown single - Videos',
+                            'description'   => __('Please choose one of the videos'),
+                            'required'      => false,
+                            'data'          => $videos
+                        ));
+
+                        // Create metabox [dropdown_multiselect]
+                        $metabox->createField('dropdown_multiple', array(
+                            'name'          => 'multi_dropdown_1',
+                            'title'         => 'Dropdown multiple - Videos',
                             'description'   => __('Please choose one of the videos'),
                             'required'      => false,
                             'data'          => $videos
@@ -238,7 +209,7 @@ $settings = get_option('sa_options', $sa_options);
                         // Create metabox [templates_dropdown]
                         $metabox->createField('dropdown_single', array(
                             'name'          => 'templates_dropdown',
-                            'title'         => 'Templates',
+                            'title'         => 'Dropdown single - Templates',
                             'description'   => __('Please choose one of the templates'),
                             'required'      => false,
                             'data'          => $templates
@@ -260,13 +231,14 @@ $settings = get_option('sa_options', $sa_options);
                             'required'      => true
                         ));
 
-                        // Create metabox [file upload]
-                        $metabox->createField('input_image_upload', array(
-                            'name'          => 'img_upload_1',
-                            'title'         => 'Image upload',
-                            'description'   => __('Upload an image here'),
+                        // Create metabox [file_upload]
+                        $metabox->createField('file_upload', array(
+                            'name'          => 'file_upload_1',
+                            'title'         => 'File upload',
+                            'description'   => __('Upload a file here'),
                             'required'      => true
                         ));
+
                         ?>
 
                     </div>
@@ -278,6 +250,9 @@ $settings = get_option('sa_options', $sa_options);
             </div>
         </div>
 
+        <!-- REQUIRED: button-submit-hidden -->
+        <!-- This hidden button is triggered via JS, without it the form validation doesn't work -->
+        <input type="submit" class="button-submit-hidden"/>
     </form>
     <!-- /form -->
 

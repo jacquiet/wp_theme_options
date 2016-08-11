@@ -1,9 +1,22 @@
-jQuery(document).ready(function($) {
 
-    // JS class wrapper for module [theme_options]
-    var App = function() {
+// This module will be loaded in the context of jQuery
+// Exact namespace: $/jQuery.themeOptions
 
-        // Components
+// MODULE CODE BLOCK
+; (function( module, jQuery, document, undefined ) {
+    "use strict";
+
+    // App class - wrapper for module functionality
+    var App = module.App = module.App || (function() {
+
+        // Enable jQuery through the variable $
+        var $ = jQuery;
+
+        // Set variable for the slider
+        var sly = null;
+
+
+        // Private: Components
         var components = {
 
             // component [any] - executed on any page
@@ -14,7 +27,7 @@ jQuery(document).ready(function($) {
                     e.preventDefault();
 
                     // submit view form
-                    $('.view-form').submit();
+                    $('.button-submit-hidden').click();
                 });
             },
 
@@ -27,11 +40,119 @@ jQuery(document).ready(function($) {
                     // go to destination
                     window.location.href = $(this).find('a').attr('href');
                 });
-            },
+            }
         };
 
 
-        // Widgets
+        // Private: Metafields
+        var metafields = {
+            any: function() {},
+            gallery: function() {
+                var toggleImageControls = function() {
+
+                    // Toggle image controls
+                    $('.gallery-image-wrapper, .view-image-upload-box').hover(function() {
+                        // show controls
+                        $(this).find('.gallery-image-controls').fadeIn(300);
+                    }, function() {
+                        // hide controls
+                        $(this).find('.gallery-image-controls').fadeOut(300);
+                    });
+                };
+
+                var enableMagnification = function() {
+                    // initialize image magnification
+                    $('.view-metafield[data-view-metafield=gallery] .gallery-image-wrapper').magnificPopup({
+                        delegate: '.gallery-image-link',
+                        tLoading: 'Loading image #%curr%...',
+                        type: 'image',
+                        gallery: {
+                            enabled: true
+                        }
+                    });
+                };
+
+                var enableSlider = function() {
+                    // Call Sly on frame
+                    sly = new Sly('.gallery-frame', {
+                        horizontal: 1,
+                        itemNav: 'basic',
+                        smart: 1,
+                        activateOn: 'click',
+                        mouseDragging: 1,
+                        touchDragging: 1,
+                        releaseSwing: 1,
+                        startAt: 0,
+                        scrollBy: 0,
+                        speed: 300,
+                        elasticBounds: 1,
+                        dragHandle: 1,
+                        dynamicHandle: 1,
+                        clickBar: 1
+                    }, function() {}).init();
+
+                    increaseSliderWidth();
+                };
+
+                var increaseSliderWidth = function() {
+                    // this function fixes a defect with the slider width
+
+                    // Get slider
+                    var $frame = $('.gallery-frame');
+
+                    // increase slider width
+                    var sliderWidth = $frame.find('ul').width();
+
+                    // Set offset for the slider width
+                    var offset = 10;
+
+                    // Update slider width
+                    sliderWidth += offset;
+
+                    // Update slider
+                    $frame.find('ul').css({width: sliderWidth + 'px'});
+                };
+
+                $('.button-remove-gallery-image').on('click', function(e) {
+                    e.preventDefault();
+                    sly.reload();
+                    increaseSliderWidth();
+                });
+
+                setTimeout(function() {
+                    // enable slider after 100 milliseconds
+
+                    try {
+                        enableSlider();
+                    } catch(e) {
+                        $('.gallery-frame').sly(false);
+                        enableSlider();
+                    }
+
+                }, 100);
+
+                // toggle image controls
+                toggleImageControls();
+
+                // enable magnification
+                enableMagnification();
+            },
+            image_upload: function() {
+
+                var enableMagnification = function() {
+                    // initialize image magnification
+                    $('.view-metafield[data-view-metafield=image_upload] .gallery-image-link').magnificPopup({
+                        type: 'image'
+                    });
+                };
+
+                // enable magnification
+                enableMagnification();
+            }
+        };
+
+
+        // Private: Widgets
         var widgets = {
 
             // widget [any] - executed on any page
@@ -42,12 +163,18 @@ jQuery(document).ready(function($) {
             // widget [activity]
             activity: function() {
                 var chartDataPosts = $('.widget-activity-posts-pie-chart').data('chart-data');
+                var chartDataVideos = $('.widget-activity-videos-pie-chart').data('chart-data');
                 var chartDataPages = $('.widget-activity-pages-pie-chart').data('chart-data');
 
                 var publishPosts = parseInt(chartDataPosts.publish);
                 var draftPosts = parseInt(chartDataPosts.draft);
                 var trashPosts = parseInt(chartDataPosts.trash);
                 var totalPosts = publishPosts + draftPosts + trashPosts;
+
+                var publishVideos = parseInt(chartDataVideos.publish);
+                var draftVideos = parseInt(chartDataVideos.draft);
+                var trashVideos = parseInt(chartDataVideos.trash);
+                var totalVideos = publishVideos + draftVideos + trashVideos;
 
                 var publishPages = parseInt(chartDataPages.publish);
                 var draftPages = parseInt(chartDataPages.draft);
@@ -58,53 +185,127 @@ jQuery(document).ready(function($) {
                 var draftPostsPercentage = (100 * draftPosts) / totalPosts;
                 var trashPostsPercentage = (100 * trashPosts) / totalPosts;
 
+                var publishVideosPercentage = (100 * publishVideos) / totalVideos;
+                var draftVideosPercentage = (100 * draftVideos) / totalVideos;
+                var trashVideosPercentage = (100 * trashVideos) / totalVideos;
+
                 var publishPagesPercentage = (100 * publishPages) / totalPages;
                 var draftPagesPercentage = (100 * draftPages) / totalPages;
                 var trashPagesPercentage = (100 * trashPages) / totalPages;
 
+                // Posts data
                 var dataPosts = {
-                    labels: [publishPostsPercentage.toFixed(2)+'%', draftPostsPercentage.toFixed(2)+'%', trashPostsPercentage.toFixed(2)+'%'],
-                        series: [
-                        {
-                            value: publishPosts,
-                            className: 'chart-publish-posts'
-                        },
-                        {
-                            value: draftPosts,
-                            className: 'chart-draft-posts'
-                        },
-                        {
-                            value: trashPosts,
-                            className: 'chart-trash-posts'
-                        }
-                    ]
+                    labels: [],
+                    series: []
                 };
 
-                var dataPages = {
-                    labels: [publishPagesPercentage.toFixed(2)+'%', draftPagesPercentage.toFixed(2)+'%', trashPagesPercentage.toFixed(2)+'%'],
-                    series: [
-                        {
-                            value: publishPages,
-                            className: 'chart-publish-posts'
-                        },
-                        {
-                            value: draftPages,
-                            className: 'chart-draft-posts'
-                        },
-                        {
-                            value: trashPages,
-                            className: 'chart-trash-posts'
-                        }
-                    ]
+                if ( publishPosts > 0 ) {
+                    dataPosts.labels.push(publishPostsPercentage.toFixed(2)+'%');
+
+                    dataPosts.series.push({
+                        value: publishPosts,
+                        className: 'chart-publish-posts'
+                    });
+                }
+
+                if ( draftPosts > 0 ) {
+                    dataPosts.labels.push(draftPostsPercentage.toFixed(2)+'%');
+
+                    dataPosts.series.push({
+                        value: draftPosts,
+                        className: 'chart-draft-posts'
+                    });
+                }
+
+                if ( trashPosts > 0 ) {
+                    dataPosts.labels.push(trashPostsPercentage.toFixed(2)+'%');
+
+                    dataPosts.series.push({
+                        value: trashPosts,
+                        className: 'chart-trash-posts'
+                    });
+                }
+
+                // Videos data
+                var dataVideos = {
+                    labels: [],
+                    series: []
                 };
+
+                if ( publishVideos > 0 ) {
+                    dataVideos.labels.push(publishVideosPercentage.toFixed(2)+'%');
+                    dataVideos.series.push({
+                        value: publishVideos,
+                        className: 'chart-publish-posts'
+                    });
+                }
+
+                if ( draftVideos > 0 ) {
+                    dataVideos.labels.push(draftVideosPercentage.toFixed(2)+'%');
+
+                    dataVideos.series.push({
+                        value: draftVideos,
+                        className: 'chart-draft-posts'
+                    });
+                }
+
+                if ( trashVideos > 0 ) {
+                    dataVideos.labels.push(trashVideosPercentage.toFixed(2)+'%');
+
+                    dataVideos.series.push({
+                        value: trashVideos,
+                        className: 'chart-trash-posts'
+                    });
+                }
+
+
+                // Pages data
+                var dataPages = {
+                    labels: [],
+                    series: []
+                };
+
+                if ( publishPages > 0 ) {
+                    dataPages.labels.push(publishPagesPercentage.toFixed(2)+'%');
+
+                    dataPages.series.push({
+                        value: publishPages,
+                        className: 'chart-publish-posts'
+                    });
+                }
+
+                if ( draftPages > 0 ) {
+                    dataPages.labels.push(draftPagesPercentage.toFixed(2)+'%');
+
+                    dataPages.series.push({
+                        value: draftPages,
+                        className: 'chart-draft-posts'
+                    });
+                }
+
+                if ( trashPages > 0 ) {
+                    dataPages.labels.push(trashPagesPercentage.toFixed(2)+'%');
+
+                    dataPages.series.push({
+                        value: trashPages,
+                        className: 'chart-trash-posts'
+                    });
+                }
 
                 new Chartist.Pie('.widget-activity-posts-pie-chart', dataPosts, {});
+                new Chartist.Pie('.widget-activity-videos-pie-chart', dataVideos, {});
                 new Chartist.Pie('.widget-activity-pages-pie-chart', dataPages, {});
+            },
+            statistics: function() {
+
+            },
+            plugins: function() {
+                console.log('Widget [plugins] initialized!');
             }
         };
 
 
-        // Call active components
+        // Private: Call active components
         var call = function(type) {
 
             // set selector
@@ -114,7 +315,19 @@ jQuery(document).ready(function($) {
             var $components = $('.' + selector);
 
             // get collection
-            var collection  = type === 'component' ? components : widgets;
+            var collection  = components;
+
+            switch (type) {
+                case 'component':
+                    collection = components;
+                    break;
+                case 'widget':
+                    collection = widgets;
+                    break;
+                case 'metafield':
+                    collection = metafields;
+                    break;
+            }
 
             // execute any
             collection.any();
@@ -130,34 +343,66 @@ jQuery(document).ready(function($) {
 
                     // execute component
                     collection[component]();
-                } else {
-
-                    // throw not found warning
-                    console.warn("Warning! " + type + " [" + component + "] not found. Make sure to define the component first.");
                 }
+                /* DEV: Uncomment to test which components are getting loaded successfully.
+                 else {
+
+                 // throw not found warning
+                 console.warn("Warning! " + type + " [" + component + "] not found. Make sure to define the component first.");
+                 }
+                 */
             }
 
         };
 
 
-        // Initialize
+        // Public: Initialize
         var init = function() {
 
             call('component');
             call('widget');
+            call('metafield');
+        };
+
+
+        // Public: Start
+        var start = function(collection, component) {
+
+            switch (collection) {
+                case 'component':
+                    if ( components.hasOwnProperty(component) ) {
+                        components[component]();
+                    }
+                    break;
+                case 'widget':
+                    if ( widgets.hasOwnProperty(component) ) {
+                        widgets[component]();
+                    }
+                    break;
+                case 'metafield':
+                    if ( metafields.hasOwnProperty(component) ) {
+                        metafields[component]();
+                    }
+                    break;
+            }
         };
 
 
         // Return public API
         return {
-            init: init
+            init: init,
+            start: start
         };
-    };
+
+    })();
+
+}(jQuery.themeOptions = jQuery.themeOptions || {}, jQuery, document));
 
 
 
-    // Initialize application
-    var app = new App();
-    app.init();
+// INITIALIZE CODE BLOCK
+jQuery(document).ready(function($) {
 
+    // Initialize module [themeOptions]
+    $.themeOptions.App.init();
 });
