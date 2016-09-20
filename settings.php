@@ -21,7 +21,10 @@ $module = array(
         // page name  // id
         'home'        => 0,
         'settings'    => 1,
-        'pages'       => 2
+        'pages'       => 2,
+        'images'      => 3,
+        'wysiwyg'     => 4,
+        'maps'        => 5
     ),
     // Define GET params
     'params'        => array(
