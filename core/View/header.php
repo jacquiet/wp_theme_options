@@ -13,10 +13,10 @@ global $module;
 $helper = new Helper();
 
 // Get url request
-$module_url = get_site_url() . $_SERVER['REQUEST_URI'];
+$module_url = $helper->getModuleUrl();
 
 // If module data has been saved
-if ( $helper->isUpdated($module_url) ) {
+if ( $helper->isSaved() ) {
 
     // notify user
     $helper->notify('save', array(
@@ -26,10 +26,10 @@ if ( $helper->isUpdated($module_url) ) {
 }
 
 // Evaluate request to find out if module page param exists
-if ( $helper->isOpened($module_url) ) {
+if ( $helper->isModuleOpened() ) {
 
     // Clear module params
-    $module_url = $helper->clearParams($module_url);
+    $module_url = $helper->clearModuleParams();
 
     // Get page index
     $page_index = $helper->getPageIndex();
@@ -37,8 +37,12 @@ if ( $helper->isOpened($module_url) ) {
 
 ?>
 
+<div class="view-title" title="<?php echo __('Developed by KenobiSoft'); ?>">
+    <p><?php echo __($module['title']); ?></p>
+</div>
+
 <!-- view-component [navigation] -->
-<div class="view-component" data-view-component="navigation">
+<div class="view-component" data-view-component="header">
 
     <div class="row row-full">
 
@@ -47,10 +51,11 @@ if ( $helper->isOpened($module_url) ) {
 
             <!-- Go through navigation pages -->
             <?php foreach ($module['pages'] as $page => $id): ?>
+                <?php $page_title = $helper->getPageTitle($page); ?>
 
                 <li class="nav-element <?php echo $id == $page_index ? 'active' : ''; ?>">
-                    <div class="view-nav-element" data-element-id="<?php echo $id; ?>" title="<?php echo __('Go to ') . ucfirst($page); ?>">
-                        <a href="<?php echo $module_url . '&' . $module['params']['page'] . '=' . $id; ?>" class="view-button-nav"><?php echo $page; ?></a>
+                    <div class="view-nav-element" data-element-id="<?php echo $id; ?>" title="<?php echo __('Go to ') . ucfirst($page_title); ?>">
+                        <a href="<?php echo $module_url . '&' . $module['params']['page'] . '=' . $id; ?>" class="view-button-nav"><?php echo $page_title; ?></a>
                     </div>
                 </li>
 

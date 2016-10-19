@@ -31,6 +31,9 @@ require_once($modules_dir . $module['name'] . '/core/Helper/Helper.php');
 // Get Metabox class
 require_once($modules_dir . $module['name'] . '/core/Metabox/Metabox.php');
 
+// Get class TO_Page
+require_once($modules_dir . $module['name'] . '/inc/TO_Page.php');
+
 
 // Enqueue module styles
 add_action('admin_print_styles', 'module_theme_options_styles');
@@ -39,7 +42,7 @@ function module_theme_options_styles() {
     global $module;
 
     // Enqueue style
-    wp_enqueue_style('module-theme-options-style-admin', get_bloginfo('template_url').'/modules/' . $module['name'] . '/assets/styles/style.css', array());
+    wp_enqueue_style('module-theme-options-style-admin', get_stylesheet_directory_uri() .'/modules/' . $module['name'] . '/assets/styles/style.css', array());
 }
 
 
@@ -57,11 +60,11 @@ function module_theme_options_scripts() {
     // Enable support for file uploader
     wp_enqueue_media();
 
-    // Enable google maps
+    // Enqueue google maps
     wp_enqueue_script('google_map', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCRo5AVP7roq_ODO0zwKhrTVfhjHb8Mz5g');
 
     // Enqueue main script
-    wp_enqueue_script('custom_admin_script', get_bloginfo('template_url').'/modules/' . $module['name'] . '/assets/javascripts/main' . $script_suffix, array('jquery'));
+    wp_enqueue_script('custom_admin_script', get_stylesheet_directory_uri() .'/modules/' . $module['name'] . '/assets/javascripts/main' . $script_suffix, array('jquery'));
 }
 
 

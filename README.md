@@ -14,9 +14,9 @@ CONTENTS
 
 1. OVERVIEW
 ------------------------------------------------------------
-Theme Options (TO) is a stand-alone module, which display the options of the theme under Appearance - Theme Options.
+Theme Options (TO) is a stand-alone WordPress module, that displays the options of the theme under Appearance - Theme Options.
 
-Under the hood, TO is a object-oriented single-page configuration MVC application. The core of TO is
+Under the hood, TO is a object-oriented configuration MVC application. The core of TO is
 broken down into meaningful files. Here's the structure:
 
 - Controller    - contains Controller.php, which communicates with the views
@@ -29,7 +29,8 @@ broken down into meaningful files. Here's the structure:
 TO also contains:
 
 - assets        - wrapper for static resources - css, sass, js, images, fonts
-- widgets       - components, which has their own view and can communicate with the database directly
+- widgets       - components, which have their own view and can communicate with the database directly
+- inc           - wrapper for helper classes
 - etc           - wrapper for templates - component, page and widget
 
 The theme is also integrated with Gulp, so common tasks like sass pre-compilation, js concatenation and minification are automated.
@@ -39,12 +40,14 @@ The theme is also integrated with Gulp, so common tasks like sass pre-compilatio
 
 2. INSTALLATION
 ------------------------------------------------------------
-The theme is integrated with Gulp. To use the pre-defined Gulp tasks you need to install:
+The module is integrated with Gulp. To use the pre-defined Gulp tasks you need to install:
+
 	node        - https://nodejs.org/en/download/
 	npm         - https://docs.npmjs.com/cli/install
 	gulp        - https://www.npmjs.com/package/gulp
 
-Once ready, open a command prompt in the theme's main directory and run:
+Once ready, open a command prompt in the module's main directory and run:
+
 npm install
 
 The above command will install all dependencies, located in themedir/package.json - devDependencies.
@@ -67,7 +70,7 @@ If you want to add more tasks, define them in gulpfile.js
 ------------------------------------------------------------
 Open a command prompt or terminal in the theme's main directory.
 
-You have 5 commands at your disposal:
+You have several commands at your disposal:
 
 	gulp app:watch
 	This is an on-going task, which conbines tasks [sass:watch] and [js:watch]
@@ -90,7 +93,8 @@ You have 5 commands at your disposal:
 4. CONFIGURATION
 ------------------------------------------------------------
 To activate Theme Options for your theme, please follow these steps:
-    - Include init.php (found in the main module dir) in your theme's functions.php file
+
+    - Include init.php (found in the main module dir) in your theme's functions.php file. Example - require_once('modules/theme_options/init.php');
 
 That's it! You're ready to start using Theme Options.
 
@@ -103,13 +107,13 @@ Some of the configuration options include:
     - base_view - base view for the module
     - params    - GET params, used by the module
 
-If you want to add module pages, make sure to add the new page in the module settings in settings.php and also make sure to add the new view under moduledir/core/View. The system will then pick up and initialize the new pages.
+If you want to add module pages, make sure to add the new page in the module settings in settings.php and also make sure to add the new view under moduledir/core/View. The system will then pick up and display the new pages.
 
 
 
 5. IMPORTANT NOTES:
 ------------------------------------------------------------
-- This theme loads a single javascript file, which contains all javascript libraries - jquery, sly, core.js, etc. The goal of this approach is to increase the overall performance of the site by reducing the number of HTTP requests. Less scripts to include, less HTTP requests to handle. This optimization is primarily for mobile devices, where the number of HTTP requests can really matter.
+- This theme concatenates all of its javascript files into a single file, which contains all javascript libraries - jquery, sly, core.js, etc. The goal of this approach is to increase the overall performance of the site by reducing the number of HTTP requests. Less scripts to include, less HTTP requests to handle. This optimization is primarily for mobile devices, where the number of HTTP requests can really matter.
 
 - The javascript functionality of moduledir/components is located in moduledir/assets/javascripts/core/core.js - App Class - components object wrapper. App Class contains a private method called initComponents which performs 'smart load' for components. InitComponents searches for components and matches the found results with the components defined in App Class - components object wrapper. This means that only the page-specific components will be loaded on the current page. This goal of this approach is to minimize called javascript code.
 

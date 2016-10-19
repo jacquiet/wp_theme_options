@@ -1,18 +1,21 @@
 <?php
 // Template: index
 // Displays the main page template
-// @param array $view_data - passed by Controller
+// @param array $view_data - passed by Router
 ?>
 
 
 <?php
 // Template settings
 
-// Get module
+// get module
 global $module;
 
-// Instantiate controller
+// instantiate controller
 $controller = new Controller();
+
+// get main view
+$mainView = $view_data['view'];
 ?>
 
 
@@ -21,12 +24,9 @@ $controller = new Controller();
 
     <!-- heading -->
     <div class="view-heading">
-        <div class="view-title" title="<?php echo __('Developed by KenobiSoft') ?>">
-            <p><?php echo __($module['title']); ?></p>
-        </div>
 
         <!-- load navigation -->
-        <?php $controller->loadView('navigation'); ?>
+        <?php $controller->loadView('header'); ?>
     </div>
 
 
@@ -34,7 +34,7 @@ $controller = new Controller();
     <div class="view-main">
 
         <!-- load page view -->
-        <?php $controller->loadView($view_data['view']); ?>
+        <?php $controller->loadMainView($mainView); ?>
     </div>
 
 

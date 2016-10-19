@@ -1,5 +1,5 @@
 <?php
-// Template: Page
+// Template: Settings
 // Use this template as base for page views
 // Page views are defined in moduledir/core/View/
 ?>

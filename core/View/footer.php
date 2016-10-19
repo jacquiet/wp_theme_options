@@ -5,6 +5,7 @@
 
 <?php
 // Component settings
+global $module;
 
 // Instantiate controller
 $controller = new Controller();
@@ -13,7 +14,7 @@ $controller = new Controller();
 $view = $controller->getCurrentView();
 ?>
 
-<?php if ( $view !== 'home' ) : ?>
+<?php if ( $view !== $module['default_view'] ) : ?>
 
     <!-- view-page-part [footer] -->
     <div class="view-page-part" data-view-page-part="footer">

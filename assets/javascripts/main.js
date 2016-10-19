@@ -6939,10 +6939,13 @@ jQuery.trumbowyg = {
             },
 
             // component [navigation]
-            navigation: function () {
+            header: function () {
+                console.log('navigation');
 
                 // on click on navigation button
                 $('.nav-element').on('click', function (e) {
+
+                    console.log('click!');
 
                     // go to destination
                     window.location.href = $(this).find('a').attr('href');
@@ -7140,11 +7143,6 @@ jQuery.trumbowyg = {
                 var trashPosts = parseInt(chartDataPosts.trash);
                 var totalPosts = publishPosts + draftPosts + trashPosts;
 
-                var publishVideos = parseInt(chartDataVideos.publish);
-                var draftVideos = parseInt(chartDataVideos.draft);
-                var trashVideos = parseInt(chartDataVideos.trash);
-                var totalVideos = publishVideos + draftVideos + trashVideos;
-
                 var publishPages = parseInt(chartDataPages.publish);
                 var draftPages = parseInt(chartDataPages.draft);
                 var trashPages = parseInt(chartDataPages.trash);
@@ -7153,10 +7151,6 @@ jQuery.trumbowyg = {
                 var publishPostsPercentage = 100 * publishPosts / totalPosts;
                 var draftPostsPercentage = 100 * draftPosts / totalPosts;
                 var trashPostsPercentage = 100 * trashPosts / totalPosts;
-
-                var publishVideosPercentage = 100 * publishVideos / totalVideos;
-                var draftVideosPercentage = 100 * draftVideos / totalVideos;
-                var trashVideosPercentage = 100 * trashVideos / totalVideos;
 
                 var publishPagesPercentage = 100 * publishPages / totalPages;
                 var draftPagesPercentage = 100 * draftPages / totalPages;
@@ -7191,38 +7185,6 @@ jQuery.trumbowyg = {
 
                     dataPosts.series.push({
                         value: trashPosts,
-                        className: 'chart-trash-posts'
-                    });
-                }
-
-                // Videos data
-                var dataVideos = {
-                    labels: [],
-                    series: []
-                };
-
-                if (publishVideos > 0) {
-                    dataVideos.labels.push(publishVideosPercentage.toFixed(2) + '%');
-                    dataVideos.series.push({
-                        value: publishVideos,
-                        className: 'chart-publish-posts'
-                    });
-                }
-
-                if (draftVideos > 0) {
-                    dataVideos.labels.push(draftVideosPercentage.toFixed(2) + '%');
-
-                    dataVideos.series.push({
-                        value: draftVideos,
-                        className: 'chart-draft-posts'
-                    });
-                }
-
-                if (trashVideos > 0) {
-                    dataVideos.labels.push(trashVideosPercentage.toFixed(2) + '%');
-
-                    dataVideos.series.push({
-                        value: trashVideos,
                         className: 'chart-trash-posts'
                     });
                 }
@@ -7262,7 +7224,6 @@ jQuery.trumbowyg = {
 
                 // initialize pie-charts
                 new Chartist.Pie('.widget-activity-posts-pie-chart', dataPosts, {});
-                new Chartist.Pie('.widget-activity-videos-pie-chart', dataVideos, {});
                 new Chartist.Pie('.widget-activity-pages-pie-chart', dataPages, {});
             },
             statistics: function () {},

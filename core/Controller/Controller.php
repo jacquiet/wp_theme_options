@@ -51,6 +51,14 @@ class Controller {
     }
 
 
+    // @param string $view
+    public function loadMainVIew($view, $view_data = array()) {
+
+        // Get view
+        $this->_getView($view, $view_data, '/pages/');
+    }
+
+
     // @param string $widget
     // @param array $widget_data
     public function loadWidget($widget, $widget_data = array()) {
