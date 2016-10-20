@@ -113,7 +113,7 @@ If you want to add module pages, make sure to add the new page in the module set
 
 5. IMPORTANT NOTES:
 ------------------------------------------------------------
-- This module concatenates all of its javascript files into a single file, which contains all javascript libraries - jquery, sly, core.js, etc. The goal of this approach is to increase the overall performance of the site by reducing the number of HTTP requests. Less scripts to include, less HTTP requests to handle. This optimization is primarily for mobile devices, where the number of HTTP requests can really matter.
+- This module concatenates most of its javascript files into a single file, which contains used javascript libraries and code base like jquery, sly, core.js, etc. The goal of this approach is to increase the overall performance of the site by reducing the number of HTTP requests. Less scripts to include, less HTTP requests to handle. This optimization is primarily for mobile devices, where the number of HTTP requests can really matter.
 
 - The javascript functionality of moduledir/components is located in moduledir/assets/javascripts/core/core.js - App Class - components object wrapper. App Class contains a private method called initComponents which performs 'smart load' for components. InitComponents searches for components and matches the found results with the components defined in App Class - components object wrapper. This means that only the page-specific components will be loaded on the current page. This goal of this approach is to minimize called javascript code.
 
