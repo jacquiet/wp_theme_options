@@ -1,7 +1,0 @@
-/**
- * Mixins
- */
-
-@mixin transition($type, $speed) {
-  transition: $type, $speed;
-}
