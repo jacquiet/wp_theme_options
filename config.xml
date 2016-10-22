@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<config>
+	<module>
+		<name>Theme Options</name>
+		<version>2.0.0</version>
+		<author>KenobiSoft</author>
+		<dir>theme_options</dir>
+        <mode>development</mode>
+        <collection>
+            <optionGroup>sa_theme_options</optionGroup>
+            <optionName>sa_options</optionName>
+        </collection>
+		<params>
+			<page>initialzr-page</page>
+            <!-- DEV NOTE: Do not change the <update> param.
+            This GET param comes from WordPress -->
+			<update>update</update>
+		</params>
+        <defaultView>dashboard</defaultView>
+	</module>
+    <pages>
+        <page>
+            <name>Dashboard</name>
+            <masonry>true</masonry>
+            <sections>
+                <section>
+                    <width>3/6</width>
+                    <title>Activity</title>
+                    <subtitle>Activity information about posts.</subtitle>
+                    <widgets>
+                        <widget>
+                            <name>activity</name>
+                        </widget>
+                    </widgets>
+                </section>
+                <section>
+                    <width>3/6</width>
+                    <title>Statistics</title>
+                    <subtitle>Statistical information about the website.</subtitle>
+                    <widgets>
+                        <widget>
+                            <name>statistics</name>
+                        </widget>
+                    </widgets>
+                </section>
+                <section>
+                    <width>3/6</width>
+                    <title>Plugins</title>
+                    <subtitle>Information regarding plugin usage.</subtitle>
+                    <widgets>
+                        <widget>
+                            <name>plugins</name>
+                        </widget>
+                    </widgets>
+                </section>
+            </sections>
+        </page>
+        <page>
+            <name>Home</name>
+            <masonry>true</masonry>
+            <sections>
+                <section>
+                    <width>2/6</width>
+                    <title>Home Slider</title>
+                    <subtitle>Fields for the header slider, which appears on the homepage.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>gallery</type>
+                            <name>gallery1</name>
+                            <label>Slider images</label>
+                            <size>auto</size>
+                        </metafield>
+                        <metafield>
+                            <type>text</type>
+                            <name>text1</name>
+                            <label>Slider title</label>
+                            <size>auto</size>
+                        </metafield>
+                    </metafields>
+                </section>
+                <section>
+                    <width>2/6</width>
+                    <title>Services Section</title>
+                    <subtitle>Fields for the 'Services' section, which appears on the homepage.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>checkbox</type>
+                            <name>checkbox</name>
+                            <label>Show section</label>
+                            <description>Make this section visible on the homepage</description>
+                            <size>auto</size>
+                        </metafield>
+                        <metafield>
+                            <type>image</type>
+                            <name>image</name>
+                            <label>Section Image</label>
+                            <description>Make this section visible on the homepage</description>
+                            <size>auto</size>
+                        </metafield>
+                        <metafield>
+                            <type>editor</type>
+                            <name>editor1</name>
+                            <label>Section Content</label>
+                            <description>This is the section content</description>
+                            <size>auto</size>
+                        </metafield>
+                        <metafield>
+                            <type>editor</type>
+                            <name>editor2s</name>
+                            <label>Section Content</label>
+                            <description>This is the section content</description>
+                            <size>auto</size>
+                        </metafield>
+                    </metafields>
+                </section>
+                <section>
+                    <width>2/6</width>
+                    <title>Products Section</title>
+                    <subtitle>Fields for the 'Products' section, which appears on the homepage.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>map</type>
+                            <name>map1</name>
+                            <label>Map 1</label>
+                            <description>Description for map 1.</description>
+                            <size>auto</size>
+                        </metafield>
+                        <metafield>
+                            <type>map</type>
+                            <name>map2</name>
+                            <label>Map 2</label>
+                            <description>Description for map 2.</description>
+                            <size>auto</size>
+                        </metafield>
+                    </metafields>
+                </section>
+            </sections>
+        </page>
+    </pages>
+</config>
