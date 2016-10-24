@@ -1,5 +1,5 @@
 
-Metabox options:
+Metafield options:
 ------------------------------
 
 General options:
@@ -18,7 +18,7 @@ Number input:
 Date input:
 	- format (default: dd/mm/yy)
 
-Textarea:
+Textarea/Editor:
 	- height (small (100px)/normal (200px)/large (300px))
 
 Plain text:

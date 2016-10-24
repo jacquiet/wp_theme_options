@@ -146,5 +146,95 @@
                 </section>
             </sections>
         </page>
+        <page>
+            <name>Plain text</name>
+            <masonry>true</masonry>
+            <sections>
+                <section>
+                    <width>2/6</width>
+                    <title>Plain Text Demo 1</title>
+                    <subtitle>This is a demonstration of the plain text metafield</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>plain_text</type>
+                            <name>howtouse</name>
+                            <block>
+                                <text>
+                                    <h>The plugin form can be added to your frontend via a shortcode.</h>
+                                    <p>1. You can add the shortcode to the content of any page/post/custom post type.</p>
+                                    <p>2. Add the following shortcode to the content of a page:</p>
+                                    <ribbon>[initialzr]</ribbon>
+                                </text>
+                            </block>
+                            <size>auto</size>
+                        </metafield>
+                    </metafields>
+                </section>
+                <section>
+                    <width>2/6</width>
+                    <title>Plain Text Demo 2</title>
+                    <subtitle>This is another demonstration of the plain text metafield</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>plain_text</type>
+                            <name>about_plugin</name>
+                            <label>About WP Initialzr</label>
+                            <block>
+                                <text>
+                                    <p>This plugin is developed by KenobiSoft Ltd.</p>
+                                    <p>KenobiSoft is a Dutch software development company that specialises in creating websites and applications with WordPress, Magento, WooCommerce and other open-source solutions.</p>
+                                    <link_text>Visit KenobiSoft Website</link_text>
+                                    <link>http://kenobisoft.com</link>
+                                </text>
+                            </block>
+                            <required>true</required>
+                            <size>large</size>
+                        </metafield>
+                    </metafields>
+                </section>
+                <section>
+                    <width>2/6</width>
+                    <title>About WP Initialzr</title>
+                    <subtitle>This page contains information about the plugin author.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>plain_text</type>
+                            <name>howtouse_17</name>
+                            <block>
+                                <text>
+                                    <p>You can also select which fields should be validated by using the 'custom_validation' and 'validate' shortcode attributes. To enable the custom validation:</p>
+                                    <p>1. Add 'custom_validation="true" to your shortcode.</p>
+                                    <p>2. Add 'validate="field1, field2, field3"', where field1, field2 and field3 must be replaced with the actual names of the form fields you want validated.</p>
+                                    <p>So, to enable custom validation and validate only the first and last name fields, use</p>
+                                    <ribbon>[initialzr validation="true" custom_validation="true" validate="first_name, last_name"]</ribbon>
+                                </text>
+                            </block>
+                            <size>auto</size>
+                        </metafield>
+                    </metafields>
+                </section>
+                <section>
+                    <width>4/6</width>
+                    <title>About WP Initialzr</title>
+                    <subtitle>This page contains information about the plugin author.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>plain_text</type>
+                            <name>howtouse_1dsd7</name>
+                            <block>
+                                <text>
+                                    <p>You can also select which fields should be validated by using the 'custom_validation' and 'validate' shortcode attributes. To enable the custom validation:</p>
+                                    <p>1. Add 'custom_validation="true" to your shortcode.</p>
+                                    <p>2. Add 'validate="field1, field2, field3"', where field1, field2 and field3 must be replaced with the actual names of the form fields you want validated.</p>
+                                    <p>So, to enable custom validation and validate only the first and last name fields, use</p>
+                                    <ribbon>[initialzr validation="true" custom_validation="true" validate="first_name, last_name"]</ribbon>
+                                </text>
+                            </block>
+                            <size>auto</size>
+                        </metafield>
+                    </metafields>
+                </section>
+            </sections>
+        </page>
     </pages>
 </config>
