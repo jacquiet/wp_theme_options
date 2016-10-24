@@ -15,6 +15,7 @@
 			<update>update</update>
 		</params>
         <defaultView>dashboard</defaultView>
+        <preventSave>dashboard</preventSave>
         <menuIcon>dashicons-list-view</menuIcon>
 	</module>
     <pages>

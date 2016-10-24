@@ -313,7 +313,10 @@ class View {
      * Load footer
      */
     protected function loadFooter() {
-        $page = $this->getCurrentPage();
+        $page           = $this->getCurrentPage();
+        $config         = self::$config['module'];
+        $hasPreventSave = isset($config['preventSave']) && !empty($config['preventSave']);
+        $showSave       = $hasPreventSave && $page !== $config['preventSave'] || !$hasPreventSave;
         ?>
 
         <!-- footer -->
@@ -322,7 +325,7 @@ class View {
             <div class="view-page-part" data-view-page-part="footer">
                 <div class="footer-controls">
 
-                    <?php if ( true ) : ?>
+                    <?php if ( $showSave ) : ?>
                         <div class="buttons-group">
                             <a href="#" class="button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
                         </div>

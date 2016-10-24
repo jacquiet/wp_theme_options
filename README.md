@@ -47,6 +47,7 @@ The 'module' node contains necessary information for Theme Options to work. This
         <update>      - the module's update param (used as an identifier when an update event is triggered)
     </params>
     <defaultView>     - the module's default view (this view will be loaded as a fallback, when a view cannot be found and loaded)
+    <preventSave>     - prevent save for given page (you need to provide the name of the page, where you want to disable the save functionality)
     <menuIcon>        - the module's menu icon
 </module>
 ```
@@ -133,3 +134,50 @@ Plain text:
 	- ribbon (info block)
 	- linkText (self-descriptive)
 	- link (self-descriptive)
+
+Finally, let's look at a full configuration:
+
+```xml
+<?xml version="1.0"?>
+<config>
+	<module>
+		<name>Theme Options</name>
+		<version>2.0.0</version>
+		<author>KenobiSoft</author>
+		<dir>theme_options</dir>
+        <mode>production</mode>
+        <collection>
+            <optionGroup>sa_theme_options</optionGroup>
+            <optionName>sa_options</optionName>
+        </collection>
+		<params>
+			<page>initialzr-page</page>
+			<update>update</update>
+		</params>
+        <defaultView>dashboard</defaultView>
+        <menuIcon>dashicons-list-view</menuIcon>
+	</module>
+    <pages>
+        <page>
+            <name>Dashboard</name>
+            <masonry>true</masonry>
+            <sections>
+                <section>
+                    <width>3/6</width>
+                    <title>Activity</title>
+                    <subtitle>Activity information about posts.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>dropdown_multiple</type>
+                            <name>dropdownm1</name>
+                            <label>Taxonomy Dropdown</label>
+                            <dataType>taxonomy</dataType>
+                            <data>category</data>
+                        </metafield>
+                    </metafields>
+                </section>
+            </sections>
+        </page>
+    </pages>
+</config>
+```
