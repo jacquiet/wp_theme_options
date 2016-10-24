@@ -1,23 +1,21 @@
 <?xml version="1.0"?>
 <config>
-	<module>
-		<name>Theme Options</name>
-		<version>2.0.0</version>
-		<author>KenobiSoft</author>
-		<dir>theme_options</dir>
+    <module>
+        <name>Theme Options</name>
+        <version>2.0.0</version>
+        <author>KenobiSoft</author>
+        <dir>theme_options</dir>
         <mode>development</mode>
         <collection>
             <optionGroup>sa_theme_options</optionGroup>
             <optionName>sa_options</optionName>
         </collection>
-		<params>
-			<page>initialzr-page</page>
-            <!-- DEV NOTE: Do not change the <update> param.
-            This GET param comes from WordPress -->
-			<update>update</update>
-		</params>
+        <params>
+            <page>initialzr-page</page>
+            <update>update</update>
+        </params>
         <defaultView>dashboard</defaultView>
-	</module>
+    </module>
     <pages>
         <page>
             <name>Dashboard</name>
@@ -65,16 +63,28 @@
                     <subtitle>Fields for the header slider, which appears on the homepage.</subtitle>
                     <metafields>
                         <metafield>
-                            <type>gallery</type>
-                            <name>gallery1</name>
-                            <label>Slider images</label>
+                            <type>dropdown_single</type>
+                            <name>ddsingle</name>
+                            <label>Dropdown Single</label>
                             <size>auto</size>
+                            <dataType>post</dataType>
+                            <data>page</data>
                         </metafield>
                         <metafield>
-                            <type>text</type>
-                            <name>text1</name>
-                            <label>Slider title</label>
+                            <type>dropdown_multiple</type>
+                            <name>multiple</name>
+                            <label>Dropdown Multiple</label>
                             <size>auto</size>
+                            <dataType>custom</dataType>
+                            <data>Neven, Ivan, Simeon</data>
+                        </metafield>
+                        <metafield>
+                            <type>textarea</type>
+                            <name>textarea23123</name>
+                            <label>Textarea</label>
+                            <size>auto</size>
+                            <rows>4</rows>
+                            <cols>10</cols>
                         </metafield>
                     </metafields>
                 </section>

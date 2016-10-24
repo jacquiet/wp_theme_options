@@ -523,6 +523,8 @@ class Metabox {
         $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
         $height      = isset($args['height']) ? $args['height'] : '';
         $selector    = isset($args['selector']) ? $args['selector'] : '';
+        $rows        = isset($args['rows']) && is_numeric($args['rows']) ? $args['rows'] : 4;
+        $cols        = isset($args['cols']) && is_numeric($args['cols']) ? $args['cols'] : 6;
         ?>
 
         <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="textarea">
@@ -530,7 +532,7 @@ class Metabox {
                 <?php self::createNonce($args); ?>
             <?php endif; ?>
             <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-            <textarea name="<?php echo $fieldName; ?>" title="<?php echo $description; ?>" class="ksfc-textarea <?php echo $height; ?> <?php echo $selector; ?>" <?php echo $required; ?>><?php echo $value; ?></textarea>
+            <textarea name="<?php echo $fieldName; ?>" title="<?php echo $description; ?>" rows="<?php echo $rows; ?>" cols="<?php echo $cols; ?>" class="ksfc-textarea <?php echo $height; ?> <?php echo $selector; ?>" <?php echo $required; ?>><?php echo $value; ?></textarea>
         </div>
         <?php
     }
