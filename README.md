@@ -66,7 +66,7 @@ Here's an example 'sections' node with a single section inside:
 ```xml
 <sections>
     <section>
-        <width>       - the section's width (can be 1, 2/6, 3/6, 4/6, 5/6)
+        <width>       - the section's width (can be 1, 1/6, 2/6, 3/6, 4/6, 5/6)
         <title>       - the section's title
         <subtitle>    - the section's subtitle
         <metafields>  - the <metafields> node contains <metafield> nodes
