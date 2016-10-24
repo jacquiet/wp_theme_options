@@ -88,7 +88,7 @@ class Initialzr {
         // add plugin backend page
         add_action('admin_menu', function() {
             $module = $this->config['module'];
-            add_theme_page($module['name'], $module['name'], 'manage_options', $module['dir'], array($this, 'getBackend'));
+            add_menu_page($module['name'], $module['name'], 'manage_options', $module['dir'], array($this, 'getBackend'), $module['menuIcon']);
         });
 
         // enqueue plugin resources
@@ -96,8 +96,8 @@ class Initialzr {
             $module    = $this->config['module'];
             $scriptExt = $module['mode'] === 'production' ? '.min.js' : '.js';
 
-            wp_enqueue_script('jquery');
             wp_enqueue_media();
+            wp_enqueue_script('jquery');
             wp_enqueue_script('jquery-ui-datepicker');
             wp_enqueue_style($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/stylesheets/style.css');
             wp_enqueue_script($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/javascripts/main' . $scriptExt, array('jquery'));

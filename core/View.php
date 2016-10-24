@@ -322,7 +322,7 @@ class View {
             <div class="view-page-part" data-view-page-part="footer">
                 <div class="footer-controls">
 
-                    <?php if ( $page !== self::$config['module']['defaultView'] ) : ?>
+                    <?php if ( true ) : ?>
                         <div class="buttons-group">
                             <a href="#" class="button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
                         </div>
@@ -530,7 +530,14 @@ class View {
             $taxType = $dataExists ? $args['data'] : '';
 
             if ( taxonomy_exists($taxType) ) {
-                $dataArr = $this->collection->getTaxonomyData($taxType);
+                $customData = $this->collection->getTaxonomyData($taxType);
+
+                $dataArr = array_map(function($val) {
+                    return (object) array(
+                        'ID'         => $val->term_id,
+                        'post_title' => $val->name
+                    );
+                }, $customData);
             }
 
         } else if ( $dataType === 'custom' ) {
@@ -538,7 +545,7 @@ class View {
 
             $dataArr = array_map(function($val) {
                 return (object) array(
-                    'ID' => $val,
+                    'ID'         => $val,
                     'post_title' => $val
                 );
             }, $customData);

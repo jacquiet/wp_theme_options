@@ -102,7 +102,7 @@ class Collection {
     public function getTaxonomyData($taxonomy) {
         $terms = get_terms(array(
             'taxonomy'   => $taxonomy,
-            'hide_empty' => 'false',
+            'hide_empty' => 0,
             'orderby'    => 'name',
             'order'      => 'ASC'
         ));

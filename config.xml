@@ -1,21 +1,22 @@
 <?xml version="1.0"?>
 <config>
-    <module>
-        <name>Theme Options</name>
-        <version>2.0.0</version>
-        <author>KenobiSoft</author>
-        <dir>theme_options</dir>
+	<module>
+		<name>Theme Options</name>
+		<version>2.0.0</version>
+		<author>KenobiSoft</author>
+		<dir>theme_options</dir>
         <mode>production</mode>
         <collection>
             <optionGroup>sa_theme_options</optionGroup>
             <optionName>sa_options</optionName>
         </collection>
-        <params>
-            <page>initialzr-page</page>
-            <update>update</update>
-        </params>
+		<params>
+			<page>initialzr-page</page>
+			<update>update</update>
+		</params>
         <defaultView>dashboard</defaultView>
-    </module>
+        <menuIcon>dashicons-list-view</menuIcon>
+	</module>
     <pages>
         <page>
             <name>Dashboard</name>
@@ -25,212 +26,13 @@
                     <width>3/6</width>
                     <title>Activity</title>
                     <subtitle>Activity information about posts.</subtitle>
-                    <widgets>
-                        <widget>
-                            <name>activity</name>
-                        </widget>
-                    </widgets>
-                </section>
-                <section>
-                    <width>3/6</width>
-                    <title>Statistics</title>
-                    <subtitle>Statistical information about the website.</subtitle>
-                    <widgets>
-                        <widget>
-                            <name>statistics</name>
-                        </widget>
-                    </widgets>
-                </section>
-                <section>
-                    <width>3/6</width>
-                    <title>Plugins</title>
-                    <subtitle>Information regarding plugin usage.</subtitle>
-                    <widgets>
-                        <widget>
-                            <name>plugins</name>
-                        </widget>
-                    </widgets>
-                </section>
-            </sections>
-        </page>
-        <page>
-            <name>Home</name>
-            <masonry>true</masonry>
-            <sections>
-                <section>
-                    <width>2/6</width>
-                    <title>Home Slider</title>
-                    <subtitle>Fields for the header slider, which appears on the homepage.</subtitle>
                     <metafields>
-                        <metafield>
-                            <type>dropdown_single</type>
-                            <name>ddsingle</name>
-                            <label>Dropdown Single</label>
-                            <size>auto</size>
-                            <dataType>post</dataType>
-                            <data>page</data>
-                        </metafield>
                         <metafield>
                             <type>dropdown_multiple</type>
-                            <name>multiple</name>
-                            <label>Dropdown Multiple</label>
-                            <size>auto</size>
-                            <dataType>custom</dataType>
-                            <data>Neven, Ivan, Simeon</data>
-                        </metafield>
-                        <metafield>
-                            <type>textarea</type>
-                            <name>textarea23123</name>
-                            <label>Textarea</label>
-                            <size>auto</size>
-                            <rows>4</rows>
-                            <cols>10</cols>
-                        </metafield>
-                    </metafields>
-                </section>
-                <section>
-                    <width>2/6</width>
-                    <title>Services Section</title>
-                    <subtitle>Fields for the 'Services' section, which appears on the homepage.</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>checkbox</type>
-                            <name>checkbox</name>
-                            <label>Show section</label>
-                            <description>Make this section visible on the homepage</description>
-                            <size>auto</size>
-                        </metafield>
-                        <metafield>
-                            <type>image</type>
-                            <name>image</name>
-                            <label>Section Image</label>
-                            <description>Make this section visible on the homepage</description>
-                            <size>auto</size>
-                        </metafield>
-                        <metafield>
-                            <type>editor</type>
-                            <name>editor1</name>
-                            <label>Section Content</label>
-                            <description>This is the section content</description>
-                            <size>auto</size>
-                        </metafield>
-                        <metafield>
-                            <type>editor</type>
-                            <name>editor2s</name>
-                            <label>Section Content</label>
-                            <description>This is the section content</description>
-                            <size>auto</size>
-                        </metafield>
-                    </metafields>
-                </section>
-                <section>
-                    <width>2/6</width>
-                    <title>Products Section</title>
-                    <subtitle>Fields for the 'Products' section, which appears on the homepage.</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>map</type>
-                            <name>map1</name>
-                            <label>Map 1</label>
-                            <description>Description for map 1.</description>
-                            <size>auto</size>
-                        </metafield>
-                        <metafield>
-                            <type>map</type>
-                            <name>map2</name>
-                            <label>Map 2</label>
-                            <description>Description for map 2.</description>
-                            <size>auto</size>
-                        </metafield>
-                    </metafields>
-                </section>
-            </sections>
-        </page>
-        <page>
-            <name>Plain text</name>
-            <masonry>true</masonry>
-            <sections>
-                <section>
-                    <width>2/6</width>
-                    <title>Plain Text Demo 1</title>
-                    <subtitle>This is a demonstration of the plain text metafield</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>plain_text</type>
-                            <name>howtouse</name>
-                            <block>
-                                <text>
-                                    <h>The plugin form can be added to your frontend via a shortcode.</h>
-                                    <p>1. You can add the shortcode to the content of any page/post/custom post type.</p>
-                                    <p>2. Add the following shortcode to the content of a page:</p>
-                                    <ribbon>[initialzr]</ribbon>
-                                </text>
-                            </block>
-                            <size>auto</size>
-                        </metafield>
-                    </metafields>
-                </section>
-                <section>
-                    <width>2/6</width>
-                    <title>Plain Text Demo 2</title>
-                    <subtitle>This is another demonstration of the plain text metafield</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>plain_text</type>
-                            <name>about_plugin</name>
-                            <label>About WP Initialzr</label>
-                            <block>
-                                <text>
-                                    <p>This plugin is developed by KenobiSoft Ltd.</p>
-                                    <p>KenobiSoft is a Dutch software development company that specialises in creating websites and applications with WordPress, Magento, WooCommerce and other open-source solutions.</p>
-                                    <link_text>Visit KenobiSoft Website</link_text>
-                                    <link>http://kenobisoft.com</link>
-                                </text>
-                            </block>
-                            <required>true</required>
-                            <size>large</size>
-                        </metafield>
-                    </metafields>
-                </section>
-                <section>
-                    <width>2/6</width>
-                    <title>About WP Initialzr</title>
-                    <subtitle>This page contains information about the plugin author.</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>plain_text</type>
-                            <name>howtouse_17</name>
-                            <block>
-                                <text>
-                                    <p>You can also select which fields should be validated by using the 'custom_validation' and 'validate' shortcode attributes. To enable the custom validation:</p>
-                                    <p>1. Add 'custom_validation="true" to your shortcode.</p>
-                                    <p>2. Add 'validate="field1, field2, field3"', where field1, field2 and field3 must be replaced with the actual names of the form fields you want validated.</p>
-                                    <p>So, to enable custom validation and validate only the first and last name fields, use</p>
-                                    <ribbon>[initialzr validation="true" custom_validation="true" validate="first_name, last_name"]</ribbon>
-                                </text>
-                            </block>
-                            <size>auto</size>
-                        </metafield>
-                    </metafields>
-                </section>
-                <section>
-                    <width>4/6</width>
-                    <title>About WP Initialzr</title>
-                    <subtitle>This page contains information about the plugin author.</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>plain_text</type>
-                            <name>howtouse_1dsd7</name>
-                            <block>
-                                <text>
-                                    <p>You can also select which fields should be validated by using the 'custom_validation' and 'validate' shortcode attributes. To enable the custom validation:</p>
-                                    <p>1. Add 'custom_validation="true" to your shortcode.</p>
-                                    <p>2. Add 'validate="field1, field2, field3"', where field1, field2 and field3 must be replaced with the actual names of the form fields you want validated.</p>
-                                    <p>So, to enable custom validation and validate only the first and last name fields, use</p>
-                                    <ribbon>[initialzr validation="true" custom_validation="true" validate="first_name, last_name"]</ribbon>
-                                </text>
-                            </block>
-                            <size>auto</size>
+                            <name>dropdownm1</name>
+                            <label>Taxonomy Dropdown</label>
+                            <dataType>taxonomy</dataType>
+                            <data>category</data>
                         </metafield>
                     </metafields>
                 </section>
