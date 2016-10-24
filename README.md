@@ -80,7 +80,7 @@ Let's take a look at the 'metafields' node:
 ```xml
 <metafields>
     <metafield>       - this node contains the definition of a metafield
-        <type>        - the metafield's type (can be text, email, hidden, number, checkbox, date, file, image, textarea, dropdown_single, dropdown_multiple, editor, map, gallery, plain_text
+        <type>        - the metafield's type (can be text, email, hidden, number, checkbox, date, file, image, textarea, dropdown_single, dropdown_multiple, editor, map, gallery, plain_text)
         <name>        - the metafield's name (this is the database identifier for the field; you will require this name to pull out the field's data on the frontend)
         <label>       - the metafield's label
         <description> - the metafield's description (appears on hover on the label)
@@ -89,6 +89,16 @@ Let's take a look at the 'metafields' node:
         <required>    - the metafield's required attribute (can have values true/false or you can remove it, which equals to false)
     </metafield>
 </metafields>
+```
+
+Let's look at the 'widgets' node:
+
+```xml
+<widgets>
+    <widget>          - this node contains the definition of a widget
+        <name>        - the widget's name (currently supported widgets are activity, statistics and plugins)
+    </widget>
+</widgets>
 ```
 
 Some metafields have access to custom attributes:
