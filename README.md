@@ -24,10 +24,10 @@ You'll find Theme Options near the bottom of the admin menu to the left.
 As mentioned already, Theme Options can be easily configured from a single file - config.xml, found in the root folder of the module.
 Let's example config.xml and show you how to configure it according to your needs.
 
-First thing you'll notice, when you open config.xml is that the whole configuration is wrapped in a <config> node. This is a must
+First thing you'll notice, when you open config.xml is that the whole configuration is wrapped in a '<config>' node. This is a must
 for the config file to work.
 
-The <config> node contains two required nodes - <module> and <pages>. Let's look at <module> first.
+The <config> node contains two required nodes - '<module>' and '<pages>'. Let's look at '<module>' first.
 
 The <module> node contains necessary information for Theme Options to work. This includes:
 
@@ -51,7 +51,7 @@ The <module> node contains necessary information for Theme Options to work. This
 </module>
 ```
 
-The <pages> node contains <page> nodes. A <page> node contains your entire page definition. Let's look at a <page> node:
+The '<pages>' node contains '<page>' nodes. A '<page>' node contains your entire page definition. Let's look at a <page> node:
 
 ```xml
 <page>
