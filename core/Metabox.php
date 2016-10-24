@@ -313,7 +313,7 @@ class Metabox {
             <input type="hidden" class="metafield" id="<?php echo $name; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
             <input type="button" class="button-file-upload" id="<?php echo $buttonId; ?>" value="<?php echo __('Select file'); ?>" title="<?php echo $description; ?>"/>
 
-            <input type="button" class="button-remove-file <?php echo !empty($value) ? '' : 'hidden' ?>" id="<?php echo $btnRemove; ?>" value="<?php echo __('Remove file'); ?>" "/>
+            <input type="button" class="button-remove-file <?php echo !empty($value) ? '' : 'hidden' ?>" id="<?php echo $btnRemove; ?>" value="<?php echo __('Remove file'); ?>"/>
         </div>
         <script type="text/javascript">
             // Helper
