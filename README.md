@@ -56,9 +56,9 @@ The 'pages' node contains 'page' nodes. A 'page' node contains your entire page 
 
 ```xml
 <page>
-    <name> - the page's name
-    <masonry> - masonry support for the page's sections (can have values true/false or you can remove it, which equals to false)
-    <sections> - this node contains <section> nodes. Each section represents an html section, which contains metafields and/or widgets.
+    <name>            - the page's name
+    <masonry>         - masonry support for the page's sections (can have values true/false or you can remove it, which equals to false)
+    <sections>        - this node contains <section> nodes. Each section represents an html section, which contains metafields and/or widgets.
 </page>
 ```
 
