@@ -126,8 +126,9 @@ Dropdown single (type - dropdown_single) and dropdown multiple (type - dropdown_
     <data>1, 2, 3, 4, 5</data> - the data node
 
 Plain text:
-	- block (wrapper for <text> elements)
-	- text (wrapper for <p>, <ribbon>, <linkText> and <link> elements)
+
+	- block (wrapper for 'text' elements)
+	- text (wrapper for 'p', 'ribbon', 'linkText' and 'link' elements)
 	- p (converted to paragraph)
 	- ribbon (info block)
 	- linkText (self-descriptive)
