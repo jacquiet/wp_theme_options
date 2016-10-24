@@ -86,7 +86,7 @@ Let's take a look at the 'metafields' node:
         <description> - the metafield's description (appears on hover on the label)
         <size>        - the metafield's width (can be small (33%)/normal (50%)/large (75%)/auto (100%))
         <selector>    - the metafield's custom css selector (css class)
-        <required>    - the metafield's required attribute (can have values true/false or you can remove it, which equals to false)
+        <required>    - the metafield's required attribute; enables validation for the metafield (can have values true/false or you can remove it, which equals to false)
     </metafield>
 </metafields>
 ```
