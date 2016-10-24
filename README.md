@@ -181,3 +181,5 @@ Finally, let's look at a full configuration:
     </pages>
 </config>
 ```
+
+With the above configuration, the module will create a single page, called 'Dashboard' and fills it with just one section, which contains a single metafield of type 'dropdown_multiple'
