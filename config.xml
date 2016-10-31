@@ -11,7 +11,7 @@
             <optionName>sa_options</optionName>
         </collection>
 		<params>
-			<page>initialzr-page</page>
+			<page>theme-options-page</page>
 			<update>update</update>
 		</params>
         <defaultView>dashboard</defaultView>
@@ -31,6 +31,26 @@
                         <metafield>
                             <type>dropdown_multiple</type>
                             <name>dropdownm1</name>
+                            <label>Taxonomy Dropdown</label>
+                            <dataType>taxonomy</dataType>
+                            <data>category</data>
+                        </metafield>
+                    </metafields>
+                </section>
+            </sections>
+        </page>
+        <page>
+            <name>Home</name>
+            <masonry>true</masonry>
+            <sections>
+                <section>
+                    <width>3/6</width>
+                    <title>Another Title</title>
+                    <subtitle>Activity information about posts.</subtitle>
+                    <metafields>
+                        <metafield>
+                            <type>dropdown_multiple</type>
+                            <name>dropdownmds1</name>
                             <label>Taxonomy Dropdown</label>
                             <dataType>taxonomy</dataType>
                             <data>category</data>
