@@ -327,7 +327,7 @@ class View {
 
                     <?php if ( $showSave ) : ?>
                         <div class="buttons-group">
-                            <a href="#" class="button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
+                            <a href="#" class="ks_theme_options-btn button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
                         </div>
                     <?php endif; ?>
 
@@ -379,7 +379,7 @@ class View {
      * @return bool
      */
     public function isUpdated() {
-        return $this->helper->postParamExist('action') && $_POST['action'] === self::$config['module']['params']['update'];
+        return strpos($this->getUrl(), self::$config['module']['dir']) !== false && $this->helper->postParamExist('action') && $_POST['action'] === self::$config['module']['params']['update'];
     }
 
 
