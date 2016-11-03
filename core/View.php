@@ -194,9 +194,6 @@ class View {
         $metafields   = $this->formatData($this->getData('metafield', $data['metafields']));
         $sectionWidth = $this->getSectionWidth($data['width']);
         $widgets      = $this->getData('widget', $data['widgets']);
-
-        //echo '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>';
-        //var_dump($this->getData('widget', $data['widgets']));
         ?>
 
         <div class="<?php echo $sectionWidth; ?> col-full block-col initialzr-col initialzr-section">
@@ -612,7 +609,7 @@ class View {
 
             // Create hidden input
             Metabox::createField(array(
-                'type'        => 'input_hidden',
+                'type'        => 'hidden',
                 'name'        => $name,
                 'value'       => $value,
                 'option_name' => $optionName
