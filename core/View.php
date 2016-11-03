@@ -194,6 +194,9 @@ class View {
         $metafields   = $this->formatData($this->getData('metafield', $data['metafields']));
         $sectionWidth = $this->getSectionWidth($data['width']);
         $widgets      = $this->getData('widget', $data['widgets']);
+
+        //echo '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>';
+        //var_dump($this->getData('widget', $data['widgets']));
         ?>
 
         <div class="<?php echo $sectionWidth; ?> col-full block-col initialzr-col initialzr-section">
@@ -377,6 +380,15 @@ class View {
      */
     public function isUpdated() {
         return strpos($this->getUrl(), self::$config['module']['dir']) !== false && $this->helper->postParamExist('action') && $_POST['action'] === self::$config['module']['params']['update'];
+    }
+
+
+    /**
+     * Is module page
+     * @return bool
+     */
+    public function isModulePage() {
+        return strpos($this->getUrl(), self::$config['module']['dir']) !== false;
     }
 
 

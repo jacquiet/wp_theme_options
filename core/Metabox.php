@@ -949,8 +949,6 @@ class Metabox {
 
                 var contains = function(ids, val) {
 
-                    // console.log(ids, val);
-
                     for (var i in ids.urls) {
                         var cleanUrl = val.replace(/-\d+x\d+((\.png)|(\.jpg)|(\.gif)|(\.tif))/g, '');
 

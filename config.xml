@@ -15,7 +15,6 @@
 			<update>update</update>
 		</params>
         <defaultView>dashboard</defaultView>
-        <preventSave>dashboard</preventSave>
         <menuIcon>dashicons-list-view</menuIcon>
 	</module>
     <pages>
@@ -29,11 +28,10 @@
                     <subtitle>Activity information about posts.</subtitle>
                     <metafields>
                         <metafield>
-                            <type>dropdown_multiple</type>
-                            <name>dropdownm1</name>
-                            <label>Taxonomy Dropdown</label>
-                            <dataType>taxonomy</dataType>
-                            <data>category</data>
+                            <type>text</type>
+                            <name>text1</name>
+                            <label>Text</label>
+                            <description>Description...</description>
                         </metafield>
                     </metafields>
                 </section>
@@ -49,11 +47,10 @@
                     <subtitle>Activity information about posts.</subtitle>
                     <metafields>
                         <metafield>
-                            <type>dropdown_multiple</type>
-                            <name>dropdownmds1</name>
-                            <label>Taxonomy Dropdown</label>
-                            <dataType>taxonomy</dataType>
-                            <data>category</data>
+                            <type>text</type>
+                            <name>text2</name>
+                            <label>Text</label>
+                            <description>Description...</description>
                         </metafield>
                     </metafields>
                 </section>

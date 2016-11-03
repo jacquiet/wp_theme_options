@@ -76,8 +76,6 @@ class Initialzr {
      * Setup
      */
     protected function setup() {
-
-        // get dependencies
         $this->getDependencies();
 
         // register collection space
@@ -99,7 +97,13 @@ class Initialzr {
             wp_enqueue_media();
             wp_enqueue_script('jquery');
             wp_enqueue_script('jquery-ui-datepicker');
+
+            if ( $this->view->isModulePage() ) {
+                wp_enqueue_style($module['dir'] . '-grid', get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/stylesheets/grid.css');
+            }
+
             wp_enqueue_style($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/stylesheets/style.css');
+
             wp_enqueue_script($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/javascripts/main' . $scriptExt, array('jquery'));
             wp_enqueue_script($module['dir'] . '_googleMaps', 'http://maps.google.com/maps/api/js?sensor=false');
         });
