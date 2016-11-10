@@ -621,7 +621,7 @@ class View {
 
             // Create hidden input
             Metabox::createField(array(
-                'type'        => 'hidden',
+                'type'        => 'textarea_hidden',
                 'name'        => $name,
                 'value'       => $value,
                 'option_name' => $optionName

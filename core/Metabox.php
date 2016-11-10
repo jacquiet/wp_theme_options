@@ -17,6 +17,7 @@ namespace ThemeOptions;
  * - file
  * - image
  * - textarea
+ * - textarea_hidden
  * - dropdown_single
  * - dropdown_multiple
  * - editor
@@ -76,6 +77,9 @@ class Metabox {
                 break;
             case 'textarea':
                 self::_createTextarea($args);
+                break;
+            case 'textarea_hidden':
+                self::_createTextareaHidden($args);
                 break;
             case 'dropdown_single':
                 self::_createDropdownSingle($args);
@@ -538,6 +542,16 @@ class Metabox {
     }
 
 
+    protected function _createTextareaHidden($args) {
+        $value     = stripslashes($args['value']);
+        $name      = $args['name'];
+        $fieldName = self::getFieldName($args['option_name'], $name);
+        ?>
+        <textarea name="<?php echo $fieldName; ?>" class="ksfc-textarea textarea-hidden"><?php echo $value; ?></textarea>
+        <?php
+    }
+
+
     /**
      * Create dropdown single
      * @param $args
@@ -683,6 +697,7 @@ class Metabox {
      */
     protected function _createMap($args) {
         $markerDir   = get_stylesheet_directory_uri() . '/modules/' . $args['module']['dir'] . '/assets/images/map-marker.png';
+
         $rawValues   = !empty($args['value']) ? preg_replace('/\\\\\"/',"\"", $args['value']) : '';
         $values      = json_decode($rawValues);
 
