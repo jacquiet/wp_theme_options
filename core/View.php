@@ -70,7 +70,7 @@ class View {
             // notify for save
             $this->notify('success', array(
                 'title'    => __('Data saved'),
-                'subtitle' => __('Floor Calculator saved successfully.')
+                'subtitle' => __('Theme Options data saved successfully.')
             ));
         }
     }
@@ -194,9 +194,6 @@ class View {
         $metafields   = $this->formatData($this->getData('metafield', $data['metafields']));
         $sectionWidth = $this->getSectionWidth($data['width']);
         $widgets      = $this->getData('widget', $data['widgets']);
-
-        //echo '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>';
-        //var_dump($this->getData('widget', $data['widgets']));
         ?>
 
         <div class="<?php echo $sectionWidth; ?> col-full block-col initialzr-col initialzr-section">

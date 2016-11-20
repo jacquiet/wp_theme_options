@@ -17,7 +17,7 @@ defined('ABSPATH') or die('Access denied!');
 
 
 /**
- * Theme options backend entry-point
+ * Module backend entry-point
  */
 function themeOptions() {
 
