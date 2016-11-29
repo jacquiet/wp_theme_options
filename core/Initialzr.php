@@ -41,22 +41,6 @@ class Initialzr {
 
 
     /**
-     * Get instance of the class
-     * @param $config
-     * @return mixed
-     */
-    public static function getInstance($config) {
-        $c = get_called_class();
-
-        if ( ! isset($instance[$c]) ) {
-            self::$instance[$c] = new Initialzr($config);
-        }
-
-        return self::$instance[$c];
-    }
-
-
-    /**
      * Construct
      * @param $config
      */
@@ -73,9 +57,27 @@ class Initialzr {
 
 
     /**
+     * Get instance of the class
+     * @param $config
+     * @return mixed
+     */
+    public static function getInstance($config) {
+        $c = get_called_class();
+
+        if ( ! isset($instance[$c]) ) {
+            self::$instance[$c] = new Initialzr($config);
+        }
+
+        return self::$instance[$c];
+    }
+
+
+    /**
      * Setup
      */
     protected function setup() {
+
+        // get dependencies
         $this->getDependencies();
 
         // register collection space

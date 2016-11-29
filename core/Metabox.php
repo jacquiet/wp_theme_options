@@ -547,7 +547,7 @@ class Metabox {
         $name      = $args['name'];
         $fieldName = self::getFieldName($args['option_name'], $name);
         ?>
-        <textarea name="<?php echo $fieldName; ?>" class="ksfc-textarea textarea-hidden"><?php echo $value; ?></textarea>
+        <textarea name="<?php echo $fieldName; ?>" class="ksfc-textarea textarea-hidden"><?php echo stripslashes($value); ?></textarea>
         <?php
     }
 
