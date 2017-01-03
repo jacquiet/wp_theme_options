@@ -13305,23 +13305,63 @@ KenobiSoft.metafields = KenobiSoft.metafields || {};
 
 // Define checkbox metafield
 KenobiSoft.metafields.checkbox = KenobiSoft.metafields.checkbox || function ($component) {
+
     // define local vars
-    var $ = jQuery,
+    var $checkbox = $component.find('input[type="checkbox"]'),
+        $hiddenInput = $component.find('input[type="hidden"]'),
         checkedVal = 1,
         uncheckedVal = 0;
 
-    $component.find('input[type="checkbox"]').on('change', function () {
-        var $checkbox = $(this);
-        var $field = $checkbox.parent().find('input[type="hidden"]');
+    // define init function
+    var init = function () {
+        $checkbox.on('change', function () {
+            if ($checkbox.is(':checked')) {
+                $hiddenInput.val(checkedVal);
+                $checkbox.attr('checked', true);
+            } else {
+                $hiddenInput.val(uncheckedVal);
+                $checkbox.attr('checked', false);
+            }
+        });
 
-        if ($checkbox.is(':checked')) {
-            $field.val(checkedVal);
-            $field.attr('value', checkedVal);
-        } else {
-            $field.val(uncheckedVal);
-            $field.attr('value', uncheckedVal);
-        }
-    });
+        $component.find('.description').on('click', function (e) {
+            if ($checkbox.is(':checked')) {
+                $hiddenInput.val(uncheckedVal);
+                $checkbox.attr('checked', false);
+            } else {
+                $hiddenInput.val(checkedVal);
+                $checkbox.attr('checked', true);
+            }
+        });
+    };
+
+    init();
+};
+;
+
+// Global object KenobiSoft
+// This is the only global used in the entire framework
+var KenobiSoft = KenobiSoft || {};
+
+// Define metafields object
+KenobiSoft.metafields = KenobiSoft.metafields || {};
+
+// Define date metafield
+KenobiSoft.metafields.date = KenobiSoft.metafields.date || function ($component) {
+
+    // define local vars
+    var $date = $component.find('input'),
+        dateFormat = $component.data('format');
+
+    // define init function
+    var init = function () {
+
+        $date.datepicker({
+            dateFormat: dateFormat
+        });
+    };
+
+    init();
 };
 ;
 
@@ -13351,10 +13391,12 @@ KenobiSoft.metafields.default = KenobiSoft.metafields.default || function ($comp
         window.location.href = $(this).find('a').attr('href');
     });
 
+    /*
     // check checkbox on label click
-    $('label').on('click', function (e) {
+    $('label').on('click', function(e) {
         $(this).find('input[type="checkbox"]').trigger('click');
     });
+    */
 
     // highlight wysiwyg on click
     $('.ksfc-metafield[data-metafield="wysiwyg"]').on('click', function () {

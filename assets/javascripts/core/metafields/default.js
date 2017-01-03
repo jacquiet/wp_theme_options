@@ -29,11 +29,12 @@ KenobiSoft.metafields.default = KenobiSoft.metafields.default || function($compo
         window.location.href = $(this).find('a').attr('href');
     });
 
-
+    /*
     // check checkbox on label click
     $('label').on('click', function(e) {
         $(this).find('input[type="checkbox"]').trigger('click');
     });
+    */
 
 
     // highlight wysiwyg on click
@@ -55,6 +56,5 @@ KenobiSoft.metafields.default = KenobiSoft.metafields.default || function($compo
         if ( $metafield.attr('data-metafield') !== 'wysiwyg' ) {
             $('.trumbowyg-box').length > 0 && $('.trumbowyg-box').removeClass('active');
         }
-
     });
 };

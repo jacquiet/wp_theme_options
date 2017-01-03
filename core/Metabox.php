@@ -225,33 +225,22 @@ class Metabox {
      * @param $args
      */
     protected static function _createDateInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
         $dateFormat  = isset($args['format']) ? $args['format'] : 'dd/mm/yy';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
-
         ?>
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="date">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $name; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-            <input type="text" class="metafield <?php echo $selector; ?>" id="<?php echo $name; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
-        </div>
 
-        <script type="text/javascript">
-            // Helper
-            jQuery(document).ready(function($) {
-                $('#' + '<?php echo $name; ?>').datepicker({
-                    dateFormat: '<?php echo $dateFormat; ?>'
-                });
-            });
-        </script>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="date" data-format="<?php echo $dateFormat; ?>">
+            <?php self::createLabel($args['label'], $fieldName); ?>
+
+            <input type="text" class="metafield <?php echo $selector; ?>" id="<?php echo $fieldName; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" <?php echo $required; ?>/>
+
+            <?php self::createDescription($args['description']); ?>
+        </div>
         <?php
     }
 
