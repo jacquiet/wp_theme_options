@@ -419,7 +419,7 @@ class Metabox {
 
             <?php self::_createHiddenInput($args); ?>
 
-            <ul id="<?php echo $fieldId; ?>" class="multiple-list <?php echo $height; ?>">
+            <ul class="multiple-list <?php echo $height; ?>">
                 <?php foreach ($data as $item): ?>
                     <?php $itemId = 'id-' . $item->ID; ?>
 
