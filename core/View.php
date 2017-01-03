@@ -70,7 +70,7 @@ class View {
             // notify for save
             $this->notify('success', array(
                 'title'    => __('Data saved'),
-                'subtitle' => __('Theme Options data saved successfully.')
+                'subtitle' => __('Floor Calculator saved successfully.')
             ));
         }
     }
@@ -194,6 +194,9 @@ class View {
         $metafields   = $this->formatData($this->getData('metafield', $data['metafields']));
         $sectionWidth = $this->getSectionWidth($data['width']);
         $widgets      = $this->getData('widget', $data['widgets']);
+
+        //echo '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>';
+        //var_dump($this->getData('widget', $data['widgets']));
         ?>
 
         <div class="<?php echo $sectionWidth; ?> col-full block-col initialzr-col initialzr-section">
@@ -324,7 +327,7 @@ class View {
 
                     <?php if ( $showSave ) : ?>
                         <div class="buttons-group">
-                            <a href="#" class="ks_theme_options-btn button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
+                            <a href="#" class="button-save" title="<?php echo __('Click to save your data'); ?>"><?php echo __('Save'); ?></a>
                         </div>
                     <?php endif; ?>
 
@@ -376,16 +379,7 @@ class View {
      * @return bool
      */
     public function isUpdated() {
-        return strpos($this->getUrl(), self::$config['module']['dir']) !== false && $this->helper->postParamExist('action') && $_POST['action'] === self::$config['module']['params']['update'];
-    }
-
-
-    /**
-     * Is module page
-     * @return bool
-     */
-    public function isModulePage() {
-        return strpos($this->getUrl(), self::$config['module']['dir']) !== false;
+        return $this->helper->postParamExist('action') && $_POST['action'] === self::$config['module']['params']['update'];
     }
 
 
@@ -618,7 +612,7 @@ class View {
 
             // Create hidden input
             Metabox::createField(array(
-                'type'        => 'textarea_hidden',
+                'type'        => 'input_hidden',
                 'name'        => $name,
                 'value'       => $value,
                 'option_name' => $optionName

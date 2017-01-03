@@ -9,9 +9,11 @@ var babel         = require('gulp-babel');
 var minify   	  = require('gulp-minify');
 var sequence      = require('run-sequence');
 var jsPaths  	  = [
-	'assets/javascripts/libs/base/*.js',
-	'assets/javascripts/libs/*.js',
-	'assets/javascripts/core/*.js'
+	'./assets/javascripts/libs/*.js',
+	'./assets/javascripts/core/base/*.js',
+    './assets/javascripts/core/metafields/*.js',
+    './assets/javascripts/core/widgets/*.js',
+	'./assets/javascripts/core/main.js'
 ];
 
 

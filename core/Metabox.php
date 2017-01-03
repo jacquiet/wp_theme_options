@@ -17,7 +17,6 @@ namespace ThemeOptions;
  * - file
  * - image
  * - textarea
- * - textarea_hidden
  * - dropdown_single
  * - dropdown_multiple
  * - editor
@@ -78,9 +77,6 @@ class Metabox {
             case 'textarea':
                 self::_createTextarea($args);
                 break;
-            case 'textarea_hidden':
-                self::_createTextareaHidden($args);
-                break;
             case 'dropdown_single':
                 self::_createDropdownSingle($args);
                 break;
@@ -110,23 +106,21 @@ class Metabox {
      * @param $args
      */
     protected static function _createTextInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
-
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
         ?>
-            <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="text">
-                <?php if ( self::$createNonce ) : ?>
-                    <?php self::createNonce($args); ?>
-                <?php endif; ?>
-                <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-                <input type="text" class="metafield <?php echo $selector; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
-            </div>
+
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="text">
+            <?php self::createLabel($args['label'], $fieldName); ?>
+
+            <input type="text" class="metafield <?php echo $selector; ?>" id="<?php echo $fieldName; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" <?php echo $required; ?>/>
+
+            <?php self::createDescription($args['description']); ?>
+        </div>
         <?php
     }
 
@@ -136,22 +130,20 @@ class Metabox {
      * @param $args
      */
     protected static function _createEmailInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
-
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
         ?>
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="email">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-            <input type="email" pattern="[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*" class="metafield <?php echo $selector; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
+
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="email">
+            <?php self::createLabel($args['label'], $fieldName); ?>
+
+            <input type="email" pattern="[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*" class="metafield <?php echo $selector; ?>" id="<?php echo $fieldName; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" <?php echo $required; ?>/>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
     <?php
     }
@@ -162,25 +154,23 @@ class Metabox {
      * @param $args
      */
     protected static function _createNumberInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
         $min         = isset($args['min']) && is_numeric(floatval($args['min'])) ? $args['min'] : 0;
-        $max         = isset($args['max']) && is_numeric(floatval($args['max'])) ? $args['max'] : 200;
+        $max         = isset($args['max']) && is_numeric(floatval($args['max'])) ? $args['max'] : 1000000;
         $step        = isset($args['step']) && is_numeric(floatval($args['step'])) ? $args['step'] : 1;
 
         ?>
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="number">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $name; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-            <input type="number" step="<?php echo $step; ?>" min="<?php echo $min; ?>" max="<?php echo $max; ?>" class="metafield <?php echo $selector; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="number">
+            <?php self::createLabel($args['label'], $fieldName); ?>
+
+            <input type="number" step="<?php echo $step; ?>" min="<?php echo $min; ?>" max="<?php echo $max; ?>" class="metafield <?php echo $selector; ?>" id="<?php echo $fieldName; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" <?php echo $required; ?>/>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
         <?php
     }
@@ -191,14 +181,11 @@ class Metabox {
      * @param $args
      */
     protected static function _createHiddenInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
         ?>
-        <div class="ksfc-metafield hidden" data-metafield="hidden_input">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
+        <div class="custom-metafield hidden" data-metafield="hidden_input">
             <input type="hidden" class="metafield" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" />
         </div>
         <?php
@@ -210,46 +197,25 @@ class Metabox {
      * @param $args
      */
     protected static function _createCheckboxInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
+        $value       = self::sanitizeValue($args['value']);
+        $fieldName   = self::getFieldName($args['option_name'], $name);
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
         $checked     = intval($value) === 1 ? 'checked' : '';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="checkbox">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="checkbox">
+            <?php
+            self::createLabel($args['label'], $fieldName);
+            self::_createHiddenInput($args);
+            ?>
 
-            <?php self::_createHiddenInput($args); ?>
+            <input type="checkbox" id="<?php echo $name; ?>" class="metafield <?php echo $selector; ?>" id="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" <?php echo $required; ?> <?php echo $checked; ?>/>
 
-            <input type="checkbox" id="<?php echo $name; ?>" class="metafield <?php echo $selector; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?> <?php echo $checked; ?>/>
-
-            <label for="<?php echo $name; ?>" title="<?php echo $description; ?>" style="display: inline;">
-                <?php echo $label; ?>
-            </label>
+            <?php self::createDescription($args['description']); ?>
         </div>
-
-        <script type="text/javascript">
-            // Helper
-            jQuery(document).ready(function($) {
-                $("#" + "<?php echo $name; ?>").on('change', function() {
-
-                    var $field = $(this).parent().find('input[type="hidden"]');
-                    if ( $(this).is(':checked') ) {
-                        $field.val(1);
-                        $field.attr('value', 1);
-                    } else {
-                        $field.val(0);
-                        $field.attr('value', 0);
-                    }
-                });
-            });
-        </script>
         <?php
     }
 
@@ -542,16 +508,6 @@ class Metabox {
     }
 
 
-    protected function _createTextareaHidden($args) {
-        $value     = stripslashes($args['value']);
-        $name      = $args['name'];
-        $fieldName = self::getFieldName($args['option_name'], $name);
-        ?>
-        <textarea name="<?php echo $fieldName; ?>" class="ksfc-textarea textarea-hidden"><?php echo stripslashes($value); ?></textarea>
-        <?php
-    }
-
-
     /**
      * Create dropdown single
      * @param $args
@@ -628,6 +584,12 @@ class Metabox {
                 <?php endforeach; ?>
             </ul>
         </div>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+
+            });
+        </script>
     <?php
     }
 
@@ -697,7 +659,6 @@ class Metabox {
      */
     protected function _createMap($args) {
         $markerDir   = get_stylesheet_directory_uri() . '/modules/' . $args['module']['dir'] . '/assets/images/map-marker.png';
-
         $rawValues   = !empty($args['value']) ? preg_replace('/\\\\\"/',"\"", $args['value']) : '';
         $values      = json_decode($rawValues);
 
@@ -964,6 +925,8 @@ class Metabox {
 
                 var contains = function(ids, val) {
 
+                    // console.log(ids, val);
+
                     for (var i in ids.urls) {
                         var cleanUrl = val.replace(/-\d+x\d+((\.png)|(\.jpg)|(\.gif)|(\.tif))/g, '');
 
@@ -1072,6 +1035,16 @@ class Metabox {
 
 
     /**
+     * Sanitize value
+     * @param $value
+     * @return string
+     */
+    public static function sanitizeValue($value) {
+        return stripslashes(htmlentities($value));
+    }
+
+
+    /**
      * Get field name
      * @param string $optionName
      * @param string $name
@@ -1079,6 +1052,63 @@ class Metabox {
      */
     protected static function getFieldName($optionName, $name) {
         return $optionName . '[' . $name . ']';
+    }
+
+
+    /**
+     * Get size
+     * @param $size
+     * @return string
+     */
+    protected static function getSize($size) {
+        return isset($size) && !empty($size) ? $size : 'auto';
+    }
+
+
+    /**
+     * Get required
+     * @param $required
+     * @return string
+     */
+    protected static function getRequired($required) {
+        return isset($required) && !empty($required) && $required === 'true' ? 'required' : '';
+    }
+
+
+    /**
+     * Get selector
+     * @param $selector
+     * @return string
+     */
+    protected static function getSelector($selector) {
+        return isset($selector) && !empty($selector) ? $selector : '';
+    }
+
+
+    /**
+     * Create label
+     * @param $label
+     * @param $for
+     */
+    protected static function createLabel($label, $for = null) {
+        if ( isset($label) && !empty($label) ) {
+            ?>
+            <label for="<?php echo $for; ?>"><?php echo $label; ?></label>
+            <?php
+        }
+    }
+
+
+    /**
+     * Create description
+     * @param $description
+     */
+    protected static function createDescription($description) {
+        if ( isset($description) && !empty($description) ) {
+            ?>
+            <p class="description"><?php echo $description; ?></p>
+            <?php
+        }
     }
 
 

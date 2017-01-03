@@ -41,22 +41,6 @@ class Initialzr {
 
 
     /**
-     * Construct
-     * @param $config
-     */
-    private function __construct($config) {
-        $this->setup();
-
-        $this->helper 	  = new Helper();
-        $this->config 	  = $this->helper->xmlToArr($config);
-        $this->view   	  = new View($this->config);
-        self::$collection = new Collection($this->config['module']['collection']);
-
-        $this->monitor();
-    }
-
-
-    /**
      * Get instance of the class
      * @param $config
      * @return mixed
@@ -69,6 +53,22 @@ class Initialzr {
         }
 
         return self::$instance[$c];
+    }
+
+
+    /**
+     * Construct
+     * @param $config
+     */
+    private function __construct($config) {
+        $this->setup();
+
+        $this->helper 	  = new Helper();
+        $this->config 	  = $this->helper->xmlToArr($config);
+        $this->view   	  = new View($this->config);
+        self::$collection = new Collection($this->config['module']['collection']);
+
+        $this->monitor();
     }
 
 
@@ -99,15 +99,9 @@ class Initialzr {
             wp_enqueue_media();
             wp_enqueue_script('jquery');
             wp_enqueue_script('jquery-ui-datepicker');
-
-            if ( $this->view->isModulePage() ) {
-                wp_enqueue_style($module['dir'] . '-grid', get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/stylesheets/grid.css');
-            }
-
             wp_enqueue_style($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/stylesheets/style.css');
-
             wp_enqueue_script($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/javascripts/main' . $scriptExt, array('jquery'));
-            wp_enqueue_script($module['dir'] . '_googleMaps', 'https://maps.googleapis.com/maps/api/js?key=' . $module['mapKey']);
+            wp_enqueue_script($module['dir'] . '_googleMaps', 'http://maps.google.com/maps/api/js?sensor=false');
         });
     }
 

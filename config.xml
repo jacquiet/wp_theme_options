@@ -5,13 +5,13 @@
 		<version>2.0.0</version>
 		<author>KenobiSoft</author>
 		<dir>theme_options</dir>
-        <mode>production</mode>
+        <mode>development</mode>
         <collection>
             <optionGroup>sa_theme_options</optionGroup>
             <optionName>sa_options</optionName>
         </collection>
 		<params>
-			<page>theme-options-page</page>
+			<page>initialzr-page</page>
 			<update>update</update>
 		</params>
         <defaultView>dashboard</defaultView>
@@ -28,29 +28,10 @@
                     <subtitle>Activity information about posts.</subtitle>
                     <metafields>
                         <metafield>
-                            <type>text</type>
-                            <name>text1</name>
-                            <label>Text</label>
-                            <description>Description...</description>
-                        </metafield>
-                    </metafields>
-                </section>
-            </sections>
-        </page>
-        <page>
-            <name>Home</name>
-            <masonry>true</masonry>
-            <sections>
-                <section>
-                    <width>3/6</width>
-                    <title>Another Title</title>
-                    <subtitle>Activity information about posts.</subtitle>
-                    <metafields>
-                        <metafield>
-                            <type>text</type>
-                            <name>text2</name>
-                            <label>Text</label>
-                            <description>Description...</description>
+                            <type>checkbox</type>
+                            <name>checkbox_field</name>
+                            <label>Checkbox Field</label>
+                            <description>This is a checkbox field.</description>
                         </metafield>
                     </metafields>
                 </section>
