@@ -255,14 +255,10 @@ class Metabox {
         $value       = stripslashes($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
         $size        = self::getSize($args['size']);
-        $required    = self::getRequired($args['required']);
-        $selector    = self::getSelector($args['selector']);
-        $fileId      = '';
-        $fileUrl     = '';
+        $fileUrl     = null;
 
         if ( ! empty($value) ) {
             $data = json_decode($value, JSON_PRETTY_PRINT);
-            $fileId = $data['id'];
             $fileUrl = $data['url'];
         }
         ?>
@@ -289,115 +285,36 @@ class Metabox {
      * @param $args
      */
     protected function __createImageInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = stripslashes($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $btnDownload = $name . '-button-download-file';
-        $btnRemove   = $name . '-button-remove-file';
-        $buttonId    = $name . '-button';
-        $imgBoxId    = $name . '-image-box';
+        $size        = self::getSize($args['size']);
+        $imageId     = null;
+        $imageUrl    = null;
 
+        if ( ! empty($value) ) {
+            $data = json_decode($value, JSON_PRETTY_PRINT);
+            $imageId  = $data['id'];
+            $imageUrl = $data['url'];
+        }
         ?>
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="image">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $name; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
 
-            <input type="hidden" class="metafield" id="<?php echo $name; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="image" data-image-id="<?php echo $imageId; ?>">
+            <?php self::createLabel($args['label'], $fieldName); ?>
 
-            <div class="image-upload-box <?php echo !empty($value) ? '' : 'hidden' ?>" id="<?php echo $imgBoxId; ?>">
-                <a class="gallery-image-link" href="<?php echo $value; ?>"><img src="<?php echo $value; ?>" alt=""/></a>
+            <a href="<?php echo !empty($value) ? $imageUrl : '#' ?>" class="button-open-image <?php echo !empty($value) ? '' : 'hidden' ?>" target="_blank">
+                <img src="<?php echo !empty($value) ? $imageUrl : '' ?>" alt="metafield-image" class="<?php echo !empty($value) ? '' : 'hidden' ?>" height="220px"/>
+            </a>
+
+            <?php self::_createHiddenTextarea($args); ?>
+
+            <div class="after-metafield">
+                <a href="#" class="button-add"><?php echo __('Add image'); ?></a>
+                <a href="#" class="button-remove <?php echo !empty($value) ? '' : 'hidden'; ?>"><?php echo __('Remove image'); ?></a>
+
+                <?php self::createDescription($args['description']); ?>
             </div>
-
-            <input type="button" class="button-file-upload" id="<?php echo $buttonId; ?>" value="<?php echo __('Select file'); ?>" title="<?php echo $description; ?>"/>
-
-            <input type="button" class="button-remove-file <?php echo !empty($value) ? '' : 'hidden' ?>" id="<?php echo $btnRemove; ?>" value="<?php echo __('Remove file'); ?>" "/>
-
         </div>
-
-        <script type="text/javascript">
-            // Helper
-            jQuery(document).ready(function($) {
-                var meta_image_frame;
-
-                $('#' + '<?php echo $buttonId; ?>').click(function(e){
-                    e.preventDefault();
-
-                    if ( meta_image_frame ) {
-                        meta_image_frame.open();
-                        return;
-                    }
-
-                    // Sets up the media library frame
-                    meta_image_frame = wp.media.frames.meta_image_frame = wp.media({
-                        title: '<?php echo __( 'Choose or Upload an Image' ); ?>',
-                        button: {
-                            text:  '<?php echo __( 'Use this image' ); ?>'
-                        }
-                    });
-
-                    // Runs when an image is selected.
-                    meta_image_frame.on('select', function(){
-                        // Grabs the attachment selection and creates a JSON representation of the model.
-                        var media_attachment = meta_image_frame.state().get('selection').first().toJSON();
-                        // Sends the attachment URL to our custom image input field.
-                        $('#' + '<?php echo $name; ?>').val(media_attachment.url);
-
-                        var $imgBox = $('#'+ '<?php echo $args['name']; ?>-image-box');
-                        $imgBox.hide();
-                        $imgBox.find('img').attr('src', media_attachment.url);
-                        $imgBox.find('img').show();
-                        $imgBox.removeClass('hidden');
-                        $imgBox.fadeIn(300);
-
-                        $('#' + '<?php echo $name; ?>').parent().find('.button-remove-file').removeClass('hidden');
-                    });
-
-                    // Runs on open
-                    meta_image_frame.on('open', function() {
-                        setTimeout(function() {
-                            var selection = meta_image_frame.state().get('selection');
-                            var $allImages = $('.attachments li');
-                            var selectedId = $('#' + '<?php echo $name; ?>').val();
-
-                            for (var i = 0, j = $allImages.length; i < j; i++) {
-                                var $img = $allImages.eq(i);
-                                var id = $img.find('img').attr('src');
-                                var cleanUrl = id.replace(/-\d+x\d+((\.png)|(\.jpg)|(\.gif)|(\.tif))/g, '');
-
-                                if ( selectedId.indexOf(cleanUrl) !== -1 && !$img.hasClass('selected') ) {
-                                    $img.addClass('selected');
-                                    selection.add(wp.media.attachment(selectedId));
-                                    break;
-                                }
-                            }
-                        }, 500);
-                    });
-
-                    // Opens the media library frame.
-                    meta_image_frame.open();
-                });
-
-                $('#' + '<?php echo $btnRemove; ?>').on('click', function(e) {
-                    e.preventDefault();
-
-                    $('#' + '<?php echo $name; ?>').val('');
-                    $('#'+ '<?php echo $args['name']; ?>-image-box').hide();
-
-                    $(this).remove();
-                });
-
-                // initialize image magnification
-                $('#' + '<?php echo $imgBoxId; ?>').find('.gallery-image-link').magnificPopup({
-                    type: 'image'
-                });
-            });
-        </script>
         <?php
     }
 

@@ -10,14 +10,17 @@ KenobiSoft.metafields = KenobiSoft.metafields || {};
 
 
 // Define image metafield
-KenobiSoft.metafields.file = KenobiSoft.metafields.file || function($component) {
+KenobiSoft.metafields.image = KenobiSoft.metafields.image || function($component) {
 
     // define local vars
-    var meta_image_frame,
-        $buttonOpen   = $component.find('.button-open'),
+    var $ = jQuery,
+        meta_image_frame,
+        $buttonOpen   = $component.find('.button-open-image'),
         $buttonAdd    = $component.find('.button-add'),
         $buttonRemove = $component.find('.button-remove'),
-        $metafield    = $component.find('textarea');
+        $metafield    = $component.find('textarea'),
+        $metafieldImg = $component.find('img'),
+        selectedImgId = null;
 
     var init = function() {
         $buttonAdd.on('click', function(e) {
@@ -30,9 +33,9 @@ KenobiSoft.metafields.file = KenobiSoft.metafields.file || function($component) 
 
             // Sets up the media library frame
             meta_image_frame = wp.media.frames.meta_image_frame = wp.media({
-                title: 'Select or upload a file',
+                title: 'Select or upload an image',
                 button: {
-                    text: 'Use this file'
+                    text: 'Use this image'
                 }
             });
 
@@ -47,15 +50,40 @@ KenobiSoft.metafields.file = KenobiSoft.metafields.file || function($component) 
                     url: media_attachment.url
                 };
 
+                selectedImgId = imageObj.id;
+
                 // store data in metafield
                 $metafield.val(JSON.stringify(imageObj));
 
                 // toggle buttons
                 $buttonRemove.removeClass('hidden');
                 $buttonOpen.attr('href', imageObj.url);
+                $metafieldImg.attr('src', imageObj.url);
                 $buttonOpen.removeClass('hidden');
+                $metafieldImg.removeClass('hidden');
             });
 
+            /*
+            // Runs on media open
+            meta_image_frame.on('open', function() {
+                setTimeout(function() {
+                    var selection = meta_image_frame.state().get('selection');
+                    var $allImages = $('.attachments li');
+
+                    for (var i = 0, j = $allImages.length; i < j; i++) {
+                        var $img     = $allImages.eq(i);
+                        var id       = $img.find('img').attr('src');
+                        var cleanUrl = id.replace(/-\d+x\d+((\.png)|(\.jpg)|(\.gif)|(\.tif))/g, '');
+
+                        if ( selectedImgId && selectedImgId.indexOf(cleanUrl) !== -1 && !$img.hasClass('selected') ) {
+                            $img.addClass('selected');
+                            selection.add(wp.media.attachment(selectedImgId));
+                            break;
+                        }
+                    }
+                }, 500);
+            });
+            */
 
             // Opens the media library frame.
             meta_image_frame.open();
@@ -70,6 +98,11 @@ KenobiSoft.metafields.file = KenobiSoft.metafields.file || function($component) 
             // toggle buttons
             $buttonOpen.addClass('hidden');
             $buttonRemove.addClass('hidden');
+        });
+
+        // initialize image magnification
+        $buttonOpen.magnificPopup({
+            type: 'image'
         });
     };
 
