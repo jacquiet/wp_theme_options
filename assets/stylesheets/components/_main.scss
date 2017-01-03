@@ -270,18 +270,6 @@
   display: none;
 }
 
-.custom-metafield .button-download-file {
-  display: block;
-  height: 42px;
-
-  .icon {
-    font-size: 42px;
-    overflow: hidden;
-    height: 42px;
-    width: 42px;
-  }
-}
-
 .ksfc-textarea.small {
   height: 100px;
 }
@@ -294,8 +282,8 @@
   height: 300px;
 }
 
-.custom-metafield .button-download-file.hidden {
-  display: none;
+.after-metafield {
+  display: block;
 }
 
 .custom-metafield[data-metafield="plain_text"] {

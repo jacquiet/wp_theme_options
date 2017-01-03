@@ -28,10 +28,11 @@
                     <subtitle>Activity information about posts.</subtitle>
                     <metafields>
                         <metafield>
-                            <type>checkbox</type>
-                            <name>checkbox_field</name>
-                            <label>Checkbox Field</label>
-                            <description>This is a checkbox field.</description>
+                            <type>date</type>
+                            <name>date_field</name>
+                            <label>Date Field</label>
+                            <description>This is a date field.</description>
+                            <format>dd-mm-yy</format>
                         </metafield>
                     </metafields>
                 </section>

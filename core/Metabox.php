@@ -36,9 +36,7 @@ class Metabox {
     /**
      * Construct
      */
-    public function __construct() {
-
-    }
+    public function __construct() {}
 
 
     /**
@@ -76,6 +74,9 @@ class Metabox {
                 break;
             case 'textarea':
                 self::_createTextarea($args);
+                break;
+            case 'textarea_hidden':
+                self::_createHiddenTextarea($args);
                 break;
             case 'dropdown_single':
                 self::_createDropdownSingle($args);
@@ -250,103 +251,36 @@ class Metabox {
      * @param $args
      */
     protected static function _createFileInput($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = stripslashes($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $btnDownload = $name . '-button-download-file';
-        $btnRemove   = $name . '-button-remove-file';
-        $buttonId    = $name . '-button';
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
+        $fileId      = '';
+        $fileUrl     = '';
 
+        if ( ! empty($value) ) {
+            $data = json_decode($value, JSON_PRETTY_PRINT);
+            $fileId = $data['id'];
+            $fileUrl = $data['url'];
+        }
         ?>
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="file">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $name; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
 
-            <a href="<?php echo !empty($value) ? $value : '#' ?>" id="<?php echo $btnDownload; ?>" class="button-download-file <?php echo !empty($value) ? '' : 'hidden' ?>" title="<?php echo __('Open file'); ?>" target="_blank"><span class="icon dashicons dashicons-media-default"></span></a>
-            <input type="hidden" class="metafield" id="<?php echo $name; ?>" name="<?php echo $fieldName; ?>" value="<?php echo $value; ?>" title="<?php echo $description; ?>" <?php echo $required; ?>/>
-            <input type="button" class="button-file-upload" id="<?php echo $buttonId; ?>" value="<?php echo __('Select file'); ?>" title="<?php echo $description; ?>"/>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="file">
+            <?php self::createLabel($args['label'], $fieldName); ?>
 
-            <input type="button" class="button-remove-file <?php echo !empty($value) ? '' : 'hidden' ?>" id="<?php echo $btnRemove; ?>" value="<?php echo __('Remove file'); ?>"/>
+            <a href="<?php echo !empty($value) ? $fileUrl : '#' ?>" class="button-open <?php echo !empty($value) ? '' : 'hidden' ?>" target="_blank"><?php echo __('Open file'); ?></a>
+
+            <?php self::_createHiddenTextarea($args); ?>
+
+            <div class="after-metafield">
+                <a href="#" class="button-add"><?php echo __('Add file'); ?></a>
+                <a href="#" class="button-remove <?php echo !empty($value) ? '' : 'hidden'; ?>"><?php echo __('Remove file'); ?></a>
+
+                <?php self::createDescription($args['description']); ?>
+            </div>
         </div>
-        <script type="text/javascript">
-            // Helper
-            jQuery(document).ready(function($) {
-                var meta_image_frame;
-                var $fileBtn = $('#' + '<?php echo $buttonId; ?>');
-
-                $fileBtn.click(function(e){
-                    e.preventDefault();
-
-                    if ( meta_image_frame ) {
-                        meta_image_frame.open();
-                        return;
-                    }
-
-                    // Sets up the media library frame
-                    meta_image_frame = wp.media.frames.meta_image_frame = wp.media({
-                        title: '<?php echo __( 'Choose or Upload a File' ); ?>',
-                        button: {
-                            text:  '<?php echo __( 'Use this file' ); ?>'
-                        }
-                    });
-
-                    // Runs when an image is selected.
-                    meta_image_frame.on('select', function(){
-                        // Grabs the attachment selection and creates a JSON representation of the model.
-                        var media_attachment = meta_image_frame.state().get('selection').first().toJSON();
-                        // Sends the attachment URL to our custom image input field.
-                        $('#' + '<?php echo $name; ?>').val(media_attachment.url);
-
-                        var $buttonDownloadFile = $('#' + '<?php echo $btnDownload;?>');
-
-                        $('#' + '<?php echo $name; ?>').parent().find('.button-remove-file').removeClass('hidden');
-                        $buttonDownloadFile.attr('href', media_attachment.url);
-                        $buttonDownloadFile.removeClass('hidden');
-
-                        $('.button-remove-file').on('click', function(e) {
-                            e.preventDefault();
-
-                            $('#' + '<?php echo $name; ?>').val('');
-
-                            var $wrapper = $(this).parent();
-
-                            $wrapper.find('.button-download-file').hide();
-                            $(this).remove();
-                        });
-                    });
-
-                    // Opens the media library frame.
-                    meta_image_frame.open();
-                });
-
-                $('#' + '<?php echo $name; ?>').parent().hover(function(e) {
-                    var $btnRemove = $(this).find('.button-remove-file');
-
-                    $btnRemove.addClass('active');
-                }, function(e) {
-                    var $btnRemove = $(this).find('.button-remove-file');
-
-                    $btnRemove.removeClass('active');
-                });
-
-                $('#' + '<?php echo $name; ?>').parent().find('.button-remove-file').on('click', function(e) {
-                    e.preventDefault();
-
-                    $('#' + '<?php echo $name; ?>').val('');
-
-                    var $wrapper = $(this).parent();
-
-                    $wrapper.find('.button-download-file').hide();
-                    $(this).remove();
-                });
-            });
-        </script>
         <?php
     }
 
@@ -494,6 +428,21 @@ class Metabox {
             <textarea name="<?php echo $fieldName; ?>" title="<?php echo $description; ?>" rows="<?php echo $rows; ?>" cols="<?php echo $cols; ?>" class="ksfc-textarea <?php echo $height; ?> <?php echo $selector; ?>" <?php echo $required; ?>><?php echo $value; ?></textarea>
         </div>
         <?php
+    }
+
+
+    /**
+     * Create hidden textarea
+     * @param $args
+     */
+    protected function _createHiddenTextarea($args) {
+        $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
+        $fieldName   = self::getFieldName($args['option_name'], $name);
+        ?>
+
+        <textarea id="<?php echo $fieldName ?>" name="<?php echo $fieldName; ?>" class="metafield textarea-hidden"><?php echo $value; ?></textarea>
+    <?php
     }
 
 
