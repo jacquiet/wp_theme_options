@@ -17,6 +17,7 @@ namespace ThemeOptions;
  * - file
  * - image
  * - textarea
+ * - textarea_hidden
  * - dropdown_single
  * - dropdown_multiple
  * - editor
@@ -324,25 +325,22 @@ class Metabox {
      * @param $args
      */
     protected function _createTextarea($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $height      = isset($args['height']) ? $args['height'] : '';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
+        $size        = self::getSize($args['size']);
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
         $rows        = isset($args['rows']) && is_numeric($args['rows']) ? $args['rows'] : 4;
         $cols        = isset($args['cols']) && is_numeric($args['cols']) ? $args['cols'] : 6;
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="textarea">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-            <textarea name="<?php echo $fieldName; ?>" title="<?php echo $description; ?>" rows="<?php echo $rows; ?>" cols="<?php echo $cols; ?>" class="ksfc-textarea <?php echo $height; ?> <?php echo $selector; ?>" <?php echo $required; ?>><?php echo $value; ?></textarea>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="textarea">
+            <?php self::createLabel($args['label'], $fieldName); ?>
+
+            <textarea name="<?php echo $fieldName; ?>" rows="<?php echo $rows; ?>" cols="<?php echo $cols; ?>" id="<?php echo $fieldName; ?>" class="metafield <?php echo $selector; ?>" <?php echo $required; ?>><?php echo $value; ?></textarea>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
         <?php
     }
@@ -368,31 +366,30 @@ class Metabox {
      * @param $args
      */
     protected function _createDropdownSingle($args) {
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
+        $size        = self::getSize($args['size']);
+
+        // DEV NOTE: Required attribute is not used for this field
+        $required    = self::getRequired($args['required']);
+
+        $selector    = self::getSelector($args['selector']);
         $data        = isset($args['data']) && !empty($args['data']) ? $args['data'] : array();
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="dropdown_single">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
+        <div class="custom-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="dropdown_single">
+            <?php self::createLabel($args['label'], $fieldName); ?>
 
-            <select class="view-dropdown-single" name="<?php echo $fieldName; ?>" title="<?php echo $description; ?>">
+            <select name="<?php echo $fieldName; ?>">
                 <option value="-1" selected="selected"><?php echo __('Select one of the options') ?></option>
 
                 <?php foreach ($data as $item): ?>
                     <option value="<?php echo $item->ID; ?>" <?php echo $value == $item->ID ? 'selected="selected"' : ''; ?>><?php echo $item->post_title; ?></option>
                 <?php endforeach ?>
             </select>
-            <div class="default-select-icon"><span class="icon dashicons dashicons-arrow-down-alt2"></span></div>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
         <?php
     }
@@ -403,24 +400,22 @@ class Metabox {
      * @param $args
      */
     protected function _createDropdownMultiple($args) {
-        $value       = isset($args['value']) && gettype($args['value']) === 'array' ? $args['value'] : array();
+        $value       = isset($args['value']) && is_array($args['value']) ? $args['value'] : array();
         $name        = $args['name'];
         $fieldName   = self::getFieldName($args['option_name'], $name) . '[]';
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
         $size        = isset($args['size']) ? $args['size'] : '';
+
+        // DEV NOTE: Required attribute is not used for this field
         $required    = isset($args['required']) && $args['required'] === 'true';
+
         $height      = isset($args['height']) ? $args['height'] : '';
         $selector    = isset($args['selector']) ? $args['selector'] : '';
         $data        = isset($args['data']) && !empty($args['data']) ? $args['data'] : array();
         $fieldId     = $name . '-list';
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="dropdown_single">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
+        <div class="custom-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="dropdown_multiple">
+            <?php self::createLabel($args['label'], $fieldName); ?>
 
             <?php self::_createHiddenInput($args); ?>
 
@@ -430,21 +425,17 @@ class Metabox {
 
                     <li>
                         <div>
-                            <input type="checkbox" <?php echo in_array($item->ID, $value) ? 'checked="checked"' : ''; ?> value="<?php echo $item->ID; ?>" name="<?php echo $fieldName ?>" id="<?php echo $itemId; ?>" style="display: inline-block;"/>
-                            <label for="<?php echo $itemId; ?>" style="display: inline-block; width: auto;">
+                            <input type="checkbox" <?php echo in_array($item->ID, $value) ? 'checked="checked"' : ''; ?> value="<?php echo $item->ID; ?>" name="<?php echo $fieldName ?>" id="<?php echo $itemId; ?>"/>
+                            <label for="<?php echo $itemId; ?>">
                                 <?php echo $item->post_title; ?>
                             </label>
                         </div>
                     </li>
                 <?php endforeach; ?>
             </ul>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
-
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
-
-            });
-        </script>
     <?php
     }
 
@@ -895,7 +886,29 @@ class Metabox {
      * @return string
      */
     public static function sanitizeValue($value) {
-        return stripslashes(htmlentities($value));
+        if ( is_array($value) ) {
+            return self::sanitizeValues($value);
+        } else {
+            return stripslashes(htmlentities($value));
+        }
+    }
+
+
+    /**
+     * Sanitize values
+     * @param $values
+     * @return array
+     */
+    public static function sanitizeValues($values) {
+        $sanitizedValues = array();
+
+        if ( count($values) > 0 ) {
+            foreach ( $values as $value ) {
+                array_push($sanitizedValues, self::sanitizeValue($value));
+            }
+        }
+
+        return $sanitizedValues;
     }
 
 

@@ -36,7 +36,6 @@ KenobiSoft.metafields.default = KenobiSoft.metafields.default || function($compo
     });
     */
 
-
     // highlight wysiwyg on click
     $('.ksfc-metafield[data-metafield="wysiwyg"]').on('click', function() {
         var $box = $(this).find('.trumbowyg-box');
