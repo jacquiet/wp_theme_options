@@ -445,56 +445,27 @@ class Metabox {
      * @param $args
      */
     protected static function _createWYSIWYG($args) {
-        $iconsDir    = get_stylesheet_directory_uri() . '/modules/' . $args['module']['dir'] . '/assets/fonts/trumbowyg/icons.svg';
-        $value       = $args['value'];
         $name        = $args['name'];
+        $value       = self::sanitizeValue($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
+        $size        = self::getSize($args['size']);
+
+        // DEV NOTE: Required attribute is not used for this field
+        $required    = self::getRequired($args['required']);
+
+        $selector    = self::getSelector($args['selector']);
+        $iconsDir    = get_stylesheet_directory_uri() . '/modules/' . $args['module']['dir'] . '/assets/fonts/trumbowyg/icons.svg';
         $height      = isset($args['$height']) ? $args['$height'] : '';
-        $textareaId  = $name . '-textarea';
-        $selector    = isset($args['selector']) ? $args['selector'] : '';
         ?>
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="editor">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $textareaId; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
-            <textarea class="textarea-hidden" id="<?php echo $name . '-wysiwyg'; ?>" name="<?php echo $fieldName; ?> <?php echo $selector; ?>"><?php echo $value; ?></textarea>
-            <div id="<?php echo $name; ?>" class="wysiwyg-wrapper"></div>
+
+        <div class="custom-metafield <?php echo $size; ?> <?php echo $height ?>" data-metafield="editor" data-icons-dir="<?php echo $iconsDir; ?>">
+            <?php self::createLabel($args['label'], $fieldName); ?>
+
+            <textarea class="textarea-hidden" name="<?php echo $fieldName; ?> <?php echo $selector; ?>"><?php echo $value; ?></textarea>
+            <div id="<?php echo $fieldName; ?>" class="wysiwyg-wrapper"></div>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
-        <script type="text/javascript">
-            // Helper
-            jQuery(document).ready(function ($) {
-                var $wysiwygEditor = $('#'+ '<?php echo $name; ?>');
-
-                // Initialize WYSIWYG editor
-                $wysiwygEditor.trumbowyg({
-                    svgPath: '<?php echo $iconsDir; ?>'
-                });
-
-                // Load editor content
-                $wysiwygEditor.trumbowyg('html', "<?php echo $value; ?>");
-
-                // Update field value on multiple events
-                $wysiwygEditor.on('keyup keydown keypress click', function () {
-                    var editorVal = $wysiwygEditor.html();
-                    var encodedVal = editorVal.replace(/"/g, "'");
-                    $('#' + '<?php echo $name . '-wysiwyg'; ?>').val(encodedVal);
-                });
-
-                // Update field value on button press events
-                $wysiwygEditor.parent().find('button').on('click', function () {
-                    var editorVal = $wysiwygEditor.html();
-                    var encodedVal = editorVal.replace(/"/g, "'");
-                    $('#' + '<?php echo $name . '-wysiwyg'; ?>').val(encodedVal);
-                });
-
-                $wysiwygEditor.parent().addClass('<?php echo $height; ?>');
-            });
-        </script>
     <?php
     }
 
