@@ -15,7 +15,7 @@ KenobiSoft.metafields.gallery = KenobiSoft.metafields.gallery || function($compo
     // define local vars
     var $ = jQuery,
         meta_image_frame,
-        galleries       = [],
+        galleries       = KenobiSoft.options.galleries,
         $galleryWrapper = $component.find('.gallery-wrapper'),
         $valStorage     = $component.find('textarea'),
         $btnAddImg      = $component.find('.button-add'),
@@ -82,12 +82,9 @@ KenobiSoft.metafields.gallery = KenobiSoft.metafields.gallery || function($compo
             var $sliders = $('.gallery-frame');
 
             for (var i = 0, l = $sliders.length; i < l; i++) {
-                if ( galleries.length > 0 && typeof galleries[i] !== 'undefined' ) {
-
-                    galleries[i].slider.destroy();
-                }
-                // $sliders.eq(i).attr('id', galleries[i].id);
-                initSlider($sliders.eq(i).attr('id'));
+                galleries[i].slider.destroy();
+                $sliders.eq(i).attr('id', galleries[i].id);
+                initSlider(galleries[i].id);
             }
         };
 
