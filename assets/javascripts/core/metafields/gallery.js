@@ -14,134 +14,115 @@ KenobiSoft.metafields.gallery = KenobiSoft.metafields.gallery || function($compo
 
     // define local vars
     var $ = jQuery,
-        galleries = [];
+        meta_image_frame,
+        galleries = [],
+        $galleryWrapper = $component.find('.gallery-wrapper'),
+        $valStorage = $component.find('textarea'),
+        $btnAddImg = $component.find('.button-add-images');
 
-    var init = function() {
-        // Set variable for the slider
-        var sly = null;
+    // define function for gallery initialization
+    var initGallery = function() {
+        if ( $galleryWrapper.hasClass('slick-initialized') ) {
+            $galleryWrapper.slick('unslick');
+        }
 
-        // Toggle image controls
-        var toggleImageControls = function() {
+        $galleryWrapper.not('.slick-initialized').slick({
+            dots: false,
+            infinite: false,
+            speed: 300,
+            slidesToShow: 1000,
+            slidesToScroll: 3,
+            centerMode: false,
+            variableWidth: true
+        });
+        $galleryWrapper.fadeIn(300);
 
-            // on hover
-            $('.gallery-image-wrapper, .view-image-upload-box').hover(function() {
-                // show controls
-                $(this).find('.gallery-image-controls').fadeIn(300);
-            }, function() {
-                // hide controls
-                $(this).find('.gallery-image-controls').fadeOut(300);
-            });
-        };
-
-        // initialize image magnification
-        var enableMagnification = function() {
-
-            $('.ksfc-metafield[data-metafield=gallery] .gallery-image-wrapper').magnificPopup({
-                delegate: '.gallery-image-link',
-                tLoading: 'Loading image #%curr%...',
-                type: 'image',
-                gallery: {
-                    enabled: true
-                }
-            });
-        };
-
-        // enable sliders
-        var enableSliders = function() {
-            var $sliders = $('.gallery-frame');
-
-            for (var i = 0, j = $sliders.length; i < j; i++) {
-                var id = $sliders.eq(i).attr('id');
-
-                // initialize slider
-                initSlider(id);
-            }
-        };
-
-        var initSlider = function(id) {
-
-            // Call Sly on frame
-            sly = new Sly('#' + id, {
-                horizontal: 1,
-                itemNav: 'basic',
-                smart: 1,
-                activateOn: 'click',
-                mouseDragging: 1,
-                touchDragging: 1,
-                releaseSwing: 1,
-                startAt: 0,
-                scrollBy: 0,
-                speed: 300,
-                elasticBounds: 1,
-                dragHandle: 1,
-                dynamicHandle: 1,
-                clickBar: 1
-            }, function() {}).init();
-
-            galleries.push({
-                slider: sly,
-                id: id
-            });
-
-            increaseSliderWidth();
-        };
-
-        var reloadSliders = function() {
-            var $sliders = $('.gallery-frame');
-
-            for (var i = 0, l = $sliders.length; i < l; i++) {
-                galleries[i].slider.destroy();
-
-                $sliders.eq(i).attr('id', galleries[i].id);
-
-                initSlider(galleries[i].id);
-            }
-        };
-
-        // increase slider width to fit all images
-        var increaseSliderWidth = function() {
-
-            // Get sliders
-            var $sliders = $('.gallery-frame');
-
-            // Set offset for the slider width
-            var offset = 200;
-
-            for (var i = 0, j = $sliders.length; i < j; i++) {
-
-                // Get slider
-                var $slider = $sliders.eq(i).find('ul');
-
-                // Get slider width
-                var sliderWidth = $slider.width();
-
-                // Update slider width
-                sliderWidth += offset;
-
-                // Update slider
-                $slider.css({width: sliderWidth + 'px'});
-            }
-        };
-
-        // enable slider after 100 milliseconds
-        setTimeout(function() {
-            try {
-                enableSliders();
-            } catch(e) {
-                reloadSliders();
-            }
-        }, 100);
-
-        // toggle image controls
-        toggleImageControls();
-
-        // enable magnification
         enableMagnification();
     };
 
+    // define function for gallery update
+    var updateGallery = function(urls) {
 
-    // Return public API
-    return {
-        init: init
-    }
+        // hide and empty current gallery
+        $galleryWrapper.hide();
+        $galleryWrapper.empty();
+
+        // concatenate gallery images
+        var $html = '<div class="gallery-wrapper"><ul>';
+
+        for (var u in urls) {
+            $html += '<div class="slide"><a class="gallery-image-link" href="' + urls[u].url + '"><img src="' + urls[u].url + '"/></a></div>';
+        }
+
+        $html += '</div>';
+
+        // append new gallery
+        $galleryWrapper.append($html);
+    };
+
+    // initialize image magnification
+    var enableMagnification = function() {
+
+        $galleryWrapper.magnificPopup({
+            delegate: '.gallery-image-link',
+            tLoading: 'Loading image #%curr%...',
+            type: 'image',
+            gallery: {
+                enabled: true
+            }
+        });
+    };
+
+    var init = function() {
+        initGallery();
+
+        // set up media frame
+        meta_image_frame = wp.media.frames.meta_image_frame = wp.media({
+            title: 'Choose or Upload an Image',
+            button: {
+                text: 'Use this image'
+            },
+            multiple: true
+        });
+
+        // upon image selection, update gallery
+        meta_image_frame.on('select', function(){
+
+            // get image data
+            var data = meta_image_frame.state().get('selection').toJSON();
+
+            // define urls array
+            var urls = [];
+
+            // fill urls array
+            for (var i in data) {
+                urls.push({
+                    id: data[i].id,
+                    url: data[i].url
+                });
+            }
+
+            // stringify urls array
+            var dataStr = JSON.stringify(urls);
+
+            // update val storage
+            $valStorage.html(dataStr);
+
+            // update the gallery
+            updateGallery(urls);
+
+            // initialize the new gallery
+            initGallery();
+        });
+
+        // on button click, open media gallery
+        $btnAddImg.click(function(e){
+            e.preventDefault();
+
+            // open media
+            meta_image_frame.open();
+        });
+    };
+
+    init();
 };

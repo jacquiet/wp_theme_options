@@ -505,20 +505,20 @@ class Metabox {
                 <a href="#" class="button-open-map-settings" title="<?php echo __('Toggle map settings'); ?>" data-control-opened="false"><span class="dashicons dashicons-admin-settings"></span></a>
 
                 <label><?php echo __('Latitude'); ?></label>
-                <input type="number" min="-200" max="200" step="0.0000001" name="<?php echo $name . '_lat'; ?>" class="lat control" value="<?php echo $lat_val; ?>"/>
+                <input type="number" min="-200" max="200" step="0.0000001" class="lat control" value="<?php echo $lat_val; ?>"/>
 
                 <label><?php echo __('Longitude'); ?></label>
-                <input type="number" min="-200" max="200" step="0.0000001" name="<?php echo $name . '_lng'; ?>" class="lng control" value="<?php echo $lng_val; ?>"/>
+                <input type="number" min="-200" max="200" step="0.0000001" class="lng control" value="<?php echo $lng_val; ?>"/>
 
                 <label><?php echo __('Zoom level'); ?></label>
-                <input type="number" min="0" max="22" step="1" name="<?php echo $name . '_zoom'; ?>" class="zoom control" value="<?php echo $zoom_val; ?>"/>
+                <input type="number" min="0" max="22" step="1" class="zoom control" value="<?php echo $zoom_val; ?>"/>
 
                 <a href="#" class="button-update-map" title="<?php echo __('Press to update the map') ?>"><?php echo __('Update the map'); ?></a>
             </div>
 
             <textarea class="textarea-hidden" name="<?php echo $fieldName; ?>" id="<?php echo $name; ?>"><?php echo $rawValues; ?></textarea>
 
-            <div id="<?php echo $fieldName; ?>" class="metafield"></div>
+            <div id="<?php echo $fieldName; ?>" class="metafield" style="<?php echo $height; ?>"></div>
 
             <?php self::createDescription($args['description']); ?>
         </div>
@@ -538,7 +538,7 @@ class Metabox {
         $selector      = isset($args['selector']) ? $args['selector'] : '';
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="plain_text">
+        <div class="custom-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="plain_text">
 
         <?php
 
@@ -597,162 +597,40 @@ class Metabox {
      * @param $args
      */
     protected function _createGallery($args) {
-        $originalVal = $args['value'];
-        $rawValues   = !empty($originalVal) ? preg_replace('/\\\\\"/',"\"", $originalVal) : '';
-        $value       = json_decode($rawValues);
         $name        = $args['name'];
+        $value       = stripslashes($args['value']);
         $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
-        $buttonId    = $name . '-button';
-        $fieldId     = $name . '-gallery';
-        $textareaId  = $name . '-textarea';
+        $size        = self::getSize($args['size']);
+
+        // DEV NOTE: These fields are currently not used
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
+
+        $rawValues   = $value;
+        $value       = json_decode($rawValues);
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="gallery">
-            <?php if ( self::$createNonce ) : ?>
-                <?php self::createNonce($args); ?>
-            <?php endif; ?>
-            <label for="<?php echo $fieldName; ?>" title="<?php echo $description; ?>"><?php echo $label; ?></label>
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="gallery">
+            <?php self::createLabel($args['label']); ?>
 
-            <div class="view-gallery-wrapper" id="<?php echo $fieldId; ?>">
+            <div class="gallery-wrapper">
+                <?php if ( ! empty($value) ) : ?>
+                    <?php foreach ($value as $item): ?>
 
-                <div class="gallery-frame" id="<?php echo $name; ?>">
-                    <ul>
-                        <?php if ( ! empty($value) ) : ?>
+                        <div class="slide">
+                            <a href="<?php echo $item->url; ?>" class="gallery-image-link"><img src="<?php echo $item->url; ?>" /></a>
+                        </div>
 
-                            <?php foreach ($value as $item): ?>
-                                <li>
-                                    <div class="gallery-image-wrapper">
-                                        <a href="<?php echo $item->url; ?>" class="gallery-image-link"><img src="<?php echo $item->url; ?>" /></a>
-                                    </div>
-                                </li>
-                            <?php endforeach ?>
-                        <?php endif; ?>
-                    </ul>
-                    <input type="button" class="button-image-upload" id="<?php echo $buttonId; ?>" value="<?php echo __('Select images') ?>"/>
-                </div>
+                    <?php endforeach ?>
+                <?php endif; ?>
             </div>
-            <textarea class="textarea-hidden" name="<?php echo $fieldName; ?>" id="<?php echo $textareaId; ?>"><?php echo strlen($rawValues) > 0 ? $rawValues : '{}'; ?></textarea>
+
+            <a href="#" class="button-add-images"><?php echo __('Select images') ?></a>
+
+            <textarea class="textarea-hidden" name="<?php echo $fieldName; ?>" ><?php echo $rawValues; ?></textarea>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
-        <script type="text/javascript">
-            // Helper
-            jQuery(document).ready(function($) {
-
-                // Init gallery
-                kenobiSoft.metafields.gallery.init();
-
-                var meta_image_frame;
-
-                var contains = function(ids, val) {
-
-                    // console.log(ids, val);
-
-                    for (var i in ids.urls) {
-                        var cleanUrl = val.replace(/-\d+x\d+((\.png)|(\.jpg)|(\.gif)|(\.tif))/g, '');
-
-                        if (ids.urls[i].url.indexOf(cleanUrl) !== -1 && !ids.checked[i] ) {
-                            ids.checked[i] = true;
-                            return ids.urls[i];
-                        }
-                    }
-
-                    return -1;
-                };
-
-                // Sets up the media library frame
-                meta_image_frame = wp.media.frames.meta_image_frame = wp.media({
-                    title: '<?php echo __( 'Choose or Upload an Image' ); ?>',
-                    button: {
-                        text:  '<?php echo __( 'Use this image' ); ?>'
-                    },
-                    multiple: true
-                });
-
-                // Runs when an image is added
-                meta_image_frame.on('select', function(){
-
-                    // Get image data
-                    var data = meta_image_frame.state().get('selection').toJSON();
-
-                    var urls = [];
-
-                    for (i in data) {
-                        urls.push({
-                            id: data[i].id,
-                            url: data[i].url
-                        });
-                    }
-
-                    var dataStr = JSON.stringify(urls);
-
-                    // Add urls as value to the metafield
-                    $('#' + '<?php echo $textareaId; ?>').html(dataStr);
-
-                    var $galleryWrapper = $('#' + '<?php echo $fieldId; ?>');
-
-                    $galleryWrapper.hide();
-
-                    $galleryWrapper.empty();
-
-                    var $html = '<div class="gallery-frame"><ul>';
-
-                    for (var u in urls) {
-
-                        $html += '<li><div class="gallery-image-wrapper"><a class="gallery-image-link" href="' + urls[u].url + '"><img src="' + urls[u].url + '"/></a></div></li>';
-                    }
-
-                    $html += '</ul></div>';
-
-                    $galleryWrapper.append($html);
-
-                    // Start programatically metafield [gallery]
-                    kenobiSoft.metafields.gallery.init();
-
-                    $galleryWrapper.fadeIn(300);
-                });
-
-                // Runs on open
-                meta_image_frame.on('open', function() {
-
-                    setTimeout(function() {
-                        var selection = meta_image_frame.state().get('selection');
-
-                        var $allImages = $('.attachments li');
-
-                        var ids = {
-                            urls: JSON.parse($('#' + '<?php echo $textareaId; ?>').val()),
-                            checked: []
-                        };
-
-                        for (var k in ids.urls) {
-                            ids.checked.push(false);
-                        }
-
-                        for (var i = 0, j = $allImages.length; i < j; i++) {
-                            var $img = $allImages.eq(i);
-                            var id = $img.find('img').attr('src');
-
-                            if ( contains(ids, id) !== -1 && !$img.hasClass('selected') ) {
-                                var idOriginal = contains(ids, id);
-
-                                $img.addClass('selected');
-                                selection.add(wp.media.attachment(idOriginal));
-                            }
-                        }
-                    }, 500);
-                });
-
-                $('#' + '<?php echo $buttonId; ?>').click(function(e){
-                    e.preventDefault();
-
-                    // Opens the media library frame.
-                    meta_image_frame.open();
-                });
-            });
-        </script>
         <?php
     }
 

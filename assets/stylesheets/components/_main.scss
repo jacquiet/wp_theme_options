@@ -286,6 +286,19 @@
   display: block;
 }
 
+.custom-metafield[data-metafield="gallery"] {
+
+  .gallery-wrapper {
+    position: relative;
+    overflow: hidden;
+
+    .slide {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+}
+
 .custom-metafield[data-metafield="plain_text"] {
   a {
     font-size: 16px;
