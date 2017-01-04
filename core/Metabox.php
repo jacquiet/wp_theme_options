@@ -411,7 +411,6 @@ class Metabox {
         $height      = isset($args['height']) ? $args['height'] : '';
         $selector    = isset($args['selector']) ? $args['selector'] : '';
         $data        = isset($args['data']) && !empty($args['data']) ? $args['data'] : array();
-        $fieldId     = $name . '-list';
         ?>
 
         <div class="custom-metafield <?php echo $size; ?> <?php echo $selector; ?>" data-metafield="dropdown_multiple">
@@ -599,39 +598,42 @@ class Metabox {
     protected function _createGallery($args) {
         $name        = $args['name'];
         $value       = stripslashes($args['value']);
+        $values      = json_decode($value);
         $fieldName   = self::getFieldName($args['option_name'], $name);
         $size        = self::getSize($args['size']);
 
         // DEV NOTE: These fields are currently not used
         $required    = self::getRequired($args['required']);
         $selector    = self::getSelector($args['selector']);
-
-        $rawValues   = $value;
-        $value       = json_decode($rawValues);
         ?>
 
         <div class="custom-metafield <?php echo $size; ?>" data-metafield="gallery">
-            <?php self::createLabel($args['label']); ?>
+            <?php self::createLabel($args['label'], $fieldName); ?>
 
             <div class="gallery-wrapper">
-                <?php if ( ! empty($value) ) : ?>
-                    <?php foreach ($value as $item): ?>
 
-                        <div class="slide">
-                            <a href="<?php echo $item->url; ?>" class="gallery-image-link"><img src="<?php echo $item->url; ?>" /></a>
-                        </div>
+                <div class="gallery-frame" id="<?php echo $name; ?>">
+                    <ul>
+                        <?php if ( ! empty($values) ) : ?>
 
-                    <?php endforeach ?>
-                <?php endif; ?>
+                            <?php foreach ($values as $item): ?>
+                                <li>
+                                    <div class="gallery-image-wrapper">
+                                        <a href="<?php echo $item->url; ?>" class="gallery-image-link"><img src="<?php echo $item->url; ?>" /></a>
+                                    </div>
+                                </li>
+                            <?php endforeach ?>
+                        <?php endif; ?>
+                    </ul>
+
+                    <a href="#" class="button-add"><?php echo __('Select images') ?></a>
+                </div>
             </div>
-
-            <a href="#" class="button-add-images"><?php echo __('Select images') ?></a>
-
-            <textarea class="textarea-hidden" name="<?php echo $fieldName; ?>" ><?php echo $rawValues; ?></textarea>
+            <textarea class="textarea-hidden" name="<?php echo $fieldName; ?>" id="<?php echo $fieldName; ?>"><?php echo $value; ?></textarea>
 
             <?php self::createDescription($args['description']); ?>
         </div>
-        <?php
+    <?php
     }
 
 

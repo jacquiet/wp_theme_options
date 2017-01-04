@@ -291,10 +291,32 @@
   .gallery-wrapper {
     position: relative;
     overflow: hidden;
+    border-top: 1px solid $light-grey;
+    padding-top: 5px;
+
+    img {
+      height: 140px;
+      @extend .z-depth-1;
+    }
 
     .slide {
       display: inline-block;
       margin-right: 10px;
+    }
+  }
+
+  .gallery-frame {
+    overflow: hidden;
+
+    ul {
+      margin: 0px;
+      height: 154px;
+      overflow: hidden;
+
+      li {
+        display: inline-block;
+        margin: 0px;
+      }
     }
   }
 }
@@ -617,16 +639,6 @@
   }
 }
 
-.view-gallery-wrapper {
-  border-top: 1px solid $light-grey;
-  padding-top: 5px;
-
-  img {
-    height: 140px;
-    @extend .z-depth-1;
-  }
-}
-
 .gallery-image-wrapper, .view-image-upload-box {
   position: relative;
 
@@ -685,20 +697,7 @@
   top: 2px;
 }
 
-.gallery-frame {
-  overflow: hidden;
 
-  ul {
-    margin: 0px;
-    height: 154px;
-    overflow: hidden;
-
-    li {
-      display: inline-block;
-      margin: 0px;
-    }
-  }
-}
 
 
 .chart-publish-posts {

@@ -27,10 +27,6 @@ KenobiSoft.manager = KenobiSoft.manager || (function($) {
         var selector     = args.selector;
         var dataSelector = args.dataSelector;
 
-        // define called components array
-        // called components are cached here
-        var calledComponents = [];
-
         // get components from DOM
         var $components = $(selector);
 
@@ -45,16 +41,12 @@ KenobiSoft.manager = KenobiSoft.manager || (function($) {
 
             // validate component
             var isValidComponent = components.hasOwnProperty(component) && typeof components[component] === 'function';
-            var alreadyCalled    = calledComponents.indexOf(component) > -1;
 
             // check if component is valid
-            if ( isValidComponent && ! alreadyCalled ) {
+            if ( isValidComponent ) {
 
                 // call component
                 components[component]($component);
-
-                // add to called components
-                calledComponents.push(component);
 
             } else if ( ! isValid ) {
                 // component not found or invalid
