@@ -101,7 +101,7 @@ class Initialzr {
             wp_enqueue_script('jquery-ui-datepicker');
             wp_enqueue_style($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/stylesheets/style.css');
             wp_enqueue_script($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/javascripts/main' . $scriptExt, array('jquery'));
-            wp_enqueue_script($module['dir'] . '_googleMaps', 'http://maps.google.com/maps/api/js?sensor=false');
+            wp_enqueue_script($module['dir'] . '_googleMaps', 'http://maps.googleapis.com/maps/api/js?sensor=false');
         });
     }
 

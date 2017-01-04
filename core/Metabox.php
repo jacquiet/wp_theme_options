@@ -475,16 +475,19 @@ class Metabox {
      * @param $args
      */
     protected function _createMap($args) {
+        $name        = $args['name'];
+        $value       = stripslashes($args['value']);
+        $fieldName   = self::getFieldName($args['option_name'], $name);
+        $size        = self::getSize($args['size']);
+
+        // DEV NOTE: These fields are currently not used
+        $required    = self::getRequired($args['required']);
+        $selector    = self::getSelector($args['selector']);
+
         $markerDir   = get_stylesheet_directory_uri() . '/modules/' . $args['module']['dir'] . '/assets/images/map-marker.png';
-        $rawValues   = !empty($args['value']) ? preg_replace('/\\\\\"/',"\"", $args['value']) : '';
+        $rawValues   = $value;
         $values      = json_decode($rawValues);
 
-        $name        = $args['name'];
-        $fieldName   = self::getFieldName($args['option_name'], $name);
-        $label       = $args['label'];
-        $description = isset($args['description']) ? $args['description'] : '';
-        $size        = isset($args['size']) ? $args['size'] : '';
-        $required    = isset($args['required']) && $args['required'] === 'true' ? 'required' : '';
         $height      = isset($args['height']) && is_numeric(floatval($args['height']))? $args['height'] : '400px';
 
         $default_lat_val = 44;
@@ -494,128 +497,31 @@ class Metabox {
         $lat_val = isset($values->lat) && !empty($values->lat) ? $values->lat : $default_lat_val;
         $lng_val = isset($values->lng) && !empty($values->lng) ? $values->lng : $default_lng_val;
         $zoom_val = isset($values->zoom) && !empty($values->zoom) ? $values->zoom : $default_zoom_val;
-
-        // Set field id
-        $fieldId = $name . '-map';
         ?>
 
-        <div class="ksfc-metafield <?php echo $size; ?>" data-metafield="map">
+        <div class="custom-metafield <?php echo $size; ?>" data-metafield="map" data-marker-dir="<?php echo $markerDir; ?>" data-lat="<?php echo $lat_val; ?>" data-lng="<?php echo $lng_val; ?>" data-zoom="<?php echo $zoom_val; ?>" data-map-id="<?php echo $fieldName; ?>">
+
             <div class="map-controls">
                 <a href="#" class="button-open-map-settings" title="<?php echo __('Toggle map settings'); ?>" data-control-opened="false"><span class="dashicons dashicons-admin-settings"></span></a>
 
                 <label><?php echo __('Latitude'); ?></label>
-                <p>
-                    <input type="number" min="-200" max="200" step="0.0000001" name="<?php echo $name . '_lat'; ?>" class="view-field-small" value="<?php echo $lat_val; ?>"/>
-                </p>
+                <input type="number" min="-200" max="200" step="0.0000001" name="<?php echo $name . '_lat'; ?>" class="lat control" value="<?php echo $lat_val; ?>"/>
+
                 <label><?php echo __('Longitude'); ?></label>
-                <p>
-                    <input type="number" min="-200" max="200" step="0.0000001" name="<?php echo $name . '_lng'; ?>" class="view-field-small" value="<?php echo $lng_val; ?>"/>
-                </p>
-                <label><?php echo __('Zoom lelve'); ?></label>
-                <p>
-                    <input type="number" min="0" max="22" step="1" name="<?php echo $name . '_zoom'; ?>" class="view-field-small" value="<?php echo $zoom_val; ?>"/>
-                </p>
+                <input type="number" min="-200" max="200" step="0.0000001" name="<?php echo $name . '_lng'; ?>" class="lng control" value="<?php echo $lng_val; ?>"/>
+
+                <label><?php echo __('Zoom level'); ?></label>
+                <input type="number" min="0" max="22" step="1" name="<?php echo $name . '_zoom'; ?>" class="zoom control" value="<?php echo $zoom_val; ?>"/>
+
                 <a href="#" class="button-update-map" title="<?php echo __('Press to update the map') ?>"><?php echo __('Update the map'); ?></a>
             </div>
 
             <textarea class="textarea-hidden" name="<?php echo $fieldName; ?>" id="<?php echo $name; ?>"><?php echo $rawValues; ?></textarea>
-            <p class="view-field-title" title="<?php echo $description; ?>"><?php echo $label; ?></p>
-            <div id="<?php echo $fieldId ?>" class="view-field-map" style="height: <?php echo $height; ?>;"></div>
+
+            <div id="<?php echo $fieldName; ?>" class="metafield"></div>
+
+            <?php self::createDescription($args['description']); ?>
         </div>
-
-
-        <script type="text/javascript">
-        // Helper
-        jQuery(document).ready(function($) {
-
-            var mapStyle = [];
-
-            var mapDiv = document.getElementById('<?php echo $fieldId; ?>');
-            var map = new google.maps.Map(mapDiv, {
-                center: {
-                    lat: <?php echo $lat_val; ?>,
-                    lng: <?php echo $lng_val; ?>
-                },
-                zoom: <?php echo $zoom_val; ?>,
-                styles: mapStyle,
-                scrollwheel: false
-            });
-
-            var marker = new google.maps.Marker({
-                position: {
-                    lat: <?php echo $lat_val; ?>,
-                    lng: <?php echo $lng_val; ?>
-                },
-                map: map,
-                title: 'Selected location',
-                icon: '<?php echo $markerDir; ?>'
-            });
-
-            google.maps.event.addDomListener(window, "resize", function() {
-                var center = map.getCenter();
-                google.maps.event.trigger(map, "resize");
-                map.setCenter(center);
-            });
-
-            var $mapWrapper = $('#' + '<?php echo $fieldId; ?>');
-
-            $mapWrapper.parent().find('.map-controls input').on('keyup keydown keypress click', function(e) {
-
-                var data = {
-                    lat: $('input[name=<?php echo $args['name'] . '_lat'; ?>]').val(),
-                    lng: $('input[name=<?php echo $args['name'] . '_lng'; ?>]').val(),
-                    zoom: $('input[name=<?php echo $args['name'] . '_zoom'; ?>]').val()
-                };
-
-                $('#' + '<?php echo $name; ?>').html(JSON.stringify(data));
-            });
-
-            $mapWrapper.parent().find('.button-update-map').on('click', function(e) {
-                e.preventDefault();
-
-                var data = {
-                    lat: parseFloat($('input[name=<?php echo $args['name'] . '_lat'; ?>]').val()),
-                    lng: parseFloat($('input[name=<?php echo $args['name'] . '_lng'; ?>]').val()),
-                    zoom: parseInt($('input[name=<?php echo $args['name'] . '_zoom'; ?>]').val())
-                };
-
-                var map = new google.maps.Map(mapDiv, {
-                    center: {
-                        lat: data.lat,
-                        lng: data.lng
-                    },
-                    zoom: data.zoom,
-                    styles: mapStyle
-                });
-
-                var marker = new google.maps.Marker({
-                    position: {
-                        lat: data.lat,
-                        lng: data.lng
-                    },
-                    map: map,
-                    title: 'Selected location',
-                    icon: '<?php echo $markerDir; ?>'
-                });
-            });
-
-            $mapWrapper.parent().find('.button-open-map-settings').on('click', function(e) {
-                e.preventDefault();
-
-                var isOpened = $(this).attr('data-control-opened') !== 'false';
-                $('#' + '<?php echo $fieldId; ?>').parent().find('.map-controls').addClass('active');
-
-                if ( isOpened ) {
-                    $(this).parent().removeClass('active');
-                    $(this).attr('data-control-opened', false);
-
-                } else {
-                    $(this).parent().addClass('active');
-                    $(this).attr('data-control-opened', true);
-                }
-            });
-        });
-        </script>
         <?php
     }
 
