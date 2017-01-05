@@ -13,10 +13,19 @@ jQuery(document).ready(function($) {
 
         var init = function() {
             if ( coreLoaded ) {
+
+                // initialize metafields
                 KenobiSoft.manager.initMetafields({
                     components: KenobiSoft.metafields,
                     selector: '.custom-metafield',
                     dataSelector: 'metafield'
+                });
+
+                // initialize widgets
+                KenobiSoft.manager.initWidgets({
+                    components: KenobiSoft.widgets,
+                    selector: '.custom-widget',
+                    dataSelector: 'widget'
                 });
             }
         };

@@ -8,17 +8,16 @@ class Widget {
     /**
      * Construct
      */
-    public function __construct() {
-
-    }
+    public function __construct() {}
 
 
     /**
      * Create widget
-     * @param array $args
+     * @param string $widget
      */
-    public static function createWidget($args) {
-        switch ($args['name']) {
+    public static function createWidget($widget) {
+
+        switch ($widget) {
             case 'activity':
                 self::_createWidgetActivity();
                 break;
@@ -45,8 +44,7 @@ class Widget {
         $pages_data = wp_count_posts('page');
         ?>
 
-        <!-- content -->
-        <div class="view-block-content">
+        <div class="custom-widget" data-widget="activity">
 
             <!-- block-section -->
             <div class="view-block-section">
@@ -81,13 +79,6 @@ class Widget {
             <!-- /block-section -->
 
         </div>
-        <!-- /content -->
-
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                kenobiSoft.widgets.activity.init();
-            });
-        </script>
         <?php
     }
 
@@ -104,7 +95,7 @@ class Widget {
         ?>
 
         <!-- content -->
-        <div class="view-block-content">
+        <div class="custom-widget" data-widget="plugins">
 
             <!-- block-section -->
             <div class="view-block-section">
@@ -158,7 +149,7 @@ class Widget {
         ?>
 
         <!-- content -->
-        <div class="view-block-content">
+        <div class="custom-widget" data-widget="statistics">
 
             <!-- block-section -->
             <div class="view-block-section">

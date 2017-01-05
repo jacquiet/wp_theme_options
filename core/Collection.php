@@ -109,4 +109,32 @@ class Collection {
 
         return $terms;
     }
+
+
+    /**
+     * Save post custom fields
+     * @param $postId
+     * @param $metafields
+     */
+    public static function savePostCustomFields($postId, $metafields) {
+
+        if ( count($metafields) > 0 ) {
+
+            foreach ( $metafields as $metafield ) {
+                $metafieldName = $metafield['name'];
+                $data          = $_POST[$metafieldName];
+                $oldData       = get_post_meta($postId);
+
+                if ( empty($oldData) ) {
+                    add_post_meta($postId, $metafieldName, $data, true);
+
+                } else if ( $data !== $oldData ) {
+                    update_post_meta($postId, $metafieldName, $data);
+
+                } else if ( empty($data) ) {
+                    delete_post_meta($postId, $metafieldName, $oldData);
+                }
+            }
+        }
+    }
 }

@@ -32,8 +32,6 @@ KenobiSoft.metafields.editor = KenobiSoft.metafields.editor || function($compone
         $editor.on('keyup keydown keypress click', function () {
             var editorVal = $editor.html();
 
-            console.log(editorVal);
-
             var encodedVal = editorVal.replace(/\//g, "'");
             $editorStorage.val(encodedVal);
         });
@@ -41,8 +39,6 @@ KenobiSoft.metafields.editor = KenobiSoft.metafields.editor || function($compone
         // update field value on button press events
         $editor.parent().find('button').on('click', function () {
             var editorVal = $editor.html();
-
-            console.log(editorVal);
 
             var encodedVal = editorVal.replace(/\//g, "'");
             $editorStorage.val(encodedVal);

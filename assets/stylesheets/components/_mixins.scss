@@ -13,7 +13,6 @@
   }
 }
 
-
 /** Breakpoint max */
 @mixin breakpoint-max($point) {
   @media (max-width: $point) {

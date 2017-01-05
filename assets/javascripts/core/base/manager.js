@@ -19,7 +19,7 @@ KenobiSoft.manager = KenobiSoft.manager || (function($) {
             typeof args.dataSelector === 'string';
 
         if ( ! isValid ) {
-            console.warn('Invalid initialization for initComponents. Make sure to provide valid args object, containing components, selector and dataSelector');
+            console.warn('Invalid initialization for initComponents. Make sure to provide a valid args object, containing components, selector and dataSelector');
             return false;
         }
 

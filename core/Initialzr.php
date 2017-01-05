@@ -41,6 +41,12 @@ class Initialzr {
 
 
     /**
+     * @property null $customPostField
+     */
+    protected $customPostField   = null;
+
+
+    /**
      * Get instance of the class
      * @param $config
      * @return mixed
@@ -63,10 +69,11 @@ class Initialzr {
     private function __construct($config) {
         $this->setup();
 
-        $this->helper 	  = new Helper();
-        $this->config 	  = $this->helper->xmlToArr($config);
-        $this->view   	  = new View($this->config);
-        self::$collection = new Collection($this->config['module']['collection']);
+        $this->helper 	       = new Helper();
+        $this->config 	       = $this->helper->xmlToArr($config);
+        $this->view   	       = new View($this->config);
+        self::$collection      = new Collection($this->config['module']['collection']);
+        $this->customPostField = new CustomPostField($this->config);
 
         $this->monitor();
     }
@@ -103,6 +110,16 @@ class Initialzr {
             wp_enqueue_script($module['dir'], get_stylesheet_directory_uri() . '/modules/' . $module['dir'] . '/assets/javascripts/main' . $scriptExt, array('jquery'));
             wp_enqueue_script($module['dir'] . '_googleMaps', 'http://maps.googleapis.com/maps/api/js?sensor=false');
         });
+
+        // add custom metafields to post types
+        add_action('add_meta_boxes', function() {
+            $this->customPostField->addCustomMetafields($this->config['postTypes']);
+        });
+
+        // save custom metafields for post types
+        add_action('save_post', function() {
+            $this->customPostField->saveCustomFields($this->config['postTypes']);
+        });
     }
 
 
@@ -113,8 +130,9 @@ class Initialzr {
         require_once('View.php');
         require_once('Widget.php');
         require_once('Helper.php');
-        require_once('Metabox.php');
+        require_once('Metafield.php');
         require_once('Collection.php');
+        require_once('CustomPostField.php');
     }
 
 

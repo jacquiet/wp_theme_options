@@ -1,10 +1,10 @@
 <?php
 /**
- * Module Name: Theme Options
+ * Module Name: Enhanced Custom Fields
  * Module URI: http://kenobisoft.com
  * Description: This is the module entry-point.
- * Version: 2.0.0
- * Author: KenobiSoft
+ * Version: 1.0.0
+ * Author: KenobiSoft, Neven Dyulgerov
  * Author URI: http://kenobisoft.com
  * License: GPL2
  */

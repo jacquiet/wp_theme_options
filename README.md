@@ -1,27 +1,27 @@
 
-#Theme Options - How to Use
+#Enhanced Custom Fields - How to Use
 
-Theme Options is an object-oriented configuration MVC module, designed to work in the context of WordPress.
+Enhanced Custom Fields (ECF) is an object-oriented configuration MVC module, designed to work in the context of WordPress.
 This tool is designed for WordPress theme developers. With it, you can easily add all the necessary custom fields, required
 for the theme you're developing.
 
 Define your custom fields and watch them work perfectly without any extra work on your end!
 
-This module should be controlled by client programmers from a single file - config.xml. This means, that you do NOT need to write any code to use Theme Options. All you have to do is configure your module and leave the rest to the system.
+This module should be controlled by client programmers from a single file - config.xml. This means, that you do NOT need to write any code to use Enhanced Custom Fields. All you have to do is configure your module using xml and leave the rest to the system.
 
-#How to include Theme Options
+#How to include Enhanced Custom Fields
 
-In order to use Theme Options, you need to include its index.php file (the module's entry-point) in your functions.php file.
+In order to use ECF, you need to include its index.php file (the module's entry-point) in your functions.php file.
 So, all you have to do is:
 
-require_once('path-to-theme-options/index.php');
+require_once('path-to-efc/index.php');
 
-That's it! Theme Options is loaded and ready to use. Once you update your functions.php file, reload your back-end (wp-admin).
-You'll find Theme Options near the bottom of the admin menu to the left.
+That's it! Enhanced Custom Fields is loaded and ready to use. Once you update your functions.php file, reload your back-end (wp-admin).
+You'll find ECF near the bottom of the admin menu to the left.
 
-#How to configure Theme Options
+#How to configure Enhanced Custom Fields
 
-As mentioned already, Theme Options can be easily configured from a single file - config.xml, found in the root folder of the module.
+As mentioned already, Enhanced Custom Fields can be easily configured from a single file - config.xml, found in the root folder of the module.
 Let's example config.xml and show you how to configure it according to your needs.
 
 First thing you'll notice, when you open config.xml is that the whole configuration is wrapped in a 'config' node. This is a must
@@ -29,14 +29,14 @@ for the config file to work.
 
 The 'config' node contains two required nodes - 'module' and 'pages'. Let's look at 'module' first.
 
-The 'module' node contains necessary information for Theme Options to work. This includes:
+The 'module' node contains necessary information for Enhanced Custom Fields to work. This includes:
 
 ```xml
 <module>
-    <name>            - the module's name (example: Theme Options)
+    <name>            - the module's name (example: Enhanced Custom Fields)
     <version>         - the module's version (example: 1.0.0)
     <author>          - the module's author (example: 'KenobiSoft')
-    <dir>             - the module's root folder name (example: 'theme_options')
+    <dir>             - the module's root folder name (example: 'efc')
     <mode>            - the module's mode (can be 'development' or 'production')
     <collection>      - the module's database settings
         <optionGroup> - the group name of the module's collection setting
@@ -51,6 +51,8 @@ The 'module' node contains necessary information for Theme Options to work. This
     <menuIcon>        - the module's menu icon
 </module>
 ```
+
+Note that currently ECF supports writing only in the options table (native for WordPress). Due to this, the 'collection' node, in the example above, contains two sub-nodes - 'optionGroup' and 'optionName'. Developers familiar with the add_option WP API will probably recognize these. Behind the curtains, ECF interacts with this API to perform the CRUD operations for managing your custom fields.
 
 The 'pages' node contains 'page' nodes. A 'page' node contains your entire page definition. Let's look at a 'page' node:
 
@@ -141,7 +143,7 @@ Finally, let's look at a full configuration:
 <?xml version="1.0"?>
 <config>
 	<module>
-		<name>Theme Options</name>
+		<name>Enhanced Custom Fields</name>
 		<version>2.0.0</version>
 		<author>KenobiSoft</author>
 		<dir>theme_options</dir>
@@ -182,4 +184,4 @@ Finally, let's look at a full configuration:
 </config>
 ```
 
-With the above configuration, the module will create a single page, called 'Dashboard' and fills it with just one section, which contains a single metafield of type 'dropdown_multiple'. The dropdown will pull out all taxonomy items from taxonomy type 'category'.
+With the above configuration, the module will create a single page, called 'Dashboard' and fills it with just one section, with width of 50%, which contains a single metafield of type 'dropdown_multiple'. The dropdown will pull out all taxonomy items from taxonomy type 'category'.

@@ -54,10 +54,6 @@
     @include transition(all, 0.3s);
   }
 
-  .nav-element {
-
-  }
-
   .nav-element.active {
     background-color: $view-navigation-active-color-index;
     @include transition(all, 0.3s);

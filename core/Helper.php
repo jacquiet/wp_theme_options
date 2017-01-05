@@ -13,9 +13,7 @@ class Helper {
     /**
      * Construct
      */
-	public function __construct() {
-
-	}
+	public function __construct() {}
 
 
     /**

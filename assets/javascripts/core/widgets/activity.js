@@ -12,6 +12,9 @@ KenobiSoft.widgets = KenobiSoft.widgets || {};
 // Define activity widget
 KenobiSoft.widgets.activity = KenobiSoft.widgets.activity || function($widget) {
 
+    // define local vars
+    var $ = jQuery;
+
     var init = function() {
         var chartDataPosts = $('.widget-activity-posts-pie-chart').data('chart-data');
         var chartDataVideos = $('.widget-activity-videos-pie-chart').data('chart-data');
@@ -108,10 +111,5 @@ KenobiSoft.widgets.activity = KenobiSoft.widgets.activity || function($widget) {
         new Chartist.Pie('.widget-activity-pages-pie-chart', dataPages, {});
     };
 
-
-    // Return public API
-    return {
-        init: init
-    }
-
+    init();
 };

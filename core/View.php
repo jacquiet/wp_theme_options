@@ -194,9 +194,7 @@ class View {
         $metafields   = $this->formatData($this->getData('metafield', $data['metafields']));
         $sectionWidth = $this->getSectionWidth($data['width']);
         $widgets      = $this->getData('widget', $data['widgets']);
-
-        //echo '<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>';
-        //var_dump($this->getData('widget', $data['widgets']));
+        $widgets      = is_array($widgets) ? $widgets : array($widgets);
         ?>
 
         <div class="<?php echo $sectionWidth; ?> col-full block-col initialzr-col initialzr-section">
@@ -283,8 +281,8 @@ class View {
         // set option name
         $data['option_name'] = $data['module']['collection']['optionName'];
 
-        // create metabox
-        Metabox::createField($data);
+        // create metafield
+        Metafield::createField($data);
     }
 
 
@@ -611,7 +609,7 @@ class View {
             $optionName = self::$config['module']['collection']['optionName'];
 
             // Create hidden input
-            Metabox::createField(array(
+            Metafield::createField(array(
                 'type'        => 'input_hidden',
                 'name'        => $name,
                 'value'       => $value,
